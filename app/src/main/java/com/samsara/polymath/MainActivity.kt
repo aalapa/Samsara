@@ -198,20 +198,32 @@ class MainActivity : AppCompatActivity() {
     private fun showEditPersonaDialog(persona: com.samsara.polymath.data.Persona) {
         val dialogBinding = DialogAddPersonaBinding.inflate(LayoutInflater.from(this))
         dialogBinding.personaNameEditText.setText(persona.name)
+        // Select all text for easy editing
+        dialogBinding.personaNameEditText.selectAll()
         
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.edit_persona))
             .setView(dialogBinding.root)
-            .setPositiveButton(getString(R.string.done)) { _, _ ->
+            .setPositiveButton(getString(R.string.done)) { dialogInterface, _ ->
                 val newName = dialogBinding.personaNameEditText.text?.toString()?.trim()
-                if (!newName.isNullOrEmpty() && newName != persona.name) {
-                    viewModel.updatePersonaName(persona.id, newName)
+                if (!newName.isNullOrEmpty()) {
+                    if (newName != persona.name) {
+                        viewModel.updatePersonaName(persona.id, newName)
+                    }
+                } else {
+                    Toast.makeText(this, "Persona name cannot be empty", Toast.LENGTH_SHORT).show()
                 }
+                dialogInterface.dismiss()
             }
-            .setNegativeButton(getString(R.string.cancel), null)
+            .setNegativeButton(getString(R.string.cancel)) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
             .create()
 
         dialog.show()
+        
+        // Request focus and show keyboard
+        dialogBinding.personaNameEditText.requestFocus()
     }
 
     private fun showDeletePersonaConfirmation(persona: com.samsara.polymath.data.Persona) {

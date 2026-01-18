@@ -27,8 +27,8 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
             val personaList = personas.first()
             val maxOrder = personaList.maxOfOrNull { it.order } ?: 0
             
-            // Assign random color with contrasting text
-            val colors = listOf(
+            // Available colors with contrasting text
+            val availableColors = listOf(
                 Pair("#007AFF", "#FFFFFF"), // Apple Blue - White text
                 Pair("#34C759", "#FFFFFF"), // Apple Green - White text
                 Pair("#FF3B30", "#FFFFFF"), // Apple Red - White text
@@ -38,19 +38,89 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
                 Pair("#5AC8FA", "#000000"), // Apple Teal - Black text
                 Pair("#5856D6", "#FFFFFF"), // Apple Indigo - White text
                 Pair("#FFCC00", "#000000"), // Yellow - Black text
-                Pair("#32D74B", "#FFFFFF")  // Bright Green - White text
+                Pair("#32D74B", "#FFFFFF"), // Bright Green - White text
+                Pair("#00C7BE", "#FFFFFF"), // Turquoise - White text
+                Pair("#FF6B6B", "#FFFFFF"), // Coral - White text
+                Pair("#4ECDC4", "#000000"), // Mint - Black text
+                Pair("#95E1D3", "#000000"), // Light Mint - Black text
+                Pair("#F38181", "#FFFFFF"), // Light Coral - White text
+                Pair("#AA96DA", "#FFFFFF"), // Lavender - White text
+                Pair("#FCBAD3", "#000000"), // Light Pink - Black text
+                Pair("#A8E6CF", "#000000"), // Light Green - Black text
+                Pair("#FFD93D", "#000000"), // Light Yellow - Black text
+                Pair("#6BCB77", "#FFFFFF")  // Fresh Green - White text
             )
-            val randomColor = colors.random()
+            
+            // Get existing persona colors
+            val existingColors = personaList.map { it.backgroundColor }
+            
+            // Find the color that is maximally different from existing colors
+            val selectedColor = findMostDifferentColor(availableColors, existingColors)
             
             repository.insertPersona(
                 Persona(
                     name = name,
                     order = maxOrder + 1,
-                    backgroundColor = randomColor.first,
-                    textColor = randomColor.second
+                    backgroundColor = selectedColor.first,
+                    textColor = selectedColor.second
                 )
             )
         }
+    }
+    
+    /**
+     * Finds the color from available colors that is maximally different from existing colors.
+     * Uses Euclidean distance in RGB space to calculate color difference.
+     */
+    private fun findMostDifferentColor(
+        availableColors: List<Pair<String, String>>,
+        existingColors: List<String>
+    ): Pair<String, String> {
+        if (existingColors.isEmpty()) {
+            // If no existing colors, return first available color
+            return availableColors.first()
+        }
+        
+        // Convert hex colors to RGB
+        fun hexToRgb(hex: String): Triple<Int, Int, Int> {
+            val cleanHex = hex.removePrefix("#")
+            val r = cleanHex.substring(0, 2).toInt(16)
+            val g = cleanHex.substring(2, 4).toInt(16)
+            val b = cleanHex.substring(4, 6).toInt(16)
+            return Triple(r, g, b)
+        }
+        
+        // Calculate Euclidean distance between two colors in RGB space
+        fun colorDistance(color1: Triple<Int, Int, Int>, color2: Triple<Int, Int, Int>): Double {
+            val dr = color1.first - color2.first
+            val dg = color1.second - color2.second
+            val db = color1.third - color2.third
+            return Math.sqrt((dr * dr + dg * dg + db * db).toDouble())
+        }
+        
+        // Convert existing colors to RGB
+        val existingRgb = existingColors.map { hexToRgb(it) }
+        
+        // Find the color with maximum minimum distance to all existing colors
+        var maxMinDistance = -1.0
+        var bestColor = availableColors.first()
+        
+        for (colorPair in availableColors) {
+            val candidateRgb = hexToRgb(colorPair.first)
+            
+            // Calculate minimum distance to any existing color
+            val minDistance = existingRgb.minOfOrNull { existingRgb ->
+                colorDistance(candidateRgb, existingRgb)
+            } ?: Double.MAX_VALUE
+            
+            // If this color is further from all existing colors, select it
+            if (minDistance > maxMinDistance) {
+                maxMinDistance = minDistance
+                bestColor = colorPair
+            }
+        }
+        
+        return bestColor
     }
     
     fun updatePersonaName(personaId: Long, newName: String) {
