@@ -3168,6 +3168,7 @@ id action_menu_presenter
 id action_mode_bar
 id action_mode_bar_stub
 id action_mode_close_button
+id action_show_completed
 id action_text
 id actions
 id activity_chooser_view_content
@@ -3817,6 +3818,7 @@ layout select_dialog_singlechoice_material
 layout support_simple_spinner_dropdown_item
 menu main_menu
 menu persona_menu
+menu tasks_menu
 mipmap ic_launcher
 mipmap ic_launcher_round
 plurals mtrl_badge_content_description
@@ -3870,6 +3872,7 @@ string character_counter_content_description
 string character_counter_overflowed_content_description
 string character_counter_pattern
 string clear_text_end_icon_content_description
+string completed_tasks
 string day_ago
 string days_ago
 string delete_confirmation
@@ -3890,6 +3893,7 @@ string fab_transformation_scrim_behavior
 string fab_transformation_sheet_behavior
 string file_picker_title
 string hide_bottom_view_on_scroll_behavior
+string hide_completed_tasks
 string icon_content_description
 string import_confirmation
 string import_data
@@ -4008,6 +4012,7 @@ string search_menu_title
 string searchbar_scrolling_view_behavior
 string searchview_clear_text_content_description
 string searchview_navigation_content_description
+string show_completed_tasks
 string side_sheet_accessibility_pane_title
 string side_sheet_behavior
 string status_bar_notification_info_overflow

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.samsara.polymath.R
 import com.samsara.polymath.adapter.TaskAdapter
 import com.samsara.polymath.databinding.ActivityTasksBinding
 import com.samsara.polymath.databinding.DialogAddTaskBinding
@@ -23,6 +24,9 @@ class TasksActivity : AppCompatActivity() {
     private var personaId: Long = -1
     private var personaName: String = ""
     private var personaBackgroundColor: String = "#007AFF" // Default color
+    private var showCompletedTasks: Boolean = false
+    private var pendingSwipeTask: com.samsara.polymath.data.Task? = null
+    private var pendingSwipePosition: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +54,22 @@ class TasksActivity : AppCompatActivity() {
         binding.toolbar.title = personaName
         binding.toolbar.setNavigationOnClickListener {
             finish()
+        }
+        binding.toolbar.inflateMenu(R.menu.tasks_menu)
+        binding.toolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_show_completed -> {
+                    showCompletedTasks = !showCompletedTasks
+                    item.title = if (showCompletedTasks) {
+                        getString(R.string.hide_completed_tasks)
+                    } else {
+                        getString(R.string.show_completed_tasks)
+                    }
+                    observeTasks() // Refresh the task list
+                    true
+                }
+                else -> false
+            }
         }
     }
 
@@ -110,18 +130,26 @@ class TasksActivity : AppCompatActivity() {
                 if (position == RecyclerView.NO_POSITION) return
                 val task = adapter.currentList[position]
 
+                // Store the task and position for confirmation
+                pendingSwipeTask = task
+                pendingSwipePosition = position
+
+                // Restore the view immediately before showing dialog
+                // This prevents the refresh from happening behind the dialog
+                binding.tasksRecyclerView.post {
+                    adapter.notifyItemChanged(position)
+                }
+
                 when (direction) {
                     ItemTouchHelper.LEFT -> {
-                        // Delete
+                        // Delete - show confirmation
                         showDeleteConfirmation(task)
-                        adapter.notifyItemChanged(position) // Restore the view
                     }
                     ItemTouchHelper.RIGHT -> {
-                        // Mark as complete
+                        // Mark as complete - show confirmation
                         if (!task.isCompleted) {
                             showCompleteConfirmation(task)
                         }
-                        adapter.notifyItemChanged(position) // Restore the view
                     }
                 }
             }
@@ -139,7 +167,13 @@ class TasksActivity : AppCompatActivity() {
 
     private fun observeTasks() {
         viewModel.getTasksByPersona(personaId).observe(this) { tasks ->
-            adapter.submitList(tasks)
+            // Filter tasks based on showCompletedTasks flag
+            val filteredTasks = if (showCompletedTasks) {
+                tasks.filter { it.isCompleted }
+            } else {
+                tasks.filter { !it.isCompleted }
+            }
+            adapter.submitList(filteredTasks)
         }
     }
 
@@ -152,21 +186,43 @@ class TasksActivity : AppCompatActivity() {
     private fun showAddTaskDialog() {
         val dialogBinding = DialogAddTaskBinding.inflate(LayoutInflater.from(this))
         
+        // Set text colors to white for dark background
+        dialogBinding.taskTitleEditText.setTextColor(android.graphics.Color.WHITE)
+        dialogBinding.taskDescriptionEditText.setTextColor(android.graphics.Color.WHITE)
+        
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.add_task))
             .setView(dialogBinding.root)
-            .setPositiveButton(getString(R.string.done)) { _, _ ->
+            .create()
+        
+        // Set text colors to white for dark background
+        dialog.setOnShowListener {
+            val titleView = dialog.findViewById<android.widget.TextView>(android.R.id.title)
+            titleView?.setTextColor(android.graphics.Color.WHITE)
+            
+            // Set button text colors to white
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(android.graphics.Color.WHITE)
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(android.graphics.Color.WHITE)
+        }
+        
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.done)) { _, _ ->
                 val title = dialogBinding.taskTitleEditText.text?.toString()?.trim()
                 val description = dialogBinding.taskDescriptionEditText.text?.toString()?.trim() ?: ""
                 
                 if (!title.isNullOrEmpty()) {
-                    viewModel.insertTask(personaId, title, description, personaBackgroundColor)
+                    // Capitalize first letter of title (English rules: first letter uppercase, rest as typed)
+                    val capitalizedTitle = title.replaceFirstChar { 
+                        if (it.isLowerCase()) it.uppercaseChar() else it 
+                    }
+                    viewModel.insertTask(personaId, capitalizedTitle, description, personaBackgroundColor)
                 } else {
                     Toast.makeText(this, "Please enter a task title", Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton(getString(R.string.cancel), null)
-            .create()
+        
+        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.cancel)) { _, _ ->
+            // Cancel - do nothing
+        }
 
         dialog.show()
     }
@@ -177,8 +233,17 @@ class TasksActivity : AppCompatActivity() {
             .setMessage(getString(R.string.delete_confirmation))
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
                 viewModel.deleteTask(task)
+                pendingSwipeTask = null
+                pendingSwipePosition = -1
             }
-            .setNegativeButton(getString(R.string.no), null)
+            .setNegativeButton(getString(R.string.no)) { _, _ ->
+                pendingSwipeTask = null
+                pendingSwipePosition = -1
+            }
+            .setOnDismissListener {
+                pendingSwipeTask = null
+                pendingSwipePosition = -1
+            }
             .show()
     }
 
@@ -188,8 +253,17 @@ class TasksActivity : AppCompatActivity() {
             .setMessage(getString(R.string.mark_complete_confirmation))
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
                 viewModel.markTaskAsComplete(task)
+                pendingSwipeTask = null
+                pendingSwipePosition = -1
             }
-            .setNegativeButton(getString(R.string.no), null)
+            .setNegativeButton(getString(R.string.no)) { _, _ ->
+                pendingSwipeTask = null
+                pendingSwipePosition = -1
+            }
+            .setOnDismissListener {
+                pendingSwipeTask = null
+                pendingSwipePosition = -1
+            }
             .show()
     }
 

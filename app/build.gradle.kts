@@ -64,19 +64,9 @@ android {
         }
     }
 
-    signingConfigs {
-        // Create externalOverride to satisfy Android Studio's requirement
-        // Always use debug keystore - set during configuration phase (not in afterEvaluate)
-        val debugKeystorePath = "${System.getProperty("user.home")}/.android/debug.keystore"
-        val debugKeystore = file(debugKeystorePath)
-        
-        create("externalOverride") {
-            storeFile = debugKeystore
-            storePassword = "android"
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
-        }
-    }
+    // No custom signing configs - using default debug signing
+    // Android Studio's injected externalOverride config causes issues with invalid paths
+    // The gradle.properties file has settings to disable injected configs
 
     buildTypes {
         debug {

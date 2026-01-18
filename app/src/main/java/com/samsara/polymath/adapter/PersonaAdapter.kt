@@ -39,9 +39,15 @@ class PersonaAdapter(
         fun bind(personaWithCount: PersonaWithTaskCount) {
             val persona = personaWithCount.persona
             val completedCount = personaWithCount.completedTaskCount
+            val emoji = personaWithCount.emoji
             
-            // Display persona name with completed task count prefix
-            binding.personaNameTextView.text = "$completedCount ${persona.name}"
+            // Display persona name with completed task count prefix and emoji
+            val displayText = if (emoji.isNotEmpty()) {
+                "$emoji $completedCount ${persona.name}"
+            } else {
+                "$completedCount ${persona.name}"
+            }
+            binding.personaNameTextView.text = displayText
             
             // Helper function to determine if color is dark
             fun isColorDark(color: Int): Boolean {
@@ -110,7 +116,11 @@ class PersonaAdapter(
         }
 
         override fun areContentsTheSame(oldItem: PersonaWithTaskCount, newItem: PersonaWithTaskCount): Boolean {
-            return oldItem.persona == newItem.persona && oldItem.completedTaskCount == newItem.completedTaskCount
+            return oldItem.persona == newItem.persona 
+                && oldItem.completedTaskCount == newItem.completedTaskCount
+                && oldItem.openTaskCount == newItem.openTaskCount
+                && oldItem.emoji == newItem.emoji
+                && oldItem.score == newItem.score
         }
     }
 }

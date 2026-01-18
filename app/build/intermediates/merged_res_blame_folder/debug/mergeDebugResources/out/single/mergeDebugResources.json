@@ -36,6 +36,10 @@
         "source": "com.samsara.polymath.app-main-45:/layout/item_task.xml"
     },
     {
+        "merged": "com.samsara.polymath.app-debug-43:/menu_tasks_menu.xml.flat",
+        "source": "com.samsara.polymath.app-main-45:/menu/tasks_menu.xml"
+    },
+    {
         "merged": "com.samsara.polymath.app-debug-43:/menu_main_menu.xml.flat",
         "source": "com.samsara.polymath.app-main-45:/menu/main_menu.xml"
     },

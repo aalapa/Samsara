@@ -35,9 +35,52 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
             repository.getAllPersonas(),
             taskRepository.getAllTasks()
         ) { personas, allTasks ->
-            personas.map { persona ->
-                val completedCount = allTasks.count { it.personaId == persona.id && it.isCompleted }
-                PersonaWithTaskCount(persona, completedCount)
+            // Calculate task counts and scores for each persona
+            val personasWithStats = personas.map { persona ->
+                val personaTasks = allTasks.filter { it.personaId == persona.id }
+                val completedCount = personaTasks.count { it.isCompleted }
+                val openCount = personaTasks.count { !it.isCompleted }
+                
+                // Calculate progress score using Option 1 formula with safety checks
+                // Score = (completedTasks / totalTasks) * openCount
+                // This rewards both completion rate and engagement (opening the persona)
+                val totalTasks = completedCount + openCount
+                val score = if (totalTasks > 0) {
+                    (completedCount.toDouble() / totalTasks) * persona.openCount
+                } else {
+                    // No tasks = no progress, score is 0
+                    0.0
+                }
+                
+                PersonaWithTaskCount(
+                    persona = persona,
+                    completedTaskCount = completedCount,
+                    openTaskCount = openCount,
+                    emoji = "", // Will be assigned after sorting
+                    score = score
+                )
+            }
+            
+            // Sort by score (descending), then by openCount (descending) for tie-breaking
+            val sortedPersonas = personasWithStats.sortedWith(
+                compareByDescending<PersonaWithTaskCount> { it.score }
+                    .thenByDescending { it.persona.openCount }
+            )
+            
+            // Assign emojis: top 3 get 😊, bottom 3 get 😢
+            // Personas with no completed tasks always get 😢
+            sortedPersonas.mapIndexed { index, personaWithStats ->
+                val emoji = when {
+                    // Personas with no completed tasks get sad emoji
+                    personaWithStats.completedTaskCount == 0 -> "😢"
+                    // Top 3 get smiling emoji
+                    index < 3 -> "😊"
+                    // Bottom 3 get sad emoji (only if there are at least 6 personas)
+                    sortedPersonas.size >= 6 && index >= sortedPersonas.size - 3 -> "😢"
+                    // Others get no emoji
+                    else -> ""
+                }
+                personaWithStats.copy(emoji = emoji)
             }
         }.asLiveData()
     }
