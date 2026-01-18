@@ -31,23 +31,28 @@ public final class AppDatabase_Impl extends AppDatabase {
 
   private volatile TaskDao _taskDao;
 
+  private volatile CommentDao _commentDao;
+
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(5) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(6) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `personas` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `order` INTEGER NOT NULL, `openCount` INTEGER NOT NULL, `backgroundColor` TEXT NOT NULL, `textColor` TEXT NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `tasks` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `personaId` INTEGER NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `completedAt` INTEGER, `isCompleted` INTEGER NOT NULL, `order` INTEGER NOT NULL, `backgroundColor` TEXT NOT NULL, FOREIGN KEY(`personaId`) REFERENCES `personas`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_tasks_personaId` ON `tasks` (`personaId`)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `comments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `text` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `tasks`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_comments_taskId` ON `comments` (`taskId`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'eba8e62bf60c5a267207e32fac2ce582')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9c08a9bd704a2a9b0229c315ad1b27d1')");
       }
 
       @Override
       public void dropAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS `personas`");
         db.execSQL("DROP TABLE IF EXISTS `tasks`");
+        db.execSQL("DROP TABLE IF EXISTS `comments`");
         final List<? extends RoomDatabase.Callback> _callbacks = mCallbacks;
         if (_callbacks != null) {
           for (RoomDatabase.Callback _callback : _callbacks) {
@@ -130,9 +135,25 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoTasks + "\n"
                   + " Found:\n" + _existingTasks);
         }
+        final HashMap<String, TableInfo.Column> _columnsComments = new HashMap<String, TableInfo.Column>(4);
+        _columnsComments.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsComments.put("taskId", new TableInfo.Column("taskId", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsComments.put("text", new TableInfo.Column("text", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsComments.put("createdAt", new TableInfo.Column("createdAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysComments = new HashSet<TableInfo.ForeignKey>(1);
+        _foreignKeysComments.add(new TableInfo.ForeignKey("tasks", "CASCADE", "NO ACTION", Arrays.asList("taskId"), Arrays.asList("id")));
+        final HashSet<TableInfo.Index> _indicesComments = new HashSet<TableInfo.Index>(1);
+        _indicesComments.add(new TableInfo.Index("index_comments_taskId", false, Arrays.asList("taskId"), Arrays.asList("ASC")));
+        final TableInfo _infoComments = new TableInfo("comments", _columnsComments, _foreignKeysComments, _indicesComments);
+        final TableInfo _existingComments = TableInfo.read(db, "comments");
+        if (!_infoComments.equals(_existingComments)) {
+          return new RoomOpenHelper.ValidationResult(false, "comments(com.samsara.polymath.data.Comment).\n"
+                  + " Expected:\n" + _infoComments + "\n"
+                  + " Found:\n" + _existingComments);
+        }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "eba8e62bf60c5a267207e32fac2ce582", "20ae48b4e3e1f3cccf47f3ac7e4b2160");
+    }, "9c08a9bd704a2a9b0229c315ad1b27d1", "78edd4a64134cbc14731e4c2c8738412");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
@@ -143,7 +164,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected InvalidationTracker createInvalidationTracker() {
     final HashMap<String, String> _shadowTablesMap = new HashMap<String, String>(0);
     final HashMap<String, Set<String>> _viewTables = new HashMap<String, Set<String>>(0);
-    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "personas","tasks");
+    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "personas","tasks","comments");
   }
 
   @Override
@@ -161,6 +182,7 @@ public final class AppDatabase_Impl extends AppDatabase {
       }
       _db.execSQL("DELETE FROM `personas`");
       _db.execSQL("DELETE FROM `tasks`");
+      _db.execSQL("DELETE FROM `comments`");
       super.setTransactionSuccessful();
     } finally {
       super.endTransaction();
@@ -180,6 +202,7 @@ public final class AppDatabase_Impl extends AppDatabase {
     final HashMap<Class<?>, List<Class<?>>> _typeConvertersMap = new HashMap<Class<?>, List<Class<?>>>();
     _typeConvertersMap.put(PersonaDao.class, PersonaDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(TaskDao.class, TaskDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(CommentDao.class, CommentDao_Impl.getRequiredConverters());
     return _typeConvertersMap;
   }
 
@@ -222,6 +245,20 @@ public final class AppDatabase_Impl extends AppDatabase {
           _taskDao = new TaskDao_Impl(this);
         }
         return _taskDao;
+      }
+    }
+  }
+
+  @Override
+  public CommentDao commentDao() {
+    if (_commentDao != null) {
+      return _commentDao;
+    } else {
+      synchronized(this) {
+        if(_commentDao == null) {
+          _commentDao = new CommentDao_Impl(this);
+        }
+        return _commentDao;
       }
     }
   }

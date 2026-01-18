@@ -1425,6 +1425,7 @@ color dim_foreground_disabled_material_dark
 color dim_foreground_disabled_material_light
 color dim_foreground_material_dark
 color dim_foreground_material_light
+color divider
 color error_color_material_dark
 color error_color_material_light
 color foreground_material_dark
@@ -2996,6 +2997,7 @@ drawable btn_radio_on_mtrl
 drawable btn_radio_on_to_off_mtrl_animation
 drawable circle_background
 drawable circle_background_completed
+drawable comment_background
 drawable design_fab_background
 drawable design_ic_visibility
 drawable design_ic_visibility_off
@@ -3226,6 +3228,10 @@ id clip_vertical
 id clockwise
 id closest
 id collapseActionView
+id commentDateTextView
+id commentEditText
+id commentTextTextView
+id commentsRecyclerView
 id completionInfoTextView
 id compress
 id confirm_button
@@ -3751,8 +3757,10 @@ layout design_text_input_end_icon
 layout design_text_input_start_icon
 layout dialog_add_persona
 layout dialog_add_task
+layout dialog_task_comments
 layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
+layout item_comment
 layout item_persona
 layout item_task
 layout m3_alert_dialog
@@ -3849,6 +3857,7 @@ string abc_searchview_description_voice
 string abc_shareactionprovider_share_with
 string abc_shareactionprovider_share_with_application
 string abc_toolbar_collapse_description
+string add_comment
 string add_persona
 string add_task
 string androidx_startup
@@ -3872,6 +3881,8 @@ string character_counter_content_description
 string character_counter_overflowed_content_description
 string character_counter_pattern
 string clear_text_end_icon_content_description
+string comment_hint
+string comments
 string completed_tasks
 string day_ago
 string days_ago
@@ -4002,6 +4013,7 @@ string mtrl_switch_track_path
 string mtrl_timepicker_cancel
 string mtrl_timepicker_confirm
 string no
+string no_comments
 string password_toggle_content_description
 string path_password_eye
 string path_password_eye_mask_strike_through

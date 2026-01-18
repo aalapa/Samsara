@@ -9,17 +9,22 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.lifecycle.Observer
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.samsara.polymath.R
+import com.samsara.polymath.adapter.CommentAdapter
 import com.samsara.polymath.adapter.TaskAdapter
 import com.samsara.polymath.databinding.ActivityTasksBinding
 import com.samsara.polymath.databinding.DialogAddTaskBinding
+import com.samsara.polymath.databinding.DialogTaskCommentsBinding
+import com.samsara.polymath.viewmodel.CommentViewModel
 import com.samsara.polymath.viewmodel.TaskViewModel
 
 class TasksActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTasksBinding
     private lateinit var viewModel: TaskViewModel
+    private lateinit var commentViewModel: CommentViewModel
     private lateinit var adapter: TaskAdapter
     private var personaId: Long = -1
     private var personaName: String = ""
@@ -43,6 +48,7 @@ class TasksActivity : AppCompatActivity() {
         }
 
         viewModel = ViewModelProvider(this)[TaskViewModel::class.java]
+        commentViewModel = ViewModelProvider(this)[CommentViewModel::class.java]
 
         setupToolbar()
         setupRecyclerView()
@@ -76,7 +82,7 @@ class TasksActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         adapter = TaskAdapter(
             onTaskClick = { task ->
-                // Optional: Could show task details
+                showTaskCommentsDialog(task)
             },
             onTaskDelete = { task ->
                 showDeleteConfirmation(task)
@@ -265,6 +271,67 @@ class TasksActivity : AppCompatActivity() {
                 pendingSwipePosition = -1
             }
             .show()
+    }
+
+    private fun showTaskCommentsDialog(task: com.samsara.polymath.data.Task) {
+        val dialogBinding = DialogTaskCommentsBinding.inflate(LayoutInflater.from(this))
+        
+        // Set task title
+        dialogBinding.taskTitleTextView.text = task.title
+        
+        // Setup comments RecyclerView
+        val commentAdapter = CommentAdapter()
+        dialogBinding.commentsRecyclerView.layoutManager = LinearLayoutManager(this)
+        dialogBinding.commentsRecyclerView.adapter = commentAdapter
+        
+        // Observe comments for this task
+        commentViewModel.getCommentsByTask(task.id).observe(this) { comments ->
+            commentAdapter.submitList(comments)
+            // Scroll to bottom to show newest comment
+            if (comments.isNotEmpty()) {
+                dialogBinding.commentsRecyclerView.post {
+                    dialogBinding.commentsRecyclerView.smoothScrollToPosition(comments.size - 1)
+                }
+            }
+        }
+        
+        // Set text colors to white for dark background
+        dialogBinding.commentEditText.setTextColor(android.graphics.Color.WHITE)
+        
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.comments))
+            .setView(dialogBinding.root)
+            .setPositiveButton(getString(R.string.add_comment), null) // Set to null to prevent auto-dismiss
+            .setNegativeButton(getString(R.string.cancel), null)
+            .create()
+        
+        // Set text colors to white for dark background
+        dialog.setOnShowListener {
+            val titleView = dialog.findViewById<android.widget.TextView>(android.R.id.title)
+            titleView?.setTextColor(android.graphics.Color.WHITE)
+            
+            // Set button text colors to white
+            val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            positiveButton?.setTextColor(android.graphics.Color.WHITE)
+            negativeButton?.setTextColor(android.graphics.Color.WHITE)
+            
+            // Override positive button to keep dialog open when adding comment
+            positiveButton?.setOnClickListener {
+                val commentText = dialogBinding.commentEditText.text?.toString()?.trim()
+                if (!commentText.isNullOrEmpty()) {
+                    commentViewModel.insertComment(task.id, commentText)
+                    dialogBinding.commentEditText.text?.clear()
+                    dialogBinding.commentEditText.requestFocus()
+                    // Don't dismiss - keep dialog open for more comments
+                }
+            }
+            
+            // Focus on comment input
+            dialogBinding.commentEditText.requestFocus()
+        }
+        
+        dialog.show()
     }
 
     companion object {

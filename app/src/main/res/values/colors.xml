@@ -27,5 +27,8 @@
     <!-- Status colors -->
     <color name="completed_green">#34C759</color>
     <color name="delete_red">#FF3B30</color>
+    
+    <!-- Divider color -->
+    <color name="divider">#E5E5EA</color>
 </resources>
 
