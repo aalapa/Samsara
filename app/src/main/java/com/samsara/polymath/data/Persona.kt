@@ -10,6 +10,8 @@ data class Persona(
     val name: String,
     val createdAt: Long = System.currentTimeMillis(),
     val order: Int = 0,
-    val openCount: Int = 0
+    val openCount: Int = 0,
+    val backgroundColor: String = "#007AFF", // Default to apple blue
+    val textColor: String = "#FFFFFF" // Default to white text
 )
 

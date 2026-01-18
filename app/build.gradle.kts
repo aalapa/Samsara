@@ -1,6 +1,7 @@
 import java.util.Properties
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.File
 
 plugins {
     id("com.android.application")
@@ -16,7 +17,7 @@ if (versionPropertiesFile.exists()) {
     versionProperties.load(FileInputStream(versionPropertiesFile))
 } else {
     versionProperties["VERSION_MAJOR"] = "1"
-    versionProperties["VERSION_MINOR"] = "0"
+    versionProperties["VERSION_MINOR"] = "2"
     versionProperties["VERSION_PATCH"] = "0"
     versionProperties["VERSION_CODE"] = "1"
 }
@@ -37,7 +38,8 @@ versionProperties["VERSION_CODE"] = currentVersionCode.toString()
 // Save updated version
 versionProperties.store(FileOutputStream(versionPropertiesFile), "Auto-incremented on build")
 
-val versionName = "$currentMajor.$currentMinor.$currentPatch"
+// Format version name as 1.01.X (minor with leading zero)
+val versionNameString = "$currentMajor.${String.format("%02d", currentMinor)}.$currentPatch"
 
 android {
     namespace = "com.samsara.polymath"
@@ -48,7 +50,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = currentVersionCode
-        versionName = versionName
+        versionName = versionNameString
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         
@@ -96,6 +98,29 @@ android {
     }
     buildFeatures {
         viewBinding = true
+    }
+}
+
+// Customize APK output name - rename after build completes
+afterEvaluate {
+    tasks.matching { it.name.startsWith("assemble") && (it.name.contains("Debug") || it.name.contains("Release")) }.configureEach {
+        doLast {
+            val buildType = if (name.contains("Debug")) "debug" else "release"
+            val apkDir = file("${project.buildDir}/outputs/apk/$buildType")
+            if (apkDir.exists()) {
+                apkDir.listFiles()?.forEach { file ->
+                    if (file.name.endsWith(".apk") && file.name.startsWith("app")) {
+                        val version = versionNameString.replace(".", "_")
+                        val newName = "Samsara_${buildType}_v${version}_${currentVersionCode}.apk"
+                        val newFile = File(apkDir, newName)
+                        if (file.exists()) {
+                            file.renameTo(newFile)
+                            println("Renamed APK: ${file.name} -> ${newFile.name}")
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

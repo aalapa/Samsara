@@ -101,12 +101,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = PersonaAdapter { persona ->
-            // Increment open count when persona is opened
-            viewModel.incrementOpenCount(persona.id)
-            // Navigate to tasks activity
-            TasksActivity.start(this, persona.id, persona.name)
-        }
+        adapter = PersonaAdapter(
+            onPersonaClick = { persona ->
+                // Increment open count when persona is opened
+                viewModel.incrementOpenCount(persona.id)
+                // Navigate to tasks activity
+                TasksActivity.start(this, persona.id, persona.name)
+            },
+            onPersonaEdit = { persona ->
+                showEditPersonaDialog(persona)
+            },
+            onPersonaDelete = { persona ->
+                showDeletePersonaConfirmation(persona)
+            }
+        )
 
         binding.personasRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.personasRecyclerView.adapter = adapter
@@ -185,6 +193,36 @@ class MainActivity : AppCompatActivity() {
             .create()
 
         dialog.show()
+    }
+
+    private fun showEditPersonaDialog(persona: com.samsara.polymath.data.Persona) {
+        val dialogBinding = DialogAddPersonaBinding.inflate(LayoutInflater.from(this))
+        dialogBinding.personaNameEditText.setText(persona.name)
+        
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.edit_persona))
+            .setView(dialogBinding.root)
+            .setPositiveButton(getString(R.string.done)) { _, _ ->
+                val newName = dialogBinding.personaNameEditText.text?.toString()?.trim()
+                if (!newName.isNullOrEmpty() && newName != persona.name) {
+                    viewModel.updatePersonaName(persona.id, newName)
+                }
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .create()
+
+        dialog.show()
+    }
+
+    private fun showDeletePersonaConfirmation(persona: com.samsara.polymath.data.Persona) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.delete_persona))
+            .setMessage(getString(R.string.delete_persona_confirmation))
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                viewModel.deletePersona(persona)
+            }
+            .setNegativeButton(getString(R.string.no), null)
+            .show()
     }
 
     private fun exportData() {

@@ -28,5 +28,8 @@ interface PersonaDao {
     
     @Query("UPDATE personas SET openCount = openCount + 1 WHERE id = :id")
     suspend fun incrementOpenCount(id: Long)
+    
+    @Query("UPDATE personas SET name = :name WHERE id = :id")
+    suspend fun updatePersonaName(id: Long, name: String)
 }
 

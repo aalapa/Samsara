@@ -44,13 +44,15 @@ public final class PersonaDao_Impl implements PersonaDao {
 
   private final SharedSQLiteStatement __preparedStmtOfIncrementOpenCount;
 
+  private final SharedSQLiteStatement __preparedStmtOfUpdatePersonaName;
+
   public PersonaDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
     this.__insertionAdapterOfPersona = new EntityInsertionAdapter<Persona>(__db) {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR ABORT INTO `personas` (`id`,`name`,`createdAt`,`order`,`openCount`) VALUES (nullif(?, 0),?,?,?,?)";
+        return "INSERT OR ABORT INTO `personas` (`id`,`name`,`createdAt`,`order`,`openCount`,`backgroundColor`,`textColor`) VALUES (nullif(?, 0),?,?,?,?,?,?)";
       }
 
       @Override
@@ -61,6 +63,8 @@ public final class PersonaDao_Impl implements PersonaDao {
         statement.bindLong(3, entity.getCreatedAt());
         statement.bindLong(4, entity.getOrder());
         statement.bindLong(5, entity.getOpenCount());
+        statement.bindString(6, entity.getBackgroundColor());
+        statement.bindString(7, entity.getTextColor());
       }
     };
     this.__deletionAdapterOfPersona = new EntityDeletionOrUpdateAdapter<Persona>(__db) {
@@ -80,7 +84,7 @@ public final class PersonaDao_Impl implements PersonaDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `personas` SET `id` = ?,`name` = ?,`createdAt` = ?,`order` = ?,`openCount` = ? WHERE `id` = ?";
+        return "UPDATE OR ABORT `personas` SET `id` = ?,`name` = ?,`createdAt` = ?,`order` = ?,`openCount` = ?,`backgroundColor` = ?,`textColor` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -91,7 +95,9 @@ public final class PersonaDao_Impl implements PersonaDao {
         statement.bindLong(3, entity.getCreatedAt());
         statement.bindLong(4, entity.getOrder());
         statement.bindLong(5, entity.getOpenCount());
-        statement.bindLong(6, entity.getId());
+        statement.bindString(6, entity.getBackgroundColor());
+        statement.bindString(7, entity.getTextColor());
+        statement.bindLong(8, entity.getId());
       }
     };
     this.__preparedStmtOfUpdatePersonaOrder = new SharedSQLiteStatement(__db) {
@@ -107,6 +113,14 @@ public final class PersonaDao_Impl implements PersonaDao {
       @NonNull
       public String createQuery() {
         final String _query = "UPDATE personas SET openCount = openCount + 1 WHERE id = ?";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfUpdatePersonaName = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "UPDATE personas SET name = ? WHERE id = ?";
         return _query;
       }
     };
@@ -220,6 +234,34 @@ public final class PersonaDao_Impl implements PersonaDao {
   }
 
   @Override
+  public Object updatePersonaName(final long id, final String name,
+      final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfUpdatePersonaName.acquire();
+        int _argIndex = 1;
+        _stmt.bindString(_argIndex, name);
+        _argIndex = 2;
+        _stmt.bindLong(_argIndex, id);
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfUpdatePersonaName.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
   public Flow<List<Persona>> getAllPersonas() {
     final String _sql = "SELECT * FROM personas ORDER BY CASE WHEN `order` = 0 THEN 999999 ELSE `order` END ASC, openCount DESC, createdAt ASC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
@@ -234,6 +276,8 @@ public final class PersonaDao_Impl implements PersonaDao {
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "createdAt");
           final int _cursorIndexOfOrder = CursorUtil.getColumnIndexOrThrow(_cursor, "order");
           final int _cursorIndexOfOpenCount = CursorUtil.getColumnIndexOrThrow(_cursor, "openCount");
+          final int _cursorIndexOfBackgroundColor = CursorUtil.getColumnIndexOrThrow(_cursor, "backgroundColor");
+          final int _cursorIndexOfTextColor = CursorUtil.getColumnIndexOrThrow(_cursor, "textColor");
           final List<Persona> _result = new ArrayList<Persona>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Persona _item;
@@ -247,7 +291,11 @@ public final class PersonaDao_Impl implements PersonaDao {
             _tmpOrder = _cursor.getInt(_cursorIndexOfOrder);
             final int _tmpOpenCount;
             _tmpOpenCount = _cursor.getInt(_cursorIndexOfOpenCount);
-            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount);
+            final String _tmpBackgroundColor;
+            _tmpBackgroundColor = _cursor.getString(_cursorIndexOfBackgroundColor);
+            final String _tmpTextColor;
+            _tmpTextColor = _cursor.getString(_cursorIndexOfTextColor);
+            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor);
             _result.add(_item);
           }
           return _result;
@@ -281,6 +329,8 @@ public final class PersonaDao_Impl implements PersonaDao {
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "createdAt");
           final int _cursorIndexOfOrder = CursorUtil.getColumnIndexOrThrow(_cursor, "order");
           final int _cursorIndexOfOpenCount = CursorUtil.getColumnIndexOrThrow(_cursor, "openCount");
+          final int _cursorIndexOfBackgroundColor = CursorUtil.getColumnIndexOrThrow(_cursor, "backgroundColor");
+          final int _cursorIndexOfTextColor = CursorUtil.getColumnIndexOrThrow(_cursor, "textColor");
           final Persona _result;
           if (_cursor.moveToFirst()) {
             final long _tmpId;
@@ -293,7 +343,11 @@ public final class PersonaDao_Impl implements PersonaDao {
             _tmpOrder = _cursor.getInt(_cursorIndexOfOrder);
             final int _tmpOpenCount;
             _tmpOpenCount = _cursor.getInt(_cursorIndexOfOpenCount);
-            _result = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount);
+            final String _tmpBackgroundColor;
+            _tmpBackgroundColor = _cursor.getString(_cursorIndexOfBackgroundColor);
+            final String _tmpTextColor;
+            _tmpTextColor = _cursor.getString(_cursorIndexOfTextColor);
+            _result = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor);
           } else {
             _result = null;
           }

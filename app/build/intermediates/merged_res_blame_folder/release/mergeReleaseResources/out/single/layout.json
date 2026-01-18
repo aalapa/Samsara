@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "com.samsara.polymath.app-mergeReleaseResources-42:/layout/dialog_add_persona.xml",
+        "source": "com.samsara.polymath.app-main-44:/layout/dialog_add_persona.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.app-mergeReleaseResources-42:/layout/activity_tasks.xml",
+        "source": "com.samsara.polymath.app-main-44:/layout/activity_tasks.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.app-mergeReleaseResources-42:/layout/item_persona.xml",
+        "source": "com.samsara.polymath.app-main-44:/layout/item_persona.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.app-mergeReleaseResources-42:/layout/item_task.xml",
+        "source": "com.samsara.polymath.app-main-44:/layout/item_task.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.app-mergeReleaseResources-42:/layout/dialog_add_task.xml",
+        "source": "com.samsara.polymath.app-main-44:/layout/dialog_add_task.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.app-mergeReleaseResources-42:/layout/activity_main.xml",
+        "source": "com.samsara.polymath.app-main-44:/layout/activity_main.xml"
+    }
+]

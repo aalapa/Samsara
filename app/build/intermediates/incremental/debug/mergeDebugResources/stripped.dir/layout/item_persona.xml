@@ -37,10 +37,12 @@
             android:visibility="gone" />
 
         <ImageView
+            android:id="@+id/menuButton"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@android:drawable/ic_menu_more"
-            android:tint="@color/text_tertiary" />
+            android:tint="@color/text_tertiary"
+            android:contentDescription="Menu" />
 
     </LinearLayout>
 

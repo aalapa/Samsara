@@ -1,15 +1,21 @@
 package com.samsara.polymath.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.samsara.polymath.R
 import com.samsara.polymath.data.Persona
 import com.samsara.polymath.databinding.ItemPersonaBinding
 
 class PersonaAdapter(
-    private val onPersonaClick: (Persona) -> Unit
+    private val onPersonaClick: (Persona) -> Unit,
+    private val onPersonaEdit: (Persona) -> Unit,
+    private val onPersonaDelete: (Persona) -> Unit
 ) : ListAdapter<Persona, PersonaAdapter.PersonaViewHolder>(PersonaDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PersonaViewHolder {
@@ -32,12 +38,59 @@ class PersonaAdapter(
         fun bind(persona: Persona) {
             binding.personaNameTextView.text = persona.name
             
+            // Helper function to determine if color is dark
+            fun isColorDark(color: Int): Boolean {
+                val darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
+                return darkness >= 0.5
+            }
+            
+            // Apply background and text colors
+            try {
+                val bgColor = Color.parseColor(persona.backgroundColor)
+                val textColor = Color.parseColor(persona.textColor)
+                binding.root.setCardBackgroundColor(bgColor)
+                binding.personaNameTextView.setTextColor(textColor)
+                binding.openCountTextView.setTextColor(textColor)
+                // Menu icon should be visible - use text color or white/black based on background
+                val menuIconColor = if (isColorDark(bgColor)) Color.WHITE else Color.BLACK
+                binding.menuButton.setColorFilter(menuIconColor)
+            } catch (e: Exception) {
+                // Fallback to default colors if parsing fails
+                binding.root.setCardBackgroundColor(Color.parseColor("#FFFFFF"))
+                binding.personaNameTextView.setTextColor(Color.parseColor("#000000"))
+                binding.menuButton.setColorFilter(Color.parseColor("#8E8E93"))
+            }
+            
             // Show open count if greater than 0
             if (persona.openCount > 0) {
                 binding.openCountTextView.text = persona.openCount.toString()
-                binding.openCountTextView.visibility = android.view.View.VISIBLE
+                binding.openCountTextView.visibility = View.VISIBLE
             } else {
-                binding.openCountTextView.visibility = android.view.View.GONE
+                binding.openCountTextView.visibility = View.GONE
+            }
+            
+            // Setup three dots menu
+            binding.menuButton.setOnClickListener { view ->
+                val contextWrapper = android.view.ContextThemeWrapper(
+                    view.context,
+                    R.style.PopupMenuTheme
+                )
+                val popup = PopupMenu(contextWrapper, view)
+                popup.menuInflater.inflate(R.menu.persona_menu, popup.menu)
+                popup.setOnMenuItemClickListener { item ->
+                    when (item.itemId) {
+                        R.id.action_edit_persona -> {
+                            onPersonaEdit(persona)
+                            true
+                        }
+                        R.id.action_delete_persona -> {
+                            onPersonaDelete(persona)
+                            true
+                        }
+                        else -> false
+                    }
+                }
+                popup.show()
             }
             
             binding.root.setOnClickListener {

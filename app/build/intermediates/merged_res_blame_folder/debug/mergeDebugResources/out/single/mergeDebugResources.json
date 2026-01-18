@@ -1,54 +1,62 @@
 [
     {
-        "merged": "com.samsara.polymath.app-debug-43:/layout_activity_tasks.xml.flat",
-        "source": "com.samsara.polymath.app-main-45:/layout/activity_tasks.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-debug-43:/layout_dialog_add_task.xml.flat",
+        "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/layout/dialog_add_task.xml"
     },
     {
-        "merged": "com.samsara.polymath.app-debug-43:/layout_activity_main.xml.flat",
-        "source": "com.samsara.polymath.app-main-45:/layout/activity_main.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-debug-43:/menu_main_menu.xml.flat",
+        "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/menu/main_menu.xml"
     },
     {
-        "merged": "com.samsara.polymath.app-debug-43:/layout_dialog_add_task.xml.flat",
-        "source": "com.samsara.polymath.app-main-45:/layout/dialog_add_task.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-debug-43:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/mipmap-anydpi-v26/ic_launcher_round.xml"
     },
     {
-        "merged": "com.samsara.polymath.app-debug-43:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
-        "source": "com.samsara.polymath.app-main-45:/mipmap-anydpi-v26/ic_launcher_round.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-debug-43:/drawable_circle_background.xml.flat",
+        "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/drawable/circle_background.xml"
     },
     {
-        "merged": "com.samsara.polymath.app-debug-43:/drawable_ic_launcher_foreground.xml.flat",
-        "source": "com.samsara.polymath.app-main-45:/drawable/ic_launcher_foreground.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-debug-43:/layout_item_task.xml.flat",
+        "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/layout/item_task.xml"
     },
     {
-        "merged": "com.samsara.polymath.app-debug-43:/drawable_circle_background.xml.flat",
-        "source": "com.samsara.polymath.app-main-45:/drawable/circle_background.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-debug-43:/layout_item_persona.xml.flat",
+        "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/layout/item_persona.xml"
+    },
+    {
+        "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-debug-43:/drawable_circle_background_completed.xml.flat",
+        "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/drawable/circle_background_completed.xml"
     },
     {
         "merged": "com.samsara.polymath.app-debug-43:/layout_item_persona.xml.flat",
         "source": "com.samsara.polymath.app-main-45:/layout/item_persona.xml"
     },
     {
-        "merged": "com.samsara.polymath.app-debug-43:/drawable_circle_background_completed.xml.flat",
-        "source": "com.samsara.polymath.app-main-45:/drawable/circle_background_completed.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-debug-43:/layout_dialog_add_persona.xml.flat",
+        "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/layout/dialog_add_persona.xml"
     },
     {
-        "merged": "com.samsara.polymath.app-debug-43:/layout_item_task.xml.flat",
-        "source": "com.samsara.polymath.app-main-45:/layout/item_task.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-debug-43:/layout_activity_main.xml.flat",
+        "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/layout/activity_main.xml"
     },
     {
-        "merged": "com.samsara.polymath.app-debug-43:/menu_main_menu.xml.flat",
-        "source": "com.samsara.polymath.app-main-45:/menu/main_menu.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-debug-43:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/drawable/ic_launcher_foreground.xml"
     },
     {
-        "merged": "com.samsara.polymath.app-debug-43:/layout_dialog_add_persona.xml.flat",
-        "source": "com.samsara.polymath.app-main-45:/layout/dialog_add_persona.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-debug-43:/layout_activity_tasks.xml.flat",
+        "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/layout/activity_tasks.xml"
     },
     {
-        "merged": "com.samsara.polymath.app-debug-43:/drawable_ic_launcher_simple.xml.flat",
-        "source": "com.samsara.polymath.app-main-45:/drawable/ic_launcher_simple.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-debug-43:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/mipmap-anydpi-v26/ic_launcher.xml"
     },
     {
-        "merged": "com.samsara.polymath.app-debug-43:/mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "com.samsara.polymath.app-main-45:/mipmap-anydpi-v26/ic_launcher.xml"
+        "merged": "com.samsara.polymath.app-debug-43:/menu_persona_menu.xml.flat",
+        "source": "com.samsara.polymath.app-main-45:/menu/persona_menu.xml"
+    },
+    {
+        "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-debug-43:/drawable_ic_launcher_simple.xml.flat",
+        "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/drawable/ic_launcher_simple.xml"
     }
 ]
