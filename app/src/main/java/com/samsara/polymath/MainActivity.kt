@@ -105,8 +105,8 @@ class MainActivity : AppCompatActivity() {
             onPersonaClick = { persona ->
                 // Increment open count when persona is opened
                 viewModel.incrementOpenCount(persona.id)
-                // Navigate to tasks activity
-                TasksActivity.start(this, persona.id, persona.name)
+                // Navigate to tasks activity with persona background color
+                TasksActivity.start(this, persona.id, persona.name, persona.backgroundColor)
             },
             onPersonaEdit = { persona ->
                 showEditPersonaDialog(persona)
@@ -146,7 +146,8 @@ class MainActivity : AppCompatActivity() {
 
                 // Update order values - set order to index+1 to mark as manually arranged
                 // (0 means not manually arranged, will use openCount for sorting)
-                currentList.forEachIndexed { index, persona ->
+                currentList.forEachIndexed { index, personaWithCount ->
+                    val persona = personaWithCount.persona
                     val newOrder = index + 1
                     if (persona.order != newOrder) {
                         viewModel.updatePersonaOrder(persona.id, newOrder)
@@ -164,8 +165,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observePersonas() {
-        viewModel.getAllPersonas().observe(this) { personas ->
-            adapter.submitList(personas)
+        viewModel.getAllPersonasWithTaskCount().observe(this) { personasWithCount ->
+            adapter.submitList(personasWithCount)
         }
     }
 
@@ -326,7 +327,8 @@ class MainActivity : AppCompatActivity() {
                                 oldTask.description,
                                 order = index,
                                 isCompleted = oldTask.isCompleted,
-                                completedAt = oldTask.completedAt
+                                completedAt = oldTask.completedAt,
+                                backgroundColor = oldTask.backgroundColor
                             )
                         }
                     }

@@ -21,19 +21,53 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     
     fun getTasksByPersona(personaId: Long): LiveData<List<Task>> = repository.getTasksByPersona(personaId).asLiveData()
     
-    fun insertTask(personaId: Long, title: String, description: String = "") {
+    fun insertTask(personaId: Long, title: String, description: String = "", personaBackgroundColor: String = "#007AFF") {
         viewModelScope.launch {
             val tasks = repository.getTasksByPersona(personaId)
             val taskList = tasks.first()
             val maxOrder = taskList.maxOfOrNull { it.order } ?: 0
+            
+            // Calculate variant color based on task order (increment hex value slightly)
+            val variantColor = calculateVariantColor(personaBackgroundColor, maxOrder + 1)
+            
             repository.insertTask(
                 Task(
                     personaId = personaId,
                     title = title,
                     description = description,
-                    order = maxOrder + 1
+                    order = maxOrder + 1,
+                    backgroundColor = variantColor
                 )
             )
+        }
+    }
+    
+    /**
+     * Calculates a variant color by incrementing the hex value slightly based on task order.
+     * Each task gets a slightly different shade of the parent persona color.
+     */
+    private fun calculateVariantColor(parentColor: String, taskOrder: Int): String {
+        try {
+            // Remove # and parse hex
+            val cleanHex = parentColor.removePrefix("#")
+            val r = cleanHex.substring(0, 2).toInt(16)
+            val g = cleanHex.substring(2, 4).toInt(16)
+            val b = cleanHex.substring(4, 6).toInt(16)
+            
+            // Increment each component by a small amount based on task order
+            // Use a small increment (e.g., 8 per task) to create subtle variations
+            val increment = taskOrder * 8
+            
+            // Calculate new RGB values (clamp to 0-255)
+            val newR = (r + increment).coerceIn(0, 255)
+            val newG = (g + increment).coerceIn(0, 255)
+            val newB = (b + increment).coerceIn(0, 255)
+            
+            // Convert back to hex
+            return String.format("#%02X%02X%02X", newR, newG, newB)
+        } catch (e: Exception) {
+            // If parsing fails, return parent color
+            return parentColor
         }
     }
     
@@ -82,7 +116,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         return repository.getTasksByPersona(personaId).first()
     }
     
-    suspend fun insertTaskSync(personaId: Long, title: String, description: String, order: Int = 0, isCompleted: Boolean = false, completedAt: Long? = null): Long {
+    suspend fun insertTaskSync(personaId: Long, title: String, description: String, order: Int = 0, isCompleted: Boolean = false, completedAt: Long? = null, backgroundColor: String = "#FFFFFF"): Long {
         return repository.insertTask(
             Task(
                 personaId = personaId,
@@ -90,7 +124,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                 description = description,
                 order = order,
                 isCompleted = isCompleted,
-                completedAt = completedAt
+                completedAt = completedAt,
+                backgroundColor = backgroundColor
             )
         )
     }

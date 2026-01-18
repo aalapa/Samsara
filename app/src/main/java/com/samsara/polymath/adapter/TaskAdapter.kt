@@ -1,5 +1,6 @@
 package com.samsara.polymath.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,6 +46,22 @@ class TaskAdapter(
                 binding.taskDescriptionTextView.visibility = View.GONE
             }
 
+            // Apply background color from task (inherited from persona with variant)
+            try {
+                val bgColor = Color.parseColor(task.backgroundColor)
+                binding.root.setCardBackgroundColor(bgColor)
+                
+                // Determine text color based on background brightness
+                val isDark = isColorDark(bgColor)
+                val textColor = if (isDark) Color.WHITE else Color.BLACK
+                binding.taskTitleTextView.setTextColor(textColor)
+                binding.taskDescriptionTextView.setTextColor(textColor)
+            } catch (e: Exception) {
+                // Fallback to default colors if parsing fails
+                binding.root.setCardBackgroundColor(Color.parseColor("#FFFFFF"))
+                binding.taskTitleTextView.setTextColor(Color.parseColor("#000000"))
+            }
+
             val currentTime = System.currentTimeMillis()
             val daysTextView = binding.daysTextView
 
@@ -84,6 +101,11 @@ class TaskAdapter(
         private fun calculateDaysDifference(startTime: Long, endTime: Long): Long {
             val diff = endTime - startTime
             return TimeUnit.MILLISECONDS.toDays(diff)
+        }
+        
+        private fun isColorDark(color: Int): Boolean {
+            val darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
+            return darkness >= 0.5
         }
     }
 

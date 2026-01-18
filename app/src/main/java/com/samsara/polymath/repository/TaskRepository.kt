@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.Flow
 class TaskRepository(private val taskDao: TaskDao) {
     fun getTasksByPersona(personaId: Long): Flow<List<Task>> = taskDao.getTasksByPersona(personaId)
     
+    fun getAllTasks(): Flow<List<Task>> = taskDao.getAllTasks()
+    
     suspend fun getTaskById(id: Long): Task? = taskDao.getTaskById(id)
     
     suspend fun insertTask(task: Task): Long = taskDao.insertTask(task)
@@ -19,5 +21,7 @@ class TaskRepository(private val taskDao: TaskDao) {
     
     suspend fun updateTaskCompletion(id: Long, isCompleted: Boolean, completedAt: Long?) =
         taskDao.updateTaskCompletion(id, isCompleted, completedAt)
+    
+    suspend fun getCompletedTaskCount(personaId: Long): Int = taskDao.getCompletedTaskCount(personaId)
 }
 

@@ -7,19 +7,40 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.samsara.polymath.data.AppDatabase
 import com.samsara.polymath.data.Persona
+import com.samsara.polymath.data.PersonaWithTaskCount
 import com.samsara.polymath.repository.PersonaRepository
+import com.samsara.polymath.repository.TaskRepository
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class PersonaViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PersonaRepository
+    private val taskRepository: TaskRepository
     
     init {
         val database = AppDatabase.getDatabase(application)
         repository = PersonaRepository(database.personaDao())
+        taskRepository = TaskRepository(database.taskDao())
     }
     
     fun getAllPersonas(): LiveData<List<Persona>> = repository.getAllPersonas().asLiveData()
+    
+    fun getAllPersonasWithTaskCount(): LiveData<List<PersonaWithTaskCount>> {
+        // Combine personas flow with all tasks flow so we update when either changes
+        return combine(
+            repository.getAllPersonas(),
+            taskRepository.getAllTasks()
+        ) { personas, allTasks ->
+            personas.map { persona ->
+                val completedCount = allTasks.count { it.personaId == persona.id && it.isCompleted }
+                PersonaWithTaskCount(persona, completedCount)
+            }
+        }.asLiveData()
+    }
     
     fun insertPersona(name: String) {
         viewModelScope.launch {

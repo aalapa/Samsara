@@ -1,8 +1,8 @@
 1<?xml version="1.0" encoding="utf-8"?>
 2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 3    package="com.samsara.polymath"
-4    android:versionCode="7"
-5    android:versionName="1.02.6" >
+4    android:versionCode="14"
+5    android:versionName="1.02.13" >
 6
 7    <uses-sdk
 8        android:minSdkVersion="24"
@@ -22,22 +22,22 @@
 15-->/Users/ragnor/StudioProjects/Samsara/app/src/main/AndroidManifest.xml:8:22-72
 16
 17    <permission
-17-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/transforms-3/232e9a68d941bd38524317cf784c872f/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
+17-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/transforms-3/96904f1c31a60b7118961e6da9c82c99/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
 18        android:name="com.samsara.polymath.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-18-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/transforms-3/232e9a68d941bd38524317cf784c872f/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
+18-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/transforms-3/96904f1c31a60b7118961e6da9c82c99/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
 19        android:protectionLevel="signature" />
-19-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/transforms-3/232e9a68d941bd38524317cf784c872f/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
+19-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/transforms-3/96904f1c31a60b7118961e6da9c82c99/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
 20
 21    <uses-permission android:name="com.samsara.polymath.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
-21-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/transforms-3/232e9a68d941bd38524317cf784c872f/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
-21-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/transforms-3/232e9a68d941bd38524317cf784c872f/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
+21-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/transforms-3/96904f1c31a60b7118961e6da9c82c99/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
+21-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/transforms-3/96904f1c31a60b7118961e6da9c82c99/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
 22
 23    <application
 23-->/Users/ragnor/StudioProjects/Samsara/app/src/main/AndroidManifest.xml:10:5-31:19
 24        android:allowBackup="true"
 24-->/Users/ragnor/StudioProjects/Samsara/app/src/main/AndroidManifest.xml:11:9-35
 25        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-25-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/transforms-3/232e9a68d941bd38524317cf784c872f/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
+25-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/transforms-3/96904f1c31a60b7118961e6da9c82c99/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
 26        android:debuggable="true"
 27        android:extractNativeLibs="true"
 28        android:icon="@drawable/ic_launcher_simple"
@@ -79,77 +79,77 @@
 46-->/Users/ragnor/StudioProjects/Samsara/app/src/main/AndroidManifest.xml:30:13-55
 47
 48        <provider
-48-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/transforms-3/e964596da353fdcbef19fdb1485bdc4f/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
+48-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/transforms-3/e286e5bea49f1eec6e3ce486448e2c2e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
 49            android:name="androidx.startup.InitializationProvider"
-49-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/transforms-3/e964596da353fdcbef19fdb1485bdc4f/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:25:13-67
+49-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/transforms-3/e286e5bea49f1eec6e3ce486448e2c2e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:25:13-67
 50            android:authorities="com.samsara.polymath.androidx-startup"
-50-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/transforms-3/e964596da353fdcbef19fdb1485bdc4f/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:26:13-68
+50-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/transforms-3/e286e5bea49f1eec6e3ce486448e2c2e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:26:13-68
 51            android:exported="false" >
-51-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/transforms-3/e964596da353fdcbef19fdb1485bdc4f/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:27:13-37
+51-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/transforms-3/e286e5bea49f1eec6e3ce486448e2c2e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:27:13-37
 52            <meta-data
-52-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/transforms-3/e964596da353fdcbef19fdb1485bdc4f/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:29:13-31:52
+52-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/transforms-3/e286e5bea49f1eec6e3ce486448e2c2e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:29:13-31:52
 53                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-53-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/transforms-3/e964596da353fdcbef19fdb1485bdc4f/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:30:17-75
+53-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/transforms-3/e286e5bea49f1eec6e3ce486448e2c2e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:30:17-75
 54                android:value="androidx.startup" />
-54-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/transforms-3/e964596da353fdcbef19fdb1485bdc4f/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:31:17-49
+54-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/transforms-3/e286e5bea49f1eec6e3ce486448e2c2e/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:31:17-49
 55            <meta-data
-55-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ragnor/.gradle/caches/transforms-3/aaabb8f16148e63887caf51e943b9b0a/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:29:13-31:52
+55-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ragnor/.gradle/caches/transforms-3/402e526bac51961dcb2bf66346eac0ff/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:29:13-31:52
 56                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-56-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ragnor/.gradle/caches/transforms-3/aaabb8f16148e63887caf51e943b9b0a/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:30:17-78
+56-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ragnor/.gradle/caches/transforms-3/402e526bac51961dcb2bf66346eac0ff/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:30:17-78
 57                android:value="androidx.startup" />
-57-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ragnor/.gradle/caches/transforms-3/aaabb8f16148e63887caf51e943b9b0a/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:31:17-49
+57-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ragnor/.gradle/caches/transforms-3/402e526bac51961dcb2bf66346eac0ff/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:31:17-49
 58            <meta-data
-58-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:29:13-31:52
+58-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:29:13-31:52
 59                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-59-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:30:17-85
+59-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:30:17-85
 60                android:value="androidx.startup" />
-60-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:31:17-49
+60-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:31:17-49
 61        </provider>
 62
 63        <service
-63-->[androidx.room:room-runtime:2.6.1] /Users/ragnor/.gradle/caches/transforms-3/af1e978d00336d2897219d645af3f779/transformed/room-runtime-2.6.1/AndroidManifest.xml:24:9-28:63
+63-->[androidx.room:room-runtime:2.6.1] /Users/ragnor/.gradle/caches/transforms-3/eeb96ef49db4c5994231db8dc1125ed2/transformed/room-runtime-2.6.1/AndroidManifest.xml:24:9-28:63
 64            android:name="androidx.room.MultiInstanceInvalidationService"
-64-->[androidx.room:room-runtime:2.6.1] /Users/ragnor/.gradle/caches/transforms-3/af1e978d00336d2897219d645af3f779/transformed/room-runtime-2.6.1/AndroidManifest.xml:25:13-74
+64-->[androidx.room:room-runtime:2.6.1] /Users/ragnor/.gradle/caches/transforms-3/eeb96ef49db4c5994231db8dc1125ed2/transformed/room-runtime-2.6.1/AndroidManifest.xml:25:13-74
 65            android:directBootAware="true"
-65-->[androidx.room:room-runtime:2.6.1] /Users/ragnor/.gradle/caches/transforms-3/af1e978d00336d2897219d645af3f779/transformed/room-runtime-2.6.1/AndroidManifest.xml:26:13-43
+65-->[androidx.room:room-runtime:2.6.1] /Users/ragnor/.gradle/caches/transforms-3/eeb96ef49db4c5994231db8dc1125ed2/transformed/room-runtime-2.6.1/AndroidManifest.xml:26:13-43
 66            android:exported="false" />
-66-->[androidx.room:room-runtime:2.6.1] /Users/ragnor/.gradle/caches/transforms-3/af1e978d00336d2897219d645af3f779/transformed/room-runtime-2.6.1/AndroidManifest.xml:27:13-37
+66-->[androidx.room:room-runtime:2.6.1] /Users/ragnor/.gradle/caches/transforms-3/eeb96ef49db4c5994231db8dc1125ed2/transformed/room-runtime-2.6.1/AndroidManifest.xml:27:13-37
 67
 68        <receiver
-68-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:34:9-52:20
+68-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:34:9-52:20
 69            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-69-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:35:13-76
+69-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:35:13-76
 70            android:directBootAware="false"
-70-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:36:13-44
+70-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:36:13-44
 71            android:enabled="true"
-71-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:37:13-35
+71-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:37:13-35
 72            android:exported="true"
-72-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:38:13-36
+72-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:38:13-36
 73            android:permission="android.permission.DUMP" >
-73-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:39:13-57
+73-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:39:13-57
 74            <intent-filter>
-74-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:40:13-42:29
+74-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:40:13-42:29
 75                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-75-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:17-91
-75-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:25-88
+75-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:17-91
+75-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:25-88
 76            </intent-filter>
 77            <intent-filter>
-77-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:43:13-45:29
+77-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:43:13-45:29
 78                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-78-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:17-85
-78-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:25-82
+78-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:17-85
+78-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:25-82
 79            </intent-filter>
 80            <intent-filter>
-80-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:46:13-48:29
+80-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:46:13-48:29
 81                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-81-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:17-88
-81-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:25-85
+81-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:17-88
+81-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:25-85
 82            </intent-filter>
 83            <intent-filter>
-83-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:49:13-51:29
+83-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:49:13-51:29
 84                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-84-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:17-95
-84-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/bb85312fdfb347322f9e3e9d386fe781/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:25-92
+84-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:17-95
+84-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/transforms-3/ae728a56dd144853ef624b75468db8b1/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:25-92
 85            </intent-filter>
 86        </receiver>
 87    </application>

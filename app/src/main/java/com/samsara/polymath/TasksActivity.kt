@@ -22,6 +22,7 @@ class TasksActivity : AppCompatActivity() {
     private lateinit var adapter: TaskAdapter
     private var personaId: Long = -1
     private var personaName: String = ""
+    private var personaBackgroundColor: String = "#007AFF" // Default color
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +31,7 @@ class TasksActivity : AppCompatActivity() {
 
         personaId = intent.getLongExtra(EXTRA_PERSONA_ID, -1)
         personaName = intent.getStringExtra(EXTRA_PERSONA_NAME) ?: "Tasks"
+        personaBackgroundColor = intent.getStringExtra(EXTRA_PERSONA_BACKGROUND_COLOR) ?: "#007AFF"
 
         if (personaId == -1L) {
             finish()
@@ -158,7 +160,7 @@ class TasksActivity : AppCompatActivity() {
                 val description = dialogBinding.taskDescriptionEditText.text?.toString()?.trim() ?: ""
                 
                 if (!title.isNullOrEmpty()) {
-                    viewModel.insertTask(personaId, title, description)
+                    viewModel.insertTask(personaId, title, description, personaBackgroundColor)
                 } else {
                     Toast.makeText(this, "Please enter a task title", Toast.LENGTH_SHORT).show()
                 }
@@ -194,11 +196,13 @@ class TasksActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_PERSONA_ID = "persona_id"
         const val EXTRA_PERSONA_NAME = "persona_name"
+        const val EXTRA_PERSONA_BACKGROUND_COLOR = "persona_background_color"
 
-        fun start(activity: AppCompatActivity, personaId: Long, personaName: String) {
+        fun start(activity: AppCompatActivity, personaId: Long, personaName: String, personaBackgroundColor: String) {
             val intent = android.content.Intent(activity, TasksActivity::class.java).apply {
                 putExtra(EXTRA_PERSONA_ID, personaId)
                 putExtra(EXTRA_PERSONA_NAME, personaName)
+                putExtra(EXTRA_PERSONA_BACKGROUND_COLOR, personaBackgroundColor)
             }
             activity.startActivity(intent)
         }

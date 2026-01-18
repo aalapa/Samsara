@@ -10,13 +10,14 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.samsara.polymath.R
 import com.samsara.polymath.data.Persona
+import com.samsara.polymath.data.PersonaWithTaskCount
 import com.samsara.polymath.databinding.ItemPersonaBinding
 
 class PersonaAdapter(
     private val onPersonaClick: (Persona) -> Unit,
     private val onPersonaEdit: (Persona) -> Unit,
     private val onPersonaDelete: (Persona) -> Unit
-) : ListAdapter<Persona, PersonaAdapter.PersonaViewHolder>(PersonaDiffCallback()) {
+) : ListAdapter<PersonaWithTaskCount, PersonaAdapter.PersonaViewHolder>(PersonaDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PersonaViewHolder {
         val binding = ItemPersonaBinding.inflate(
@@ -35,8 +36,12 @@ class PersonaAdapter(
         private val binding: ItemPersonaBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(persona: Persona) {
-            binding.personaNameTextView.text = persona.name
+        fun bind(personaWithCount: PersonaWithTaskCount) {
+            val persona = personaWithCount.persona
+            val completedCount = personaWithCount.completedTaskCount
+            
+            // Display persona name with completed task count prefix
+            binding.personaNameTextView.text = "$completedCount ${persona.name}"
             
             // Helper function to determine if color is dark
             fun isColorDark(color: Int): Boolean {
@@ -99,13 +104,13 @@ class PersonaAdapter(
         }
     }
 
-    class PersonaDiffCallback : DiffUtil.ItemCallback<Persona>() {
-        override fun areItemsTheSame(oldItem: Persona, newItem: Persona): Boolean {
-            return oldItem.id == newItem.id
+    class PersonaDiffCallback : DiffUtil.ItemCallback<PersonaWithTaskCount>() {
+        override fun areItemsTheSame(oldItem: PersonaWithTaskCount, newItem: PersonaWithTaskCount): Boolean {
+            return oldItem.persona.id == newItem.persona.id
         }
 
-        override fun areContentsTheSame(oldItem: Persona, newItem: Persona): Boolean {
-            return oldItem == newItem
+        override fun areContentsTheSame(oldItem: PersonaWithTaskCount, newItem: PersonaWithTaskCount): Boolean {
+            return oldItem.persona == newItem.persona && oldItem.completedTaskCount == newItem.completedTaskCount
         }
     }
 }

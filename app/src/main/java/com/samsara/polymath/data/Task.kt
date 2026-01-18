@@ -26,6 +26,7 @@ data class Task(
     val createdAt: Long = System.currentTimeMillis(),
     val completedAt: Long? = null,
     val isCompleted: Boolean = false,
-    val order: Int = 0
+    val order: Int = 0,
+    val backgroundColor: String = "#FFFFFF" // Inherited from persona with variant
 )
 

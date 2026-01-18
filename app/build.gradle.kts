@@ -6,7 +6,7 @@ import java.io.File
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp") version "1.9.20-1.0.14"
+    id("com.google.devtools.ksp")
 }
 
 // Read version from properties file
@@ -41,9 +41,6 @@ versionProperties.store(FileOutputStream(versionPropertiesFile), "Auto-increment
 // Format version name as 1.01.X (minor with leading zero)
 val versionNameString = "$currentMajor.${String.format("%02d", currentMinor)}.$currentPatch"
 
-// Set archive base name to control APK naming (project-level property)
-base.archivesName.set("Samsara")
-
 android {
     namespace = "com.samsara.polymath"
     compileSdk = 34
@@ -68,10 +65,12 @@ android {
     }
 
     signingConfigs {
-        // Create externalOverride to override Android Studio's invalid injected config
-        // Always use debug keystore - this will override any invalid paths Android Studio tries to inject
+        // Create externalOverride to satisfy Android Studio's requirement
+        // Always use debug keystore - set during configuration phase (not in afterEvaluate)
+        val debugKeystorePath = "${System.getProperty("user.home")}/.android/debug.keystore"
+        val debugKeystore = file(debugKeystorePath)
+        
         create("externalOverride") {
-            val debugKeystore = file("${System.getProperty("user.home")}/.android/debug.keystore")
             storeFile = debugKeystore
             storePassword = "android"
             keyAlias = "androiddebugkey"
@@ -112,67 +111,58 @@ afterEvaluate {
     // Hook into package tasks
     tasks.named("packageDebug").configure {
         doLast {
-            renameApkFiles("debug", versionForApk, versionCodeForApk)
+            val apkDir = project.file("${project.buildDir}/outputs/apk/debug")
+            val buildType = "debug"
+            val targetName = "Samsara_${buildType}_v${versionForApk}_${versionCodeForApk}.apk"
+            
+            println("=== Renaming APK files ===")
+            println("Looking in: ${apkDir.absolutePath}")
+            println("Version: $versionForApk, VersionCode: $versionCodeForApk")
+            
+            if (apkDir.exists()) {
+                apkDir.walkTopDown().forEach { apkFile ->
+                    if (apkFile.isFile && apkFile.name.endsWith(".apk")) {
+                        val currentName = apkFile.name
+                        if (currentName != targetName) {
+                            val newFile = File(apkFile.parent, targetName)
+                            println("Renaming: $currentName -> $targetName")
+                            if (newFile.exists() && newFile.absolutePath != apkFile.absolutePath) {
+                                newFile.delete()
+                            }
+                            apkFile.renameTo(newFile)
+                        }
+                    }
+                }
+            }
         }
     }
     
     tasks.named("packageRelease").configure {
         doLast {
-            renameApkFiles("release", versionForApk, versionCodeForApk)
-        }
-    }
-}
-
-fun renameApkFiles(buildType: String, version: String, versionCode: Int) {
-    val apkDir = file("${project.buildDir}/outputs/apk/$buildType")
-    
-    println("=== Renaming APK files ===")
-    println("Looking in: ${apkDir.absolutePath}")
-    println("Version: $version, VersionCode: $versionCode")
-    
-    if (apkDir.exists()) {
-        // Find all APK files recursively
-        apkDir.walkTopDown().forEach { apkFile ->
-            if (apkFile.isFile && apkFile.name.endsWith(".apk")) {
-                val currentName = apkFile.name
-                println("Found APK: $currentName at ${apkFile.absolutePath}")
-                
-                // Target name with version
-                val targetName = "Samsara_${buildType}_v${version}_${versionCode}.apk"
-                
-                // Rename if it doesn't already match our target name exactly
-                if (currentName != targetName) {
-                    val newFile = File(apkFile.parent, targetName)
-                    
-                    println("Attempting to rename: $currentName -> $targetName")
-                    
-                    if (apkFile.exists()) {
-                        try {
-                            // Delete old file if new one exists
+            val apkDir = project.file("${project.buildDir}/outputs/apk/release")
+            val buildType = "release"
+            val targetName = "Samsara_${buildType}_v${versionForApk}_${versionCodeForApk}.apk"
+            
+            println("=== Renaming APK files ===")
+            println("Looking in: ${apkDir.absolutePath}")
+            println("Version: $versionForApk, VersionCode: $versionCodeForApk")
+            
+            if (apkDir.exists()) {
+                apkDir.walkTopDown().forEach { apkFile ->
+                    if (apkFile.isFile && apkFile.name.endsWith(".apk")) {
+                        val currentName = apkFile.name
+                        if (currentName != targetName) {
+                            val newFile = File(apkFile.parent, targetName)
+                            println("Renaming: $currentName -> $targetName")
                             if (newFile.exists() && newFile.absolutePath != apkFile.absolutePath) {
-                                println("Deleting existing file: $targetName")
                                 newFile.delete()
                             }
-                            val renamed = apkFile.renameTo(newFile)
-                            if (renamed) {
-                                println("✓ Successfully renamed: $currentName -> $targetName")
-                            } else {
-                                println("✗ Failed to rename: $currentName (file may be locked or in use)")
-                                println("  Source: ${apkFile.absolutePath}")
-                                println("  Target: ${newFile.absolutePath}")
-                            }
-                        } catch (e: Exception) {
-                            println("✗ Error renaming APK: ${e.message}")
-                            e.printStackTrace()
+                            apkFile.renameTo(newFile)
                         }
                     }
-                } else {
-                    println("APK already has correct name: $currentName")
                 }
             }
         }
-    } else {
-        println("✗ APK directory does not exist: ${apkDir.absolutePath}")
     }
 }
 
