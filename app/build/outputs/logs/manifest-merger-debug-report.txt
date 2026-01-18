@@ -112,11 +112,11 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] /Users/ragnor/.gradle/cache
 	android:label
 		ADDED from /Users/ragnor/StudioProjects/Samsara/app/src/main/AndroidManifest.xml:13:9-41
 	android:roundIcon
-		ADDED from /Users/ragnor/StudioProjects/Samsara/app/src/main/AndroidManifest.xml:14:9-57
+		ADDED from /Users/ragnor/StudioProjects/Samsara/app/src/main/AndroidManifest.xml:14:9-54
 	tools:targetApi
 		ADDED from /Users/ragnor/StudioProjects/Samsara/app/src/main/AndroidManifest.xml:17:9-29
 	android:icon
-		ADDED from /Users/ragnor/StudioProjects/Samsara/app/src/main/AndroidManifest.xml:12:9-52
+		ADDED from /Users/ragnor/StudioProjects/Samsara/app/src/main/AndroidManifest.xml:12:9-43
 	android:allowBackup
 		ADDED from /Users/ragnor/StudioProjects/Samsara/app/src/main/AndroidManifest.xml:11:9-35
 	android:theme

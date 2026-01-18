@@ -30,5 +30,8 @@
     
     <!-- Divider color -->
     <color name="divider">#E5E5EA</color>
+    
+    <!-- Icon background (dark blue/black) -->
+    <color name="icon_background">#0A0E27</color>
 </resources>
 
