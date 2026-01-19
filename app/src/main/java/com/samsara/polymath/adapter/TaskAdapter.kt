@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.samsara.polymath.R
+import com.samsara.polymath.data.RankStatus
 import com.samsara.polymath.data.Task
 import com.samsara.polymath.databinding.ItemTaskBinding
 import java.util.Calendar
@@ -92,6 +93,14 @@ class TaskAdapter(
                 // Keep blue circle
                 daysTextView.setBackgroundResource(R.drawable.circle_background)
             }
+
+            // Set rank indicator icon based on rank status
+            val rankIcon = when (task.rankStatus) {
+                RankStatus.STABLE -> R.drawable.ic_rank_stable
+                RankStatus.UP -> R.drawable.ic_rank_up
+                RankStatus.DOWN -> R.drawable.ic_rank_down
+            }
+            binding.rankIndicatorImageView.setImageResource(rankIcon)
 
             binding.root.setOnClickListener {
                 onTaskClick(task)

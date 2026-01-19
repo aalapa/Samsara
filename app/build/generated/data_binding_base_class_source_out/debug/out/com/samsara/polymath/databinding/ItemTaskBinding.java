@@ -4,6 +4,7 @@ package com.samsara.polymath.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +27,9 @@ public final class ItemTaskBinding implements ViewBinding {
   public final TextView daysTextView;
 
   @NonNull
+  public final ImageView rankIndicatorImageView;
+
+  @NonNull
   public final MaterialCardView taskCard;
 
   @NonNull
@@ -36,11 +40,12 @@ public final class ItemTaskBinding implements ViewBinding {
 
   private ItemTaskBinding(@NonNull MaterialCardView rootView,
       @NonNull TextView completionInfoTextView, @NonNull TextView daysTextView,
-      @NonNull MaterialCardView taskCard, @NonNull TextView taskDescriptionTextView,
-      @NonNull TextView taskTitleTextView) {
+      @NonNull ImageView rankIndicatorImageView, @NonNull MaterialCardView taskCard,
+      @NonNull TextView taskDescriptionTextView, @NonNull TextView taskTitleTextView) {
     this.rootView = rootView;
     this.completionInfoTextView = completionInfoTextView;
     this.daysTextView = daysTextView;
+    this.rankIndicatorImageView = rankIndicatorImageView;
     this.taskCard = taskCard;
     this.taskDescriptionTextView = taskDescriptionTextView;
     this.taskTitleTextView = taskTitleTextView;
@@ -85,6 +90,12 @@ public final class ItemTaskBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.rankIndicatorImageView;
+      ImageView rankIndicatorImageView = ViewBindings.findChildViewById(rootView, id);
+      if (rankIndicatorImageView == null) {
+        break missingId;
+      }
+
       MaterialCardView taskCard = (MaterialCardView) rootView;
 
       id = R.id.taskDescriptionTextView;
@@ -100,7 +111,7 @@ public final class ItemTaskBinding implements ViewBinding {
       }
 
       return new ItemTaskBinding((MaterialCardView) rootView, completionInfoTextView, daysTextView,
-          taskCard, taskDescriptionTextView, taskTitleTextView);
+          rankIndicatorImageView, taskCard, taskDescriptionTextView, taskTitleTextView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

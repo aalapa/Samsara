@@ -89,6 +89,12 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
     
+    fun updateTaskOrderWithRank(taskId: Long, newOrder: Int, previousOrder: Int, rankStatus: com.samsara.polymath.data.RankStatus) {
+        viewModelScope.launch {
+            repository.updateTaskOrderWithRank(taskId, newOrder, previousOrder, rankStatus)
+        }
+    }
+    
     fun markTaskAsComplete(task: Task) {
         viewModelScope.launch {
             repository.updateTaskCompletion(

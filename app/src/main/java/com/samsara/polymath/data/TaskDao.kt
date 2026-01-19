@@ -26,6 +26,9 @@ interface TaskDao {
     @Query("UPDATE tasks SET `order` = :order WHERE id = :id")
     suspend fun updateTaskOrder(id: Long, order: Int)
     
+    @Query("UPDATE tasks SET `order` = :order, previousOrder = :previousOrder, rankStatus = :rankStatus WHERE id = :id")
+    suspend fun updateTaskOrderWithRank(id: Long, order: Int, previousOrder: Int, rankStatus: String)
+    
     @Query("UPDATE tasks SET isCompleted = :isCompleted, completedAt = :completedAt WHERE id = :id")
     suspend fun updateTaskCompletion(id: Long, isCompleted: Boolean, completedAt: Long?)
     

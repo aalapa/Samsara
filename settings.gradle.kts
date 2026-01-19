@@ -1,3 +1,6 @@
+// Apply init script to intercept signing config injection early
+apply(from = "init.gradle.kts")
+
 pluginManagement {
     repositories {
         google()

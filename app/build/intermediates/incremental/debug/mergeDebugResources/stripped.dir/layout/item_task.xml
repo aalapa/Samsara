@@ -63,6 +63,14 @@
 
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/rankIndicatorImageView"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/ic_rank_stable"
+            android:contentDescription="@string/rank_indicator" />
+
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

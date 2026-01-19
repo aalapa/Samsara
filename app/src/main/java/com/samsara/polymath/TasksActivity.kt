@@ -120,10 +120,18 @@ class TasksActivity : AppCompatActivity() {
                 val item = currentList.removeAt(fromPosition)
                 currentList.add(toPosition, item)
 
-                // Update order values
+                // Update order values and rank status
                 currentList.forEachIndexed { index, task ->
                     if (task.order != index) {
-                        viewModel.updateTaskOrder(task.id, index)
+                        // Determine rank status based on position change
+                        val rankStatus = when {
+                            index == 0 && task.order == 0 -> com.samsara.polymath.data.RankStatus.STABLE // Always at top
+                            index < task.order -> com.samsara.polymath.data.RankStatus.UP // Moved up
+                            index > task.order -> com.samsara.polymath.data.RankStatus.DOWN // Moved down
+                            else -> task.rankStatus // No change
+                        }
+                        
+                        viewModel.updateTaskOrderWithRank(task.id, index, task.order, rankStatus)
                     }
                 }
 

@@ -35,5 +35,6 @@
     <string name="comment_hint">Add a comment...</string>
     <string name="add_comment">Add Comment</string>
     <string name="no_comments">No comments yet. Add your first comment to track progress.</string>
+    <string name="rank_indicator">Task rank indicator</string>
 </resources>
 

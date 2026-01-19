@@ -37,11 +37,15 @@ public final class TaskDao_Impl implements TaskDao {
 
   private final EntityInsertionAdapter<Task> __insertionAdapterOfTask;
 
+  private final Converters __converters = new Converters();
+
   private final EntityDeletionOrUpdateAdapter<Task> __deletionAdapterOfTask;
 
   private final EntityDeletionOrUpdateAdapter<Task> __updateAdapterOfTask;
 
   private final SharedSQLiteStatement __preparedStmtOfUpdateTaskOrder;
+
+  private final SharedSQLiteStatement __preparedStmtOfUpdateTaskOrderWithRank;
 
   private final SharedSQLiteStatement __preparedStmtOfUpdateTaskCompletion;
 
@@ -51,7 +55,7 @@ public final class TaskDao_Impl implements TaskDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR ABORT INTO `tasks` (`id`,`personaId`,`title`,`description`,`createdAt`,`completedAt`,`isCompleted`,`order`,`backgroundColor`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?)";
+        return "INSERT OR ABORT INTO `tasks` (`id`,`personaId`,`title`,`description`,`createdAt`,`completedAt`,`isCompleted`,`order`,`backgroundColor`,`previousOrder`,`rankStatus`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -71,6 +75,9 @@ public final class TaskDao_Impl implements TaskDao {
         statement.bindLong(7, _tmp);
         statement.bindLong(8, entity.getOrder());
         statement.bindString(9, entity.getBackgroundColor());
+        statement.bindLong(10, entity.getPreviousOrder());
+        final String _tmp_1 = __converters.fromRankStatus(entity.getRankStatus());
+        statement.bindString(11, _tmp_1);
       }
     };
     this.__deletionAdapterOfTask = new EntityDeletionOrUpdateAdapter<Task>(__db) {
@@ -90,7 +97,7 @@ public final class TaskDao_Impl implements TaskDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `tasks` SET `id` = ?,`personaId` = ?,`title` = ?,`description` = ?,`createdAt` = ?,`completedAt` = ?,`isCompleted` = ?,`order` = ?,`backgroundColor` = ? WHERE `id` = ?";
+        return "UPDATE OR ABORT `tasks` SET `id` = ?,`personaId` = ?,`title` = ?,`description` = ?,`createdAt` = ?,`completedAt` = ?,`isCompleted` = ?,`order` = ?,`backgroundColor` = ?,`previousOrder` = ?,`rankStatus` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -110,7 +117,10 @@ public final class TaskDao_Impl implements TaskDao {
         statement.bindLong(7, _tmp);
         statement.bindLong(8, entity.getOrder());
         statement.bindString(9, entity.getBackgroundColor());
-        statement.bindLong(10, entity.getId());
+        statement.bindLong(10, entity.getPreviousOrder());
+        final String _tmp_1 = __converters.fromRankStatus(entity.getRankStatus());
+        statement.bindString(11, _tmp_1);
+        statement.bindLong(12, entity.getId());
       }
     };
     this.__preparedStmtOfUpdateTaskOrder = new SharedSQLiteStatement(__db) {
@@ -118,6 +128,14 @@ public final class TaskDao_Impl implements TaskDao {
       @NonNull
       public String createQuery() {
         final String _query = "UPDATE tasks SET `order` = ? WHERE id = ?";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfUpdateTaskOrderWithRank = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "UPDATE tasks SET `order` = ?, previousOrder = ?, rankStatus = ? WHERE id = ?";
         return _query;
       }
     };
@@ -214,6 +232,38 @@ public final class TaskDao_Impl implements TaskDao {
   }
 
   @Override
+  public Object updateTaskOrderWithRank(final long id, final int order, final int previousOrder,
+      final String rankStatus, final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfUpdateTaskOrderWithRank.acquire();
+        int _argIndex = 1;
+        _stmt.bindLong(_argIndex, order);
+        _argIndex = 2;
+        _stmt.bindLong(_argIndex, previousOrder);
+        _argIndex = 3;
+        _stmt.bindString(_argIndex, rankStatus);
+        _argIndex = 4;
+        _stmt.bindLong(_argIndex, id);
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfUpdateTaskOrderWithRank.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
   public Object updateTaskCompletion(final long id, final boolean isCompleted,
       final Long completedAt, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
@@ -269,6 +319,8 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfIsCompleted = CursorUtil.getColumnIndexOrThrow(_cursor, "isCompleted");
           final int _cursorIndexOfOrder = CursorUtil.getColumnIndexOrThrow(_cursor, "order");
           final int _cursorIndexOfBackgroundColor = CursorUtil.getColumnIndexOrThrow(_cursor, "backgroundColor");
+          final int _cursorIndexOfPreviousOrder = CursorUtil.getColumnIndexOrThrow(_cursor, "previousOrder");
+          final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
           final List<Task> _result = new ArrayList<Task>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Task _item;
@@ -296,7 +348,13 @@ public final class TaskDao_Impl implements TaskDao {
             _tmpOrder = _cursor.getInt(_cursorIndexOfOrder);
             final String _tmpBackgroundColor;
             _tmpBackgroundColor = _cursor.getString(_cursorIndexOfBackgroundColor);
-            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpOrder,_tmpBackgroundColor);
+            final int _tmpPreviousOrder;
+            _tmpPreviousOrder = _cursor.getInt(_cursorIndexOfPreviousOrder);
+            final RankStatus _tmpRankStatus;
+            final String _tmp_1;
+            _tmp_1 = _cursor.getString(_cursorIndexOfRankStatus);
+            _tmpRankStatus = __converters.toRankStatus(_tmp_1);
+            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus);
             _result.add(_item);
           }
           return _result;
@@ -331,6 +389,8 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfIsCompleted = CursorUtil.getColumnIndexOrThrow(_cursor, "isCompleted");
           final int _cursorIndexOfOrder = CursorUtil.getColumnIndexOrThrow(_cursor, "order");
           final int _cursorIndexOfBackgroundColor = CursorUtil.getColumnIndexOrThrow(_cursor, "backgroundColor");
+          final int _cursorIndexOfPreviousOrder = CursorUtil.getColumnIndexOrThrow(_cursor, "previousOrder");
+          final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
           final List<Task> _result = new ArrayList<Task>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Task _item;
@@ -358,7 +418,13 @@ public final class TaskDao_Impl implements TaskDao {
             _tmpOrder = _cursor.getInt(_cursorIndexOfOrder);
             final String _tmpBackgroundColor;
             _tmpBackgroundColor = _cursor.getString(_cursorIndexOfBackgroundColor);
-            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpOrder,_tmpBackgroundColor);
+            final int _tmpPreviousOrder;
+            _tmpPreviousOrder = _cursor.getInt(_cursorIndexOfPreviousOrder);
+            final RankStatus _tmpRankStatus;
+            final String _tmp_1;
+            _tmp_1 = _cursor.getString(_cursorIndexOfRankStatus);
+            _tmpRankStatus = __converters.toRankStatus(_tmp_1);
+            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus);
             _result.add(_item);
           }
           return _result;
@@ -396,6 +462,8 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfIsCompleted = CursorUtil.getColumnIndexOrThrow(_cursor, "isCompleted");
           final int _cursorIndexOfOrder = CursorUtil.getColumnIndexOrThrow(_cursor, "order");
           final int _cursorIndexOfBackgroundColor = CursorUtil.getColumnIndexOrThrow(_cursor, "backgroundColor");
+          final int _cursorIndexOfPreviousOrder = CursorUtil.getColumnIndexOrThrow(_cursor, "previousOrder");
+          final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
           final Task _result;
           if (_cursor.moveToFirst()) {
             final long _tmpId;
@@ -422,7 +490,13 @@ public final class TaskDao_Impl implements TaskDao {
             _tmpOrder = _cursor.getInt(_cursorIndexOfOrder);
             final String _tmpBackgroundColor;
             _tmpBackgroundColor = _cursor.getString(_cursorIndexOfBackgroundColor);
-            _result = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpOrder,_tmpBackgroundColor);
+            final int _tmpPreviousOrder;
+            _tmpPreviousOrder = _cursor.getInt(_cursorIndexOfPreviousOrder);
+            final RankStatus _tmpRankStatus;
+            final String _tmp_1;
+            _tmp_1 = _cursor.getString(_cursorIndexOfRankStatus);
+            _tmpRankStatus = __converters.toRankStatus(_tmp_1);
+            _result = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus);
           } else {
             _result = null;
           }

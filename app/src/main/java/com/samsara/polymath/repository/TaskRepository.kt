@@ -1,5 +1,6 @@
 package com.samsara.polymath.repository
 
+import com.samsara.polymath.data.RankStatus
 import com.samsara.polymath.data.Task
 import com.samsara.polymath.data.TaskDao
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,9 @@ class TaskRepository(private val taskDao: TaskDao) {
     suspend fun deleteTask(task: Task) = taskDao.deleteTask(task)
     
     suspend fun updateTaskOrder(id: Long, order: Int) = taskDao.updateTaskOrder(id, order)
+    
+    suspend fun updateTaskOrderWithRank(id: Long, order: Int, previousOrder: Int, rankStatus: RankStatus) =
+        taskDao.updateTaskOrderWithRank(id, order, previousOrder, rankStatus.name)
     
     suspend fun updateTaskCompletion(id: Long, isCompleted: Boolean, completedAt: Long?) =
         taskDao.updateTaskCompletion(id, isCompleted, completedAt)

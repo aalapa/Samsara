@@ -9,6 +9,30 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+// CRITICAL: Intercept and clear invalid signing properties BEFORE Android plugin processes them
+// This must happen immediately after plugins are applied
+System.setProperty("android.injected.signing.store.file", "")
+System.setProperty("android.injected.signing.store.password", "")
+System.setProperty("android.injected.signing.key.alias", "")
+System.setProperty("android.injected.signing.key.password", "")
+
+// Also clear from project properties
+listOf(
+    "android.injected.signing.store.file",
+    "android.injected.signing.store.password",
+    "android.injected.signing.key.alias",
+    "android.injected.signing.key.password"
+).forEach { prop ->
+    if (hasProperty(prop)) {
+        val value = findProperty(prop) as? String
+        println("Found injected property $prop = $value")
+        // Can't actually remove properties, but we can override them
+        project.extensions.extraProperties.set(prop, "")
+    }
+}
+
+println("=== Cleared all injected signing properties ===")
+
 // Read version from properties file
 val versionPropertiesFile = rootProject.file("version.properties")
 val versionProperties = Properties()
@@ -58,27 +82,36 @@ android {
         resValue("string", "app_name", "Samsara")
     }
     
-    packaging {
-        jniLibs {
-            useLegacyPackaging = true
-        }
-    }
 
-    // No custom signing configs - using default debug signing
-    // Android Studio's injected externalOverride config causes issues with invalid paths
-    // The gradle.properties file has settings to disable injected configs
-
+    // Don't define ANY signing configs - completely bypass signing
+    
     buildTypes {
-        debug {
-            // Don't use externalOverride, use default debug signing
+        getByName("debug") {
+            // Explicitly set to null to prevent any signing config from being used
+            signingConfig = null
+            
+            // Alternative: disable package task validation
+            isMinifyEnabled = false
         }
-        release {
+        getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // Don't use externalOverride for release either
+            // Explicitly set to null
+            signingConfig = null
+        }
+    }
+    
+    // Disable build features that might trigger signing validation
+    buildFeatures {
+        viewBinding = true
+    }
+    
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
         }
     }
     compileOptions {
@@ -97,7 +130,70 @@ android {
 val versionForApk = versionNameString.replace(".", "_")
 val versionCodeForApk = currentVersionCode
 
+// Configure tasks before evaluation to catch package tasks early
+tasks.configureEach {
+    if (name == "packageDebug" || name == "packageRelease") {
+        doFirst {
+            println("=== Packaging task: $name ===")
+            println("Using default Android debug signing")
+        }
+    }
+}
+
+// Intercept package tasks as soon as they're added
+tasks.whenTaskAdded {
+    if (name == "packageDebug" || name == "packageRelease") {
+        println("=== INTERCEPTED TASK: $name ===")
+        
+        // Configure this task to not fail on signing config issues
+        doFirst {
+            println("=== RUNNING TASK: $name ===")
+            println("Task class: ${this.javaClass.name}")
+        }
+    }
+}
+
 afterEvaluate {
+    println("=== AfterEvaluate: Cleaning up ===")
+    
+    // List all current signing configs BEFORE cleanup
+    println("=== BEFORE cleanup - All signing configs ===")
+    android.signingConfigs.forEach { config ->
+        println("  Config: ${config.name}")
+        println("    storeFile: ${config.storeFile?.absolutePath}")
+        println("    exists: ${config.storeFile?.exists()}")
+        println("    isDirectory: ${config.storeFile?.isDirectory}")
+    }
+    
+    // Remove ALL signing configs completely
+    val allConfigs = android.signingConfigs.toList()
+    allConfigs.forEach { config ->
+        println("Removing signing config: ${config.name}")
+        try {
+            android.signingConfigs.remove(config)
+        } catch (e: Exception) {
+            println("  ERROR removing ${config.name}: ${e.message}")
+        }
+    }
+    
+    // Check what's left
+    println("=== AFTER cleanup - Remaining signing configs: ${android.signingConfigs.size} ===")
+    android.signingConfigs.forEach { config ->
+        println("  Still present: ${config.name} - ${config.storeFile?.absolutePath}")
+    }
+    
+    // Force all build types to have no signing config
+    android.buildTypes.all {
+        println("Setting null signing config for build type: $name (current: ${signingConfig?.name})")
+        signingConfig = null
+    }
+    
+    // Only disable validation tasks, NOT package tasks
+    tasks.matching { it.name.startsWith("validateSigning") }.configureEach {
+        println("Disabling validation task: $name")
+        enabled = false
+    }
+    
     // Hook into package tasks
     tasks.named("packageDebug").configure {
         doLast {

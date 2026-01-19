@@ -3023,6 +3023,9 @@ drawable ic_mtrl_checked_circle
 drawable ic_mtrl_chip_checked_black
 drawable ic_mtrl_chip_checked_circle
 drawable ic_mtrl_chip_close_circle
+drawable ic_rank_down
+drawable ic_rank_stable
+drawable ic_rank_up
 drawable ic_search_black_24
 drawable m3_avd_hide_password
 drawable m3_avd_show_password
@@ -3477,6 +3480,7 @@ id pressed
 id progress_circular
 id progress_horizontal
 id radio
+id rankIndicatorImageView
 id ratio
 id rectangles
 id report_drawn
@@ -4021,6 +4025,7 @@ string path_password_eye_mask_strike_through
 string path_password_eye_mask_visible
 string path_password_strike_through
 string persona_name_hint
+string rank_indicator
 string search_menu_title
 string searchbar_scrolling_view_behavior
 string searchview_clear_text_content_description

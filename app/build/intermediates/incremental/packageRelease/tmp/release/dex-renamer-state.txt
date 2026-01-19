@@ -1,4 +1,0 @@
-#Sun Jan 18 11:38:38 CST 2026
-base.0=/Users/ragnor/StudioProjects/Samsara/app/build/intermediates/dex/release/mergeDexRelease/classes.dex
-path.0=classes.dex
-renamed.0=classes.dex
