@@ -1,5 +1,13 @@
 [
     {
+        "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-mergeDebugResources-42:/layout/item_comment.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/layout/item_comment.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.app-mergeDebugResources-42:/layout/item_persona.xml",
+        "source": "com.samsara.polymath.app-main-45:/layout/item_persona.xml"
+    },
+    {
         "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-mergeDebugResources-42:/layout/item_persona.xml",
         "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/layout/item_persona.xml"
     },
@@ -12,6 +20,10 @@
         "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/layout/dialog_add_task.xml"
     },
     {
+        "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-mergeDebugResources-42:/layout/dialog_task_comments.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/layout/dialog_task_comments.xml"
+    },
+    {
         "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-mergeDebugResources-42:/layout/item_task.xml",
         "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/layout/item_task.xml"
     },
@@ -20,12 +32,12 @@
         "source": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-main-45:/layout/activity_main.xml"
     },
     {
-        "merged": "com.samsara.polymath.app-mergeDebugResources-42:/layout/dialog_task_comments.xml",
-        "source": "com.samsara.polymath.app-main-45:/layout/dialog_task_comments.xml"
+        "merged": "com.samsara.polymath.app-mergeDebugResources-42:/layout/item_task.xml",
+        "source": "com.samsara.polymath.app-main-45:/layout/item_task.xml"
     },
     {
-        "merged": "com.samsara.polymath.app-mergeDebugResources-42:/layout/item_comment.xml",
-        "source": "com.samsara.polymath.app-main-45:/layout/item_comment.xml"
+        "merged": "com.samsara.polymath.app-mergeDebugResources-42:/layout/activity_main.xml",
+        "source": "com.samsara.polymath.app-main-45:/layout/activity_main.xml"
     },
     {
         "merged": "/Users/ragnor/.gradle/daemon/8.4/com.samsara.polymath.app-mergeDebugResources-42:/layout/dialog_add_persona.xml",
