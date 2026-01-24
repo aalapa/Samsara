@@ -122,7 +122,16 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         return repository.getTasksByPersona(personaId).first()
     }
     
-    suspend fun insertTaskSync(personaId: Long, title: String, description: String, order: Int = 0, isCompleted: Boolean = false, completedAt: Long? = null, backgroundColor: String = "#FFFFFF"): Long {
+    suspend fun insertTaskSync(
+        personaId: Long, 
+        title: String, 
+        description: String, 
+        order: Int = 0, 
+        isCompleted: Boolean = false, 
+        completedAt: Long? = null, 
+        backgroundColor: String = "#FFFFFF",
+        createdAt: Long = System.currentTimeMillis()  // Add createdAt parameter with default
+    ): Long {
         return repository.insertTask(
             Task(
                 personaId = personaId,
@@ -131,7 +140,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                 order = order,
                 isCompleted = isCompleted,
                 completedAt = completedAt,
-                backgroundColor = backgroundColor
+                backgroundColor = backgroundColor,
+                createdAt = createdAt  // Pass the createdAt timestamp
             )
         )
     }

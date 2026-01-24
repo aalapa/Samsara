@@ -23,17 +23,8 @@
       <change beforePath="$PROJECT_DIR$/.gradle/8.4/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.4/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.4/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.4/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/generated/ksp/debug/java/com/samsara/polymath/data/AppDatabase_Impl.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/generated/ksp/debug/java/com/samsara/polymath/data/AppDatabase_Impl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build/generated/ksp/debug/java/com/samsara/polymath/data/PersonaDao_Impl.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/build/generated/ksp/debug/java/com/samsara/polymath/data/PersonaDao_Impl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/adapter/PersonaAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/adapter/PersonaAdapter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/data/AppDatabase.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/data/AppDatabase.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/data/Persona.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/data/Persona.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/data/PersonaDao.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/data/PersonaDao.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/data/PersonaWithTaskCount.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/data/PersonaWithTaskCount.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/repository/PersonaRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/repository/PersonaRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/viewmodel/PersonaViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/viewmodel/PersonaViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/viewmodel/TaskViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/samsara/polymath/viewmodel/TaskViewModel.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/version.properties" beforeDir="false" afterPath="$PROJECT_DIR$/version.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

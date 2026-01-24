@@ -276,13 +276,14 @@ class MainActivity : AppCompatActivity() {
                         val newPersonaId = personaIdMap[oldPersonaId] ?: return@forEach
                         tasks.sortedBy { it.order }.forEachIndexed { index, oldTask ->
                             taskViewModel.insertTaskSync(
-                                newPersonaId,
-                                oldTask.title,
-                                oldTask.description,
+                                personaId = newPersonaId,
+                                title = oldTask.title,
+                                description = oldTask.description,
                                 order = index,
                                 isCompleted = oldTask.isCompleted,
                                 completedAt = oldTask.completedAt,
-                                backgroundColor = oldTask.backgroundColor
+                                backgroundColor = oldTask.backgroundColor,
+                                createdAt = oldTask.createdAt  // Preserve the original creation timestamp
                             )
                         }
                     }
