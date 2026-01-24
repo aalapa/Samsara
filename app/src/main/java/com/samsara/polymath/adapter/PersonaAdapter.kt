@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.samsara.polymath.R
+import com.samsara.polymath.data.DecayLevel
 import com.samsara.polymath.data.Persona
 import com.samsara.polymath.data.PersonaWithTaskCount
 import com.samsara.polymath.data.RankStatus
@@ -57,8 +58,9 @@ class PersonaAdapter(
             }
             
             // Apply background and text colors
+            var bgColor = Color.parseColor("#FFFFFF")
             try {
-                val bgColor = Color.parseColor(persona.backgroundColor)
+                bgColor = Color.parseColor(persona.backgroundColor)
                 val textColor = Color.parseColor(persona.textColor)
                 binding.root.setCardBackgroundColor(bgColor)
                 binding.personaNameTextView.setTextColor(textColor)
@@ -68,10 +70,13 @@ class PersonaAdapter(
                 binding.menuButton.setColorFilter(menuIconColor)
             } catch (e: Exception) {
                 // Fallback to default colors if parsing fails
-                binding.root.setCardBackgroundColor(Color.parseColor("#FFFFFF"))
+                binding.root.setCardBackgroundColor(bgColor)
                 binding.personaNameTextView.setTextColor(Color.parseColor("#000000"))
                 binding.menuButton.setColorFilter(Color.parseColor("#8E8E93"))
             }
+
+            // Store bgColor for decay visuals (used later)
+            val finalBgColor = bgColor
             
             // Show open count if greater than 0
             if (persona.openCount > 0) {
@@ -96,7 +101,10 @@ class PersonaAdapter(
                     binding.rankIndicatorImageView.visibility = View.GONE
                 }
             }
-            
+
+            // Apply visual decay based on decay level
+            applyDecayVisuals(personaWithCount.decayLevel, finalBgColor)
+
             // Setup three dots menu
             binding.menuButton.setOnClickListener { view ->
                 val contextWrapper = android.view.ContextThemeWrapper(
@@ -125,6 +133,54 @@ class PersonaAdapter(
                 onPersonaClick(persona)
             }
         }
+
+        /**
+         * Apply visual decay effects based on decay level.
+         * - NONE: No effect (100% opacity, full color)
+         * - SLIGHT: 90% opacity
+         * - MEDIUM: 75% opacity
+         * - SERIOUS: 60% opacity + desaturated background color
+         */
+        private fun applyDecayVisuals(decayLevel: DecayLevel, bgColor: Int) {
+            when (decayLevel) {
+                DecayLevel.NONE -> {
+                    binding.root.alpha = 1.0f
+                    binding.root.setCardBackgroundColor(bgColor)
+                }
+                DecayLevel.SLIGHT -> {
+                    binding.root.alpha = 0.90f
+                    binding.root.setCardBackgroundColor(bgColor)
+                }
+                DecayLevel.MEDIUM -> {
+                    binding.root.alpha = 0.75f
+                    binding.root.setCardBackgroundColor(bgColor)
+                }
+                DecayLevel.SERIOUS -> {
+                    binding.root.alpha = 0.60f
+                    // Apply desaturation to the background color
+                    binding.root.setCardBackgroundColor(desaturateColor(bgColor, 0.3f))
+                }
+            }
+        }
+
+        /**
+         * Desaturate a color by a given factor (0.0 = grayscale, 1.0 = full color)
+         */
+        private fun desaturateColor(color: Int, saturation: Float): Int {
+            val r = Color.red(color)
+            val g = Color.green(color)
+            val b = Color.blue(color)
+
+            // Calculate grayscale value using luminance formula
+            val gray = (0.299 * r + 0.587 * g + 0.114 * b).toInt()
+
+            // Blend between grayscale and original color
+            val newR = (gray + saturation * (r - gray)).toInt().coerceIn(0, 255)
+            val newG = (gray + saturation * (g - gray)).toInt().coerceIn(0, 255)
+            val newB = (gray + saturation * (b - gray)).toInt().coerceIn(0, 255)
+
+            return Color.rgb(newR, newG, newB)
+        }
     }
 
     class PersonaDiffCallback : DiffUtil.ItemCallback<PersonaWithTaskCount>() {
@@ -139,6 +195,7 @@ class PersonaAdapter(
                 && oldItem.emoji == newItem.emoji
                 && oldItem.score == newItem.score
                 && oldItem.rankStatus == newItem.rankStatus
+                && oldItem.decayLevel == newItem.decayLevel
         }
     }
 }

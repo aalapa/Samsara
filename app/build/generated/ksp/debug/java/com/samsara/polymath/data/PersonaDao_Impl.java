@@ -42,8 +42,6 @@ public final class PersonaDao_Impl implements PersonaDao {
 
   private final EntityDeletionOrUpdateAdapter<Persona> __updateAdapterOfPersona;
 
-  private final SharedSQLiteStatement __preparedStmtOfUpdatePersonaOrder;
-
   private final SharedSQLiteStatement __preparedStmtOfIncrementOpenCount;
 
   private final SharedSQLiteStatement __preparedStmtOfUpdatePersonaName;
@@ -60,7 +58,7 @@ public final class PersonaDao_Impl implements PersonaDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR ABORT INTO `personas` (`id`,`name`,`createdAt`,`order`,`openCount`,`backgroundColor`,`textColor`,`previousOpenCount`,`rankStatus`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?)";
+        return "INSERT OR ABORT INTO `personas` (`id`,`name`,`createdAt`,`order`,`openCount`,`backgroundColor`,`textColor`,`previousOpenCount`,`rankStatus`,`lastOpenedAt`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -76,6 +74,7 @@ public final class PersonaDao_Impl implements PersonaDao {
         statement.bindLong(8, entity.getPreviousOpenCount());
         final String _tmp = __converters.fromRankStatus(entity.getRankStatus());
         statement.bindString(9, _tmp);
+        statement.bindLong(10, entity.getLastOpenedAt());
       }
     };
     this.__deletionAdapterOfPersona = new EntityDeletionOrUpdateAdapter<Persona>(__db) {
@@ -95,7 +94,7 @@ public final class PersonaDao_Impl implements PersonaDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `personas` SET `id` = ?,`name` = ?,`createdAt` = ?,`order` = ?,`openCount` = ?,`backgroundColor` = ?,`textColor` = ?,`previousOpenCount` = ?,`rankStatus` = ? WHERE `id` = ?";
+        return "UPDATE OR ABORT `personas` SET `id` = ?,`name` = ?,`createdAt` = ?,`order` = ?,`openCount` = ?,`backgroundColor` = ?,`textColor` = ?,`previousOpenCount` = ?,`rankStatus` = ?,`lastOpenedAt` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -111,22 +110,15 @@ public final class PersonaDao_Impl implements PersonaDao {
         statement.bindLong(8, entity.getPreviousOpenCount());
         final String _tmp = __converters.fromRankStatus(entity.getRankStatus());
         statement.bindString(9, _tmp);
-        statement.bindLong(10, entity.getId());
-      }
-    };
-    this.__preparedStmtOfUpdatePersonaOrder = new SharedSQLiteStatement(__db) {
-      @Override
-      @NonNull
-      public String createQuery() {
-        final String _query = "UPDATE personas SET `order` = ? WHERE id = ?";
-        return _query;
+        statement.bindLong(10, entity.getLastOpenedAt());
+        statement.bindLong(11, entity.getId());
       }
     };
     this.__preparedStmtOfIncrementOpenCount = new SharedSQLiteStatement(__db) {
       @Override
       @NonNull
       public String createQuery() {
-        final String _query = "UPDATE personas SET openCount = openCount + 1 WHERE id = ?";
+        final String _query = "UPDATE personas SET openCount = openCount + 1, lastOpenedAt = ? WHERE id = ?";
         return _query;
       }
     };
@@ -219,41 +211,16 @@ public final class PersonaDao_Impl implements PersonaDao {
   }
 
   @Override
-  public Object updatePersonaOrder(final long id, final int order,
+  public Object incrementOpenCount(final long id, final long timestamp,
       final Continuation<? super Unit> $completion) {
-    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
-      @Override
-      @NonNull
-      public Unit call() throws Exception {
-        final SupportSQLiteStatement _stmt = __preparedStmtOfUpdatePersonaOrder.acquire();
-        int _argIndex = 1;
-        _stmt.bindLong(_argIndex, order);
-        _argIndex = 2;
-        _stmt.bindLong(_argIndex, id);
-        try {
-          __db.beginTransaction();
-          try {
-            _stmt.executeUpdateDelete();
-            __db.setTransactionSuccessful();
-            return Unit.INSTANCE;
-          } finally {
-            __db.endTransaction();
-          }
-        } finally {
-          __preparedStmtOfUpdatePersonaOrder.release(_stmt);
-        }
-      }
-    }, $completion);
-  }
-
-  @Override
-  public Object incrementOpenCount(final long id, final Continuation<? super Unit> $completion) {
     return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
       @Override
       @NonNull
       public Unit call() throws Exception {
         final SupportSQLiteStatement _stmt = __preparedStmtOfIncrementOpenCount.acquire();
         int _argIndex = 1;
+        _stmt.bindLong(_argIndex, timestamp);
+        _argIndex = 2;
         _stmt.bindLong(_argIndex, id);
         try {
           __db.beginTransaction();
@@ -378,7 +345,7 @@ public final class PersonaDao_Impl implements PersonaDao {
 
   @Override
   public Flow<List<Persona>> getAllPersonas() {
-    final String _sql = "SELECT * FROM personas ORDER BY CASE WHEN `order` = 0 THEN 999999 ELSE `order` END ASC, openCount DESC, createdAt ASC";
+    final String _sql = "SELECT * FROM personas ORDER BY createdAt ASC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
     return CoroutinesRoom.createFlow(__db, false, new String[] {"personas"}, new Callable<List<Persona>>() {
       @Override
@@ -395,6 +362,7 @@ public final class PersonaDao_Impl implements PersonaDao {
           final int _cursorIndexOfTextColor = CursorUtil.getColumnIndexOrThrow(_cursor, "textColor");
           final int _cursorIndexOfPreviousOpenCount = CursorUtil.getColumnIndexOrThrow(_cursor, "previousOpenCount");
           final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
+          final int _cursorIndexOfLastOpenedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "lastOpenedAt");
           final List<Persona> _result = new ArrayList<Persona>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Persona _item;
@@ -418,7 +386,9 @@ public final class PersonaDao_Impl implements PersonaDao {
             final String _tmp;
             _tmp = _cursor.getString(_cursorIndexOfRankStatus);
             _tmpRankStatus = __converters.toRankStatus(_tmp);
-            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus);
+            final long _tmpLastOpenedAt;
+            _tmpLastOpenedAt = _cursor.getLong(_cursorIndexOfLastOpenedAt);
+            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt);
             _result.add(_item);
           }
           return _result;
@@ -456,6 +426,7 @@ public final class PersonaDao_Impl implements PersonaDao {
           final int _cursorIndexOfTextColor = CursorUtil.getColumnIndexOrThrow(_cursor, "textColor");
           final int _cursorIndexOfPreviousOpenCount = CursorUtil.getColumnIndexOrThrow(_cursor, "previousOpenCount");
           final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
+          final int _cursorIndexOfLastOpenedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "lastOpenedAt");
           final Persona _result;
           if (_cursor.moveToFirst()) {
             final long _tmpId;
@@ -478,7 +449,9 @@ public final class PersonaDao_Impl implements PersonaDao {
             final String _tmp;
             _tmp = _cursor.getString(_cursorIndexOfRankStatus);
             _tmpRankStatus = __converters.toRankStatus(_tmp);
-            _result = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus);
+            final long _tmpLastOpenedAt;
+            _tmpLastOpenedAt = _cursor.getLong(_cursorIndexOfLastOpenedAt);
+            _result = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt);
           } else {
             _result = null;
           }

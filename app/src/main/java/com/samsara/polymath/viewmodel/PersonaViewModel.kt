@@ -6,11 +6,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.samsara.polymath.data.AppDatabase
+import com.samsara.polymath.data.DecayLevel
 import com.samsara.polymath.data.Persona
 import com.samsara.polymath.data.PersonaWithTaskCount
 import com.samsara.polymath.data.RankStatus
 import com.samsara.polymath.repository.PersonaRepository
 import com.samsara.polymath.repository.TaskRepository
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -36,38 +38,45 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
             repository.getAllPersonas(),
             taskRepository.getAllTasks()
         ) { personas, allTasks ->
+            val currentTime = System.currentTimeMillis()
+
             // Calculate task counts and scores for each persona
             val personasWithStats = personas.map { persona ->
                 val personaTasks = allTasks.filter { it.personaId == persona.id }
                 val completedCount = personaTasks.count { it.isCompleted }
                 val openCount = personaTasks.count { !it.isCompleted }
-                
-                // Calculate progress score using Option 1 formula with safety checks
-                // Score = (completedTasks / totalTasks) * openCount
-                // This rewards both completion rate and engagement (opening the persona)
+
+                // Calculate decay level based on days since last opened
+                val decayLevel = calculateDecayLevel(persona.lastOpenedAt, currentTime)
+                val decayMultiplier = getDecayMultiplier(decayLevel)
+
+                // Calculate progress score with decay penalty
+                // Base Score = (completedTasks / totalTasks) * openCount
+                // Final Score = Base Score * decayMultiplier
                 val totalTasks = completedCount + openCount
-                val score = if (totalTasks > 0) {
+                val baseScore = if (totalTasks > 0) {
                     (completedCount.toDouble() / totalTasks) * persona.openCount
                 } else {
-                    // No tasks = no progress, score is 0
                     0.0
                 }
-                
+                val score = baseScore * decayMultiplier
+
                 PersonaWithTaskCount(
                     persona = persona,
                     completedTaskCount = completedCount,
                     openTaskCount = openCount,
                     emoji = "", // Will be assigned after sorting
-                    score = score
+                    score = score,
+                    decayLevel = decayLevel
                 )
             }
-            
+
             // Sort by score (descending), then by openCount (descending) for tie-breaking
             val sortedPersonas = personasWithStats.sortedWith(
                 compareByDescending<PersonaWithTaskCount> { it.score }
                     .thenByDescending { it.persona.openCount }
             )
-            
+
             // Assign emojis: top 3 get 😊, bottom 3 get 😢
             // Personas with no completed tasks always get 😢
             sortedPersonas.mapIndexed { index, personaWithStats ->
@@ -89,13 +98,45 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
             }
         }.asLiveData()
     }
+
+    /**
+     * Calculate decay level based on days since last opened.
+     * - 0-6 days: NONE
+     * - 7-13 days: SLIGHT
+     * - 14-20 days: MEDIUM
+     * - 21+ days: SERIOUS
+     */
+    private fun calculateDecayLevel(lastOpenedAt: Long, currentTime: Long): DecayLevel {
+        val daysSinceOpened = TimeUnit.MILLISECONDS.toDays(currentTime - lastOpenedAt)
+        return when {
+            daysSinceOpened < 7 -> DecayLevel.NONE
+            daysSinceOpened < 14 -> DecayLevel.SLIGHT
+            daysSinceOpened < 21 -> DecayLevel.MEDIUM
+            else -> DecayLevel.SERIOUS
+        }
+    }
+
+    /**
+     * Get score multiplier for decay level.
+     * - NONE: 100%
+     * - SLIGHT: 85%
+     * - MEDIUM: 65%
+     * - SERIOUS: 40%
+     */
+    private fun getDecayMultiplier(decayLevel: DecayLevel): Double {
+        return when (decayLevel) {
+            DecayLevel.NONE -> 1.0
+            DecayLevel.SLIGHT -> 0.85
+            DecayLevel.MEDIUM -> 0.65
+            DecayLevel.SERIOUS -> 0.40
+        }
+    }
     
     fun insertPersona(name: String) {
         viewModelScope.launch {
             val personas = repository.getAllPersonas()
             val personaList = personas.first()
-            val maxOrder = personaList.maxOfOrNull { it.order } ?: 0
-            
+
             // Available colors with contrasting text
             val availableColors = listOf(
                 Pair("#007AFF", "#FFFFFF"), // Apple Blue - White text
@@ -129,7 +170,6 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
             repository.insertPersona(
                 Persona(
                     name = name,
-                    order = maxOrder + 1,
                     backgroundColor = selectedColor.first,
                     textColor = selectedColor.second
                 )
@@ -226,21 +266,7 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
             repository.deletePersona(persona)
         }
     }
-    
-    fun updatePersonaOrder(personaId: Long, newOrder: Int) {
-        viewModelScope.launch {
-            repository.updatePersonaOrder(personaId, newOrder)
-        }
-    }
-    
-    fun reorderPersonas(personas: List<Persona>) {
-        viewModelScope.launch {
-            personas.forEachIndexed { index, persona ->
-                repository.updatePersonaOrder(persona.id, index)
-            }
-        }
-    }
-    
+
     suspend fun getAllPersonasSync(): List<Persona> {
         return repository.getAllPersonas().first()
     }
@@ -258,19 +284,46 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
     
     fun incrementOpenCount(personaId: Long) {
         viewModelScope.launch {
-            // Get current personas and their positions (sorted by openCount desc)
+            val currentTime = System.currentTimeMillis()
+            val allTasks = taskRepository.getAllTasks().first()
+
+            // Helper function to calculate score for a persona
+            fun calculatePersonaScore(persona: Persona): Double {
+                val personaTasks = allTasks.filter { it.personaId == persona.id }
+                val completedCount = personaTasks.count { it.isCompleted }
+                val openCount = personaTasks.count { !it.isCompleted }
+                val totalTasks = completedCount + openCount
+
+                val decayLevel = calculateDecayLevel(persona.lastOpenedAt, currentTime)
+                val decayMultiplier = getDecayMultiplier(decayLevel)
+
+                val baseScore = if (totalTasks > 0) {
+                    (completedCount.toDouble() / totalTasks) * persona.openCount
+                } else {
+                    0.0
+                }
+                return baseScore * decayMultiplier
+            }
+
+            // Get current personas and calculate positions based on score
             val personasBefore = repository.getAllPersonas().first()
-            val sortedBefore = personasBefore.sortedByDescending { it.openCount }
+            val sortedBefore = personasBefore.sortedWith(
+                compareByDescending<Persona> { calculatePersonaScore(it) }
+                    .thenByDescending { it.openCount }
+            )
             val positionsBefore = sortedBefore.mapIndexed { index, persona ->
                 persona.id to index
             }.toMap()
 
-            // Increment the open count
+            // Increment the open count (this also updates lastOpenedAt)
             repository.incrementOpenCount(personaId)
 
-            // Get personas after increment
+            // Get personas after increment and recalculate positions
             val personasAfter = repository.getAllPersonas().first()
-            val sortedAfter = personasAfter.sortedByDescending { it.openCount }
+            val sortedAfter = personasAfter.sortedWith(
+                compareByDescending<Persona> { calculatePersonaScore(it) }
+                    .thenByDescending { it.openCount }
+            )
             val positionsAfter = sortedAfter.mapIndexed { index, persona ->
                 persona.id to index
             }.toMap()

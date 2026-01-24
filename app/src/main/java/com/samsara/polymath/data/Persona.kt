@@ -14,6 +14,18 @@ data class Persona(
     val backgroundColor: String = "#007AFF", // Default to apple blue
     val textColor: String = "#FFFFFF", // Default to white text
     val previousOpenCount: Int = 0, // Track previous open count for rank changes
-    val rankStatus: RankStatus = RankStatus.STABLE // Track movement: STABLE, UP, DOWN
+    val rankStatus: RankStatus = RankStatus.STABLE, // Track movement: STABLE, UP, DOWN
+    val lastOpenedAt: Long = System.currentTimeMillis() // Track when persona was last opened for decay
 )
+
+/**
+ * Decay levels based on days since last opened.
+ * Affects both visual appearance and score calculation.
+ */
+enum class DecayLevel {
+    NONE,    // 0-6 days: No decay, 100% score
+    SLIGHT,  // 7-13 days: 85% score, 90% opacity
+    MEDIUM,  // 14-20 days: 65% score, 75% opacity
+    SERIOUS  // 21+ days: 40% score, 60% opacity + desaturated
+}
 

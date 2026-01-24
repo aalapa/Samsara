@@ -16,8 +16,6 @@ class PersonaRepository(private val personaDao: PersonaDao) {
 
     suspend fun deletePersona(persona: Persona) = personaDao.deletePersona(persona)
 
-    suspend fun updatePersonaOrder(id: Long, order: Int) = personaDao.updatePersonaOrder(id, order)
-
     suspend fun incrementOpenCount(id: Long) = personaDao.incrementOpenCount(id)
 
     suspend fun updatePersonaName(id: Long, name: String) = personaDao.updatePersonaName(id, name)

@@ -15,9 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.samsara.polymath.adapter.PersonaAdapter
@@ -118,50 +116,6 @@ class MainActivity : AppCompatActivity() {
 
         binding.personasRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.personasRecyclerView.adapter = adapter
-        
-        // Setup ItemTouchHelper for drag and drop reordering
-        val itemTouchHelper = ItemTouchHelper(createItemTouchHelperCallback())
-        itemTouchHelper.attachToRecyclerView(binding.personasRecyclerView)
-    }
-    
-    private fun createItemTouchHelperCallback(): ItemTouchHelper.SimpleCallback {
-        return object : ItemTouchHelper.SimpleCallback(
-            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
-            0 // No swipe gestures for personas
-        ) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                val fromPosition = viewHolder.bindingAdapterPosition
-                val toPosition = target.bindingAdapterPosition
-                if (fromPosition == RecyclerView.NO_POSITION || toPosition == RecyclerView.NO_POSITION) {
-                    return false
-                }
-
-                val currentList = adapter.currentList.toMutableList()
-                val item = currentList.removeAt(fromPosition)
-                currentList.add(toPosition, item)
-
-                // Update order values - set order to index+1 to mark as manually arranged
-                // (0 means not manually arranged, will use openCount for sorting)
-                currentList.forEachIndexed { index, personaWithCount ->
-                    val persona = personaWithCount.persona
-                    val newOrder = index + 1
-                    if (persona.order != newOrder) {
-                        viewModel.updatePersonaOrder(persona.id, newOrder)
-                    }
-                }
-
-                adapter.submitList(currentList)
-                return true
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                // No swipe for personas
-            }
-        }
     }
 
     private fun observePersonas() {
