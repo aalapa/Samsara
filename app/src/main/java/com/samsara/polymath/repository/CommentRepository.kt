@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.Flow
 class CommentRepository(private val commentDao: CommentDao) {
     fun getCommentsByTask(taskId: Long): Flow<List<Comment>> = commentDao.getCommentsByTask(taskId)
 
+    suspend fun getAllComments(): List<Comment> = commentDao.getAllComments()
+
     suspend fun insertComment(comment: Comment): Long = commentDao.insertComment(comment)
 
     suspend fun deleteComment(comment: Comment) = commentDao.deleteComment(comment)

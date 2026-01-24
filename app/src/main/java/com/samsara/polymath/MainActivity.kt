@@ -19,6 +19,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.samsara.polymath.adapter.PersonaAdapter
+import com.samsara.polymath.data.AppDatabase
+import com.samsara.polymath.data.Comment
 import com.samsara.polymath.data.ExportData
 import com.samsara.polymath.databinding.ActivityMainBinding
 import com.samsara.polymath.databinding.DialogAddPersonaBinding
@@ -210,9 +212,15 @@ class MainActivity : AppCompatActivity() {
                         allTasks.addAll(tasks)
                     }
 
+                    // Get all comments directly from the database
+                    val allComments = AppDatabase.getDatabase(applicationContext)
+                        .commentDao()
+                        .getAllComments()
+
                     val exportData = ExportData(
                         personas = personas,
-                        tasks = allTasks
+                        tasks = allTasks,
+                        comments = allComments
                     )
 
                     val json = gson.toJson(exportData)
@@ -271,11 +279,12 @@ class MainActivity : AppCompatActivity() {
                     }
                     
                     // Import tasks with new persona IDs, grouped by persona
+                    val taskIdMap = mutableMapOf<Long, Long>() // Map old task IDs to new task IDs
                     val tasksByPersona = exportData.tasks.groupBy { it.personaId }
                     tasksByPersona.forEach { (oldPersonaId, tasks) ->
                         val newPersonaId = personaIdMap[oldPersonaId] ?: return@forEach
                         tasks.sortedBy { it.order }.forEachIndexed { index, oldTask ->
-                            taskViewModel.insertTaskSync(
+                            val newTaskId = taskViewModel.insertTaskSync(
                                 personaId = newPersonaId,
                                 title = oldTask.title,
                                 description = oldTask.description,
@@ -284,6 +293,22 @@ class MainActivity : AppCompatActivity() {
                                 completedAt = oldTask.completedAt,
                                 backgroundColor = oldTask.backgroundColor,
                                 createdAt = oldTask.createdAt  // Preserve the original creation timestamp
+                            )
+                            taskIdMap[oldTask.id] = newTaskId
+                        }
+                    }
+
+                    // Import comments with new task IDs
+                    val commentDao = AppDatabase.getDatabase(applicationContext).commentDao()
+                    exportData.comments.forEach { oldComment ->
+                        val newTaskId = taskIdMap[oldComment.taskId]
+                        if (newTaskId != null) {
+                            commentDao.insertComment(
+                                Comment(
+                                    taskId = newTaskId,
+                                    text = oldComment.text,
+                                    createdAt = oldComment.createdAt
+                                )
                             )
                         }
                     }

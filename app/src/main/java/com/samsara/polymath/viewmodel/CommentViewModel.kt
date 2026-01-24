@@ -22,12 +22,13 @@ class CommentViewModel(application: Application) : AndroidViewModel(application)
         return repository.getCommentsByTask(taskId).asLiveData()
     }
 
-    fun insertComment(taskId: Long, text: String) {
+    fun insertComment(taskId: Long, text: String, createdAt: Long = System.currentTimeMillis()) {
         viewModelScope.launch {
             repository.insertComment(
                 Comment(
                     taskId = taskId,
-                    text = text
+                    text = text,
+                    createdAt = createdAt
                 )
             )
         }
@@ -37,6 +38,10 @@ class CommentViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch {
             repository.deleteComment(comment)
         }
+    }
+
+    suspend fun getAllCommentsSync(): List<Comment> {
+        return repository.getAllComments()
     }
 }
 
