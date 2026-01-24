@@ -3023,6 +3023,9 @@ drawable ic_mtrl_checked_circle
 drawable ic_mtrl_chip_checked_black
 drawable ic_mtrl_chip_checked_circle
 drawable ic_mtrl_chip_close_circle
+drawable ic_persona_rank_down
+drawable ic_persona_rank_stable
+drawable ic_persona_rank_up
 drawable ic_rank_down
 drawable ic_rank_stable
 drawable ic_rank_up

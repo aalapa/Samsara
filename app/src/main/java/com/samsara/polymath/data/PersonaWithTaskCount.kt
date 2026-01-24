@@ -32,6 +32,7 @@ data class PersonaWithTaskCount(
     val completedTaskCount: Int,
     val openTaskCount: Int = 0,
     val emoji: String = "",
-    val score: Double = 0.0
+    val score: Double = 0.0,
+    val rankStatus: RankStatus = RankStatus.STABLE // Track movement for display
 )
 

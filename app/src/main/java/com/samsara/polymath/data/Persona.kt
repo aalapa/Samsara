@@ -12,6 +12,8 @@ data class Persona(
     val order: Int = 0,
     val openCount: Int = 0,
     val backgroundColor: String = "#007AFF", // Default to apple blue
-    val textColor: String = "#FFFFFF" // Default to white text
+    val textColor: String = "#FFFFFF", // Default to white text
+    val previousOpenCount: Int = 0, // Track previous open count for rank changes
+    val rankStatus: RankStatus = RankStatus.STABLE // Track movement: STABLE, UP, DOWN
 )
 

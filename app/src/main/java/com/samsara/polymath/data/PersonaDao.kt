@@ -28,8 +28,17 @@ interface PersonaDao {
     
     @Query("UPDATE personas SET openCount = openCount + 1 WHERE id = :id")
     suspend fun incrementOpenCount(id: Long)
-    
+
     @Query("UPDATE personas SET name = :name WHERE id = :id")
     suspend fun updatePersonaName(id: Long, name: String)
+
+    @Query("UPDATE personas SET rankStatus = :rankStatus WHERE id = :id")
+    suspend fun updateRankStatus(id: Long, rankStatus: RankStatus)
+
+    @Query("UPDATE personas SET previousOpenCount = openCount WHERE id = :id")
+    suspend fun savePreviousOpenCount(id: Long)
+
+    @Query("UPDATE personas SET previousOpenCount = openCount")
+    suspend fun saveAllPreviousOpenCounts()
 }
 

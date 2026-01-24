@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.samsara.polymath.data.AppDatabase
 import com.samsara.polymath.data.Persona
 import com.samsara.polymath.data.PersonaWithTaskCount
+import com.samsara.polymath.data.RankStatus
 import com.samsara.polymath.repository.PersonaRepository
 import com.samsara.polymath.repository.TaskRepository
 import kotlinx.coroutines.flow.first
@@ -80,7 +81,11 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
                     // Others get no emoji
                     else -> ""
                 }
-                personaWithStats.copy(emoji = emoji)
+                // Include rank status from persona
+                personaWithStats.copy(
+                    emoji = emoji,
+                    rankStatus = personaWithStats.persona.rankStatus
+                )
             }
         }.asLiveData()
     }
@@ -253,7 +258,39 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
     
     fun incrementOpenCount(personaId: Long) {
         viewModelScope.launch {
+            // Get current personas and their positions (sorted by openCount desc)
+            val personasBefore = repository.getAllPersonas().first()
+            val sortedBefore = personasBefore.sortedByDescending { it.openCount }
+            val positionsBefore = sortedBefore.mapIndexed { index, persona ->
+                persona.id to index
+            }.toMap()
+
+            // Increment the open count
             repository.incrementOpenCount(personaId)
+
+            // Get personas after increment
+            val personasAfter = repository.getAllPersonas().first()
+            val sortedAfter = personasAfter.sortedByDescending { it.openCount }
+            val positionsAfter = sortedAfter.mapIndexed { index, persona ->
+                persona.id to index
+            }.toMap()
+
+            // Update rank status for all personas based on position change
+            for (persona in personasAfter) {
+                val posBefore = positionsBefore[persona.id] ?: Int.MAX_VALUE
+                val posAfter = positionsAfter[persona.id] ?: Int.MAX_VALUE
+
+                val newRankStatus = when {
+                    posAfter < posBefore -> RankStatus.UP     // Lower index = higher rank
+                    posAfter > posBefore -> RankStatus.DOWN
+                    else -> RankStatus.STABLE
+                }
+
+                // Only update if status changed
+                if (persona.rankStatus != newRankStatus) {
+                    repository.updateRankStatus(persona.id, newRankStatus)
+                }
+            }
         }
     }
     

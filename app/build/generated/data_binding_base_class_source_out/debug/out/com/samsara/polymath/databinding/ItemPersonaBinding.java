@@ -29,12 +29,17 @@ public final class ItemPersonaBinding implements ViewBinding {
   @NonNull
   public final TextView personaNameTextView;
 
+  @NonNull
+  public final ImageView rankIndicatorImageView;
+
   private ItemPersonaBinding(@NonNull MaterialCardView rootView, @NonNull ImageView menuButton,
-      @NonNull TextView openCountTextView, @NonNull TextView personaNameTextView) {
+      @NonNull TextView openCountTextView, @NonNull TextView personaNameTextView,
+      @NonNull ImageView rankIndicatorImageView) {
     this.rootView = rootView;
     this.menuButton = menuButton;
     this.openCountTextView = openCountTextView;
     this.personaNameTextView = personaNameTextView;
+    this.rankIndicatorImageView = rankIndicatorImageView;
   }
 
   @Override
@@ -82,8 +87,14 @@ public final class ItemPersonaBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.rankIndicatorImageView;
+      ImageView rankIndicatorImageView = ViewBindings.findChildViewById(rootView, id);
+      if (rankIndicatorImageView == null) {
+        break missingId;
+      }
+
       return new ItemPersonaBinding((MaterialCardView) rootView, menuButton, openCountTextView,
-          personaNameTextView);
+          personaNameTextView, rankIndicatorImageView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

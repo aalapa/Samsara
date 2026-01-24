@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.samsara.polymath"
-    android:versionCode="77"
-    android:versionName="1.02.76" >
+    android:versionCode="79"
+    android:versionName="1.02.78" >
 
     <uses-sdk
         android:minSdkVersion="24"

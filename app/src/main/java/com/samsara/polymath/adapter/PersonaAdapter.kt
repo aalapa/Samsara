@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.samsara.polymath.R
 import com.samsara.polymath.data.Persona
 import com.samsara.polymath.data.PersonaWithTaskCount
+import com.samsara.polymath.data.RankStatus
 import com.samsara.polymath.databinding.ItemPersonaBinding
 
 class PersonaAdapter(
@@ -79,6 +80,22 @@ class PersonaAdapter(
             } else {
                 binding.openCountTextView.visibility = View.GONE
             }
+
+            // Set rank indicator icon based on rank status
+            val rankStatus = personaWithCount.rankStatus
+            when (rankStatus) {
+                RankStatus.UP -> {
+                    binding.rankIndicatorImageView.setImageResource(R.drawable.ic_persona_rank_up)
+                    binding.rankIndicatorImageView.visibility = View.VISIBLE
+                }
+                RankStatus.DOWN -> {
+                    binding.rankIndicatorImageView.setImageResource(R.drawable.ic_persona_rank_down)
+                    binding.rankIndicatorImageView.visibility = View.VISIBLE
+                }
+                RankStatus.STABLE -> {
+                    binding.rankIndicatorImageView.visibility = View.GONE
+                }
+            }
             
             // Setup three dots menu
             binding.menuButton.setOnClickListener { view ->
@@ -116,11 +133,12 @@ class PersonaAdapter(
         }
 
         override fun areContentsTheSame(oldItem: PersonaWithTaskCount, newItem: PersonaWithTaskCount): Boolean {
-            return oldItem.persona == newItem.persona 
+            return oldItem.persona == newItem.persona
                 && oldItem.completedTaskCount == newItem.completedTaskCount
                 && oldItem.openTaskCount == newItem.openTaskCount
                 && oldItem.emoji == newItem.emoji
                 && oldItem.score == newItem.score
+                && oldItem.rankStatus == newItem.rankStatus
         }
     }
 }

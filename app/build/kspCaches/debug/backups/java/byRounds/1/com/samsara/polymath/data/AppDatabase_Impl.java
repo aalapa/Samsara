@@ -36,16 +36,16 @@ public final class AppDatabase_Impl extends AppDatabase {
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(7) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(8) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS `personas` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `order` INTEGER NOT NULL, `openCount` INTEGER NOT NULL, `backgroundColor` TEXT NOT NULL, `textColor` TEXT NOT NULL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `personas` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `order` INTEGER NOT NULL, `openCount` INTEGER NOT NULL, `backgroundColor` TEXT NOT NULL, `textColor` TEXT NOT NULL, `previousOpenCount` INTEGER NOT NULL, `rankStatus` TEXT NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `tasks` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `personaId` INTEGER NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `completedAt` INTEGER, `isCompleted` INTEGER NOT NULL, `order` INTEGER NOT NULL, `backgroundColor` TEXT NOT NULL, `previousOrder` INTEGER NOT NULL, `rankStatus` TEXT NOT NULL, FOREIGN KEY(`personaId`) REFERENCES `personas`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_tasks_personaId` ON `tasks` (`personaId`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `comments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `text` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `tasks`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_comments_taskId` ON `comments` (`taskId`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7e4eb82c11f92691447312be61fcbaf2')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '464da18b1f5dc066c868cdc44f753f42')");
       }
 
       @Override
@@ -97,7 +97,7 @@ public final class AppDatabase_Impl extends AppDatabase {
       @NonNull
       public RoomOpenHelper.ValidationResult onValidateSchema(
           @NonNull final SupportSQLiteDatabase db) {
-        final HashMap<String, TableInfo.Column> _columnsPersonas = new HashMap<String, TableInfo.Column>(7);
+        final HashMap<String, TableInfo.Column> _columnsPersonas = new HashMap<String, TableInfo.Column>(9);
         _columnsPersonas.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPersonas.put("name", new TableInfo.Column("name", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPersonas.put("createdAt", new TableInfo.Column("createdAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -105,6 +105,8 @@ public final class AppDatabase_Impl extends AppDatabase {
         _columnsPersonas.put("openCount", new TableInfo.Column("openCount", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPersonas.put("backgroundColor", new TableInfo.Column("backgroundColor", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPersonas.put("textColor", new TableInfo.Column("textColor", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsPersonas.put("previousOpenCount", new TableInfo.Column("previousOpenCount", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsPersonas.put("rankStatus", new TableInfo.Column("rankStatus", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysPersonas = new HashSet<TableInfo.ForeignKey>(0);
         final HashSet<TableInfo.Index> _indicesPersonas = new HashSet<TableInfo.Index>(0);
         final TableInfo _infoPersonas = new TableInfo("personas", _columnsPersonas, _foreignKeysPersonas, _indicesPersonas);
@@ -155,7 +157,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "7e4eb82c11f92691447312be61fcbaf2", "f0df4de807cdfd1ec4504782b36abf44");
+    }, "464da18b1f5dc066c868cdc44f753f42", "658283b198a1cac2bfa7ec401ea7b151");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;

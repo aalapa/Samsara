@@ -36,6 +36,8 @@ public final class PersonaDao_Impl implements PersonaDao {
 
   private final EntityInsertionAdapter<Persona> __insertionAdapterOfPersona;
 
+  private final Converters __converters = new Converters();
+
   private final EntityDeletionOrUpdateAdapter<Persona> __deletionAdapterOfPersona;
 
   private final EntityDeletionOrUpdateAdapter<Persona> __updateAdapterOfPersona;
@@ -46,13 +48,19 @@ public final class PersonaDao_Impl implements PersonaDao {
 
   private final SharedSQLiteStatement __preparedStmtOfUpdatePersonaName;
 
+  private final SharedSQLiteStatement __preparedStmtOfUpdateRankStatus;
+
+  private final SharedSQLiteStatement __preparedStmtOfSavePreviousOpenCount;
+
+  private final SharedSQLiteStatement __preparedStmtOfSaveAllPreviousOpenCounts;
+
   public PersonaDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
     this.__insertionAdapterOfPersona = new EntityInsertionAdapter<Persona>(__db) {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR ABORT INTO `personas` (`id`,`name`,`createdAt`,`order`,`openCount`,`backgroundColor`,`textColor`) VALUES (nullif(?, 0),?,?,?,?,?,?)";
+        return "INSERT OR ABORT INTO `personas` (`id`,`name`,`createdAt`,`order`,`openCount`,`backgroundColor`,`textColor`,`previousOpenCount`,`rankStatus`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -65,6 +73,9 @@ public final class PersonaDao_Impl implements PersonaDao {
         statement.bindLong(5, entity.getOpenCount());
         statement.bindString(6, entity.getBackgroundColor());
         statement.bindString(7, entity.getTextColor());
+        statement.bindLong(8, entity.getPreviousOpenCount());
+        final String _tmp = __converters.fromRankStatus(entity.getRankStatus());
+        statement.bindString(9, _tmp);
       }
     };
     this.__deletionAdapterOfPersona = new EntityDeletionOrUpdateAdapter<Persona>(__db) {
@@ -84,7 +95,7 @@ public final class PersonaDao_Impl implements PersonaDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `personas` SET `id` = ?,`name` = ?,`createdAt` = ?,`order` = ?,`openCount` = ?,`backgroundColor` = ?,`textColor` = ? WHERE `id` = ?";
+        return "UPDATE OR ABORT `personas` SET `id` = ?,`name` = ?,`createdAt` = ?,`order` = ?,`openCount` = ?,`backgroundColor` = ?,`textColor` = ?,`previousOpenCount` = ?,`rankStatus` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -97,7 +108,10 @@ public final class PersonaDao_Impl implements PersonaDao {
         statement.bindLong(5, entity.getOpenCount());
         statement.bindString(6, entity.getBackgroundColor());
         statement.bindString(7, entity.getTextColor());
-        statement.bindLong(8, entity.getId());
+        statement.bindLong(8, entity.getPreviousOpenCount());
+        final String _tmp = __converters.fromRankStatus(entity.getRankStatus());
+        statement.bindString(9, _tmp);
+        statement.bindLong(10, entity.getId());
       }
     };
     this.__preparedStmtOfUpdatePersonaOrder = new SharedSQLiteStatement(__db) {
@@ -121,6 +135,30 @@ public final class PersonaDao_Impl implements PersonaDao {
       @NonNull
       public String createQuery() {
         final String _query = "UPDATE personas SET name = ? WHERE id = ?";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfUpdateRankStatus = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "UPDATE personas SET rankStatus = ? WHERE id = ?";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfSavePreviousOpenCount = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "UPDATE personas SET previousOpenCount = openCount WHERE id = ?";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfSaveAllPreviousOpenCounts = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "UPDATE personas SET previousOpenCount = openCount";
         return _query;
       }
     };
@@ -262,6 +300,83 @@ public final class PersonaDao_Impl implements PersonaDao {
   }
 
   @Override
+  public Object updateRankStatus(final long id, final RankStatus rankStatus,
+      final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfUpdateRankStatus.acquire();
+        int _argIndex = 1;
+        final String _tmp = __converters.fromRankStatus(rankStatus);
+        _stmt.bindString(_argIndex, _tmp);
+        _argIndex = 2;
+        _stmt.bindLong(_argIndex, id);
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfUpdateRankStatus.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object savePreviousOpenCount(final long id, final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfSavePreviousOpenCount.acquire();
+        int _argIndex = 1;
+        _stmt.bindLong(_argIndex, id);
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfSavePreviousOpenCount.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object saveAllPreviousOpenCounts(final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfSaveAllPreviousOpenCounts.acquire();
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfSaveAllPreviousOpenCounts.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
   public Flow<List<Persona>> getAllPersonas() {
     final String _sql = "SELECT * FROM personas ORDER BY CASE WHEN `order` = 0 THEN 999999 ELSE `order` END ASC, openCount DESC, createdAt ASC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
@@ -278,6 +393,8 @@ public final class PersonaDao_Impl implements PersonaDao {
           final int _cursorIndexOfOpenCount = CursorUtil.getColumnIndexOrThrow(_cursor, "openCount");
           final int _cursorIndexOfBackgroundColor = CursorUtil.getColumnIndexOrThrow(_cursor, "backgroundColor");
           final int _cursorIndexOfTextColor = CursorUtil.getColumnIndexOrThrow(_cursor, "textColor");
+          final int _cursorIndexOfPreviousOpenCount = CursorUtil.getColumnIndexOrThrow(_cursor, "previousOpenCount");
+          final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
           final List<Persona> _result = new ArrayList<Persona>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Persona _item;
@@ -295,7 +412,13 @@ public final class PersonaDao_Impl implements PersonaDao {
             _tmpBackgroundColor = _cursor.getString(_cursorIndexOfBackgroundColor);
             final String _tmpTextColor;
             _tmpTextColor = _cursor.getString(_cursorIndexOfTextColor);
-            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor);
+            final int _tmpPreviousOpenCount;
+            _tmpPreviousOpenCount = _cursor.getInt(_cursorIndexOfPreviousOpenCount);
+            final RankStatus _tmpRankStatus;
+            final String _tmp;
+            _tmp = _cursor.getString(_cursorIndexOfRankStatus);
+            _tmpRankStatus = __converters.toRankStatus(_tmp);
+            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus);
             _result.add(_item);
           }
           return _result;
@@ -331,6 +454,8 @@ public final class PersonaDao_Impl implements PersonaDao {
           final int _cursorIndexOfOpenCount = CursorUtil.getColumnIndexOrThrow(_cursor, "openCount");
           final int _cursorIndexOfBackgroundColor = CursorUtil.getColumnIndexOrThrow(_cursor, "backgroundColor");
           final int _cursorIndexOfTextColor = CursorUtil.getColumnIndexOrThrow(_cursor, "textColor");
+          final int _cursorIndexOfPreviousOpenCount = CursorUtil.getColumnIndexOrThrow(_cursor, "previousOpenCount");
+          final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
           final Persona _result;
           if (_cursor.moveToFirst()) {
             final long _tmpId;
@@ -347,7 +472,13 @@ public final class PersonaDao_Impl implements PersonaDao {
             _tmpBackgroundColor = _cursor.getString(_cursorIndexOfBackgroundColor);
             final String _tmpTextColor;
             _tmpTextColor = _cursor.getString(_cursorIndexOfTextColor);
-            _result = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor);
+            final int _tmpPreviousOpenCount;
+            _tmpPreviousOpenCount = _cursor.getInt(_cursorIndexOfPreviousOpenCount);
+            final RankStatus _tmpRankStatus;
+            final String _tmp;
+            _tmp = _cursor.getString(_cursorIndexOfRankStatus);
+            _tmpRankStatus = __converters.toRankStatus(_tmp);
+            _result = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus);
           } else {
             _result = null;
           }

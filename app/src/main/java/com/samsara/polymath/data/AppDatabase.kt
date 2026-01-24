@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [Persona::class, Task::class, Comment::class], version = 7, exportSchema = false)
+@Database(entities = [Persona::class, Task::class, Comment::class], version = 8, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun personaDao(): PersonaDao
@@ -24,7 +24,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "polymath_database"
                 )
-                .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+                .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
                 .fallbackToDestructiveMigration() // For development - remove in production
                 .build()
                 INSTANCE = instance
@@ -68,6 +68,14 @@ abstract class AppDatabase : RoomDatabase() {
                 // Add rank tracking columns to tasks table
                 database.execSQL("ALTER TABLE tasks ADD COLUMN previousOrder INTEGER NOT NULL DEFAULT 0")
                 database.execSQL("ALTER TABLE tasks ADD COLUMN rankStatus TEXT NOT NULL DEFAULT 'STABLE'")
+            }
+        }
+
+        private val MIGRATION_7_8 = object : androidx.room.migration.Migration(7, 8) {
+            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                // Add rank tracking columns to personas table
+                database.execSQL("ALTER TABLE personas ADD COLUMN previousOpenCount INTEGER NOT NULL DEFAULT 0")
+                database.execSQL("ALTER TABLE personas ADD COLUMN rankStatus TEXT NOT NULL DEFAULT 'STABLE'")
             }
         }
     }

@@ -26,6 +26,15 @@
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium" />
 
+        <ImageView
+            android:id="@+id/rankIndicatorImageView"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="4dp"
+            android:src="@drawable/ic_persona_rank_stable"
+            android:visibility="gone"
+            android:contentDescription="Rank indicator" />
+
         <TextView
             android:id="@+id/openCountTextView"
             android:layout_width="wrap_content"
