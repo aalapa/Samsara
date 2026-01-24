@@ -135,6 +135,7 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
     /**
      * Finds the color from available colors that is maximally different from existing colors.
      * Uses Euclidean distance in RGB space to calculate color difference.
+     * When all colors are used, picks the least-used color to ensure variety.
      */
     private fun findMostDifferentColor(
         availableColors: List<Pair<String, String>>,
@@ -144,7 +145,29 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
             // If no existing colors, return first available color
             return availableColors.first()
         }
-        
+
+        // First, check if there are any unused colors
+        val unusedColors = availableColors.filter { colorPair ->
+            colorPair.first !in existingColors
+        }
+
+        // If there are unused colors, pick the most different one from existing
+        val colorsToChooseFrom = if (unusedColors.isNotEmpty()) {
+            unusedColors
+        } else {
+            // All colors used - pick the least-used color for variety
+            val colorUsageCounts = availableColors.associateWith { colorPair ->
+                existingColors.count { it == colorPair.first }
+            }
+            val minUsageCount = colorUsageCounts.values.minOrNull() ?: 0
+            availableColors.filter { colorUsageCounts[it] == minUsageCount }
+        }
+
+        // If only one option, return it
+        if (colorsToChooseFrom.size == 1) {
+            return colorsToChooseFrom.first()
+        }
+
         // Convert hex colors to RGB
         fun hexToRgb(hex: String): Triple<Int, Int, Int> {
             val cleanHex = hex.removePrefix("#")
@@ -153,7 +176,7 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
             val b = cleanHex.substring(4, 6).toInt(16)
             return Triple(r, g, b)
         }
-        
+
         // Calculate Euclidean distance between two colors in RGB space
         fun colorDistance(color1: Triple<Int, Int, Int>, color2: Triple<Int, Int, Int>): Double {
             val dr = color1.first - color2.first
@@ -161,29 +184,29 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
             val db = color1.third - color2.third
             return Math.sqrt((dr * dr + dg * dg + db * db).toDouble())
         }
-        
+
         // Convert existing colors to RGB
         val existingRgb = existingColors.map { hexToRgb(it) }
-        
+
         // Find the color with maximum minimum distance to all existing colors
         var maxMinDistance = -1.0
-        var bestColor = availableColors.first()
-        
-        for (colorPair in availableColors) {
+        var bestColor = colorsToChooseFrom.first()
+
+        for (colorPair in colorsToChooseFrom) {
             val candidateRgb = hexToRgb(colorPair.first)
-            
+
             // Calculate minimum distance to any existing color
             val minDistance = existingRgb.minOfOrNull { existingRgb ->
                 colorDistance(candidateRgb, existingRgb)
             } ?: Double.MAX_VALUE
-            
+
             // If this color is further from all existing colors, select it
             if (minDistance > maxMinDistance) {
                 maxMinDistance = minDistance
                 bestColor = colorPair
             }
         }
-        
+
         return bestColor
     }
     
