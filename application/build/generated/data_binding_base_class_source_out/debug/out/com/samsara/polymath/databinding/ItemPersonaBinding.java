@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.chip.ChipGroup;
 import com.samsara.polymath.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -32,14 +33,18 @@ public final class ItemPersonaBinding implements ViewBinding {
   @NonNull
   public final ImageView rankIndicatorImageView;
 
+  @NonNull
+  public final ChipGroup tagsChipGroup;
+
   private ItemPersonaBinding(@NonNull MaterialCardView rootView, @NonNull ImageView menuButton,
       @NonNull TextView openCountTextView, @NonNull TextView personaNameTextView,
-      @NonNull ImageView rankIndicatorImageView) {
+      @NonNull ImageView rankIndicatorImageView, @NonNull ChipGroup tagsChipGroup) {
     this.rootView = rootView;
     this.menuButton = menuButton;
     this.openCountTextView = openCountTextView;
     this.personaNameTextView = personaNameTextView;
     this.rankIndicatorImageView = rankIndicatorImageView;
+    this.tagsChipGroup = tagsChipGroup;
   }
 
   @Override
@@ -93,8 +98,14 @@ public final class ItemPersonaBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tagsChipGroup;
+      ChipGroup tagsChipGroup = ViewBindings.findChildViewById(rootView, id);
+      if (tagsChipGroup == null) {
+        break missingId;
+      }
+
       return new ItemPersonaBinding((MaterialCardView) rootView, menuButton, openCountTextView,
-          personaNameTextView, rankIndicatorImageView);
+          personaNameTextView, rankIndicatorImageView, tagsChipGroup);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -39,8 +39,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: PersonaViewModel
     private lateinit var taskViewModel: TaskViewModel
+    private lateinit var tagViewModel: com.samsara.polymath.viewmodel.TagViewModel
     private lateinit var adapter: PersonaAdapter
     private val gson = Gson()
+    
+    private val prefs by lazy { 
+        getSharedPreferences("samsara_prefs", android.content.Context.MODE_PRIVATE) 
+    }
 
     private val createFileLauncher = registerForActivityResult(
         ActivityResultContracts.CreateDocument("application/json")
@@ -61,12 +66,113 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[PersonaViewModel::class.java]
         taskViewModel = ViewModelProvider(this)[TaskViewModel::class.java]
+        tagViewModel = ViewModelProvider(this)[com.samsara.polymath.viewmodel.TagViewModel::class.java]
 
         setSupportActionBar(binding.toolbar)
         setupMenuButton()
         setupRecyclerView()
+        setupFilterChips()
         observePersonas()
         setupFab()
+        
+        // Auto-tag existing personas only once after migration
+        if (!prefs.getBoolean("tags_auto_assigned", false)) {
+            lifecycleScope.launch {
+                val personaDao = AppDatabase.getDatabase(applicationContext).personaDao()
+                com.samsara.polymath.util.autoTagExistingPersonas(personaDao, tagViewModel)
+                prefs.edit().putBoolean("tags_auto_assigned", true).apply()
+            }
+        }
+    }
+    
+    private var selectedFilterTagIds = mutableSetOf<Long>()
+    
+    private fun setupFilterChips() {
+        tagViewModel.allTags.observe(this) { allTags ->
+            binding.filterChipGroup.removeAllViews()
+            
+            if (allTags.isEmpty()) {
+                binding.filterChipsScrollView.visibility = View.GONE
+                return@observe
+            }
+            
+            binding.filterChipsScrollView.visibility = View.VISIBLE
+            
+            // Add "Show All" chip
+            val showAllChip = com.google.android.material.chip.Chip(this).apply {
+                text = getString(R.string.show_all)
+                isCheckable = true
+                isChecked = selectedFilterTagIds.isEmpty()
+                
+                setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) {
+                        selectedFilterTagIds.clear()
+                        // Uncheck all other chips
+                        for (i in 0 until binding.filterChipGroup.childCount) {
+                            val chip = binding.filterChipGroup.getChildAt(i) as? com.google.android.material.chip.Chip
+                            if (chip != this) chip?.isChecked = false
+                        }
+                        observePersonas()
+                    }
+                }
+            }
+            binding.filterChipGroup.addView(showAllChip)
+            
+            // Add tag filter chips
+            allTags.forEach { tag ->
+                val chip = com.google.android.material.chip.Chip(this).apply {
+                    text = tag.name
+                    isCheckable = true
+                    isChecked = tag.id in selectedFilterTagIds
+                    
+                    val chipBgColor = try {
+                        if (tag.color != null) android.graphics.Color.parseColor(tag.color)
+                        else android.graphics.Color.parseColor("#666666")
+                    } catch (e: Exception) {
+                        android.graphics.Color.parseColor("#666666")
+                    }
+                    
+                    chipBackgroundColor = android.content.res.ColorStateList.valueOf(chipBgColor)
+                    val textColor = if (isColorDark(chipBgColor)) android.graphics.Color.WHITE else android.graphics.Color.BLACK
+                    setTextColor(textColor)
+                    
+                    setOnCheckedChangeListener { _, isChecked ->
+                        if (isChecked) {
+                            selectedFilterTagIds.add(tag.id)
+                            showAllChip.isChecked = false
+                        } else {
+                            selectedFilterTagIds.remove(tag.id)
+                            if (selectedFilterTagIds.isEmpty()) {
+                                showAllChip.isChecked = true
+                            }
+                        }
+                        observePersonas()
+                    }
+                }
+                binding.filterChipGroup.addView(chip)
+            }
+            
+            // Add "Untagged" chip
+            val untaggedChip = com.google.android.material.chip.Chip(this).apply {
+                text = getString(R.string.untagged)
+                isCheckable = true
+                isChecked = false
+                
+                setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) {
+                        selectedFilterTagIds.add(-1L) // Use -1 for untagged
+                        showAllChip.isChecked = false
+                    } else {
+                        selectedFilterTagIds.remove(-1L)
+                        if (selectedFilterTagIds.isEmpty()) {
+                            showAllChip.isChecked = true
+                        }
+                    }
+                    observePersonas()
+                }
+            }
+            binding.filterChipGroup.addView(untaggedChip)
+        }
     }
     
     private fun setupMenuButton() {
@@ -89,6 +195,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.action_manage_tags -> {
+                startActivity(Intent(this, TagManagementActivity::class.java))
+                true
+            }
             R.id.action_report -> {
                 startActivity(Intent(this, PersonaReportActivity::class.java))
                 true
@@ -127,7 +237,19 @@ class MainActivity : AppCompatActivity() {
 
     private fun observePersonas() {
         viewModel.getAllPersonasWithTaskCount().observe(this) { personasWithCount ->
-            adapter.submitList(personasWithCount)
+            val filteredList = if (selectedFilterTagIds.isEmpty()) {
+                // Show all personas
+                personasWithCount
+            } else if (-1L in selectedFilterTagIds) {
+                // Show only untagged personas
+                personasWithCount.filter { it.tags.isEmpty() }
+            } else {
+                // Show personas that have at least one of the selected tags
+                personasWithCount.filter { personaWithCount ->
+                    personaWithCount.tags.any { tag -> tag.id in selectedFilterTagIds }
+                }
+            }
+            adapter.submitList(filteredList)
         }
     }
 
@@ -139,6 +261,45 @@ class MainActivity : AppCompatActivity() {
 
     private fun showAddPersonaDialog() {
         val dialogBinding = DialogAddPersonaBinding.inflate(LayoutInflater.from(this))
+        val selectedTagIds = mutableSetOf<Long>()
+        
+        // Observe all tags and populate the chip group
+        tagViewModel.allTags.observe(this) { allTags ->
+            dialogBinding.tagsChipGroup.removeAllViews()
+            
+            allTags.forEach { tag ->
+                val chip = com.google.android.material.chip.Chip(this).apply {
+                    text = tag.name
+                    isCheckable = true
+                    isChecked = false
+                    
+                    // Parse tag color if available
+                    val chipBgColor = try {
+                        if (tag.color != null) android.graphics.Color.parseColor(tag.color)
+                        else android.graphics.Color.parseColor("#666666")
+                    } catch (e: Exception) {
+                        android.graphics.Color.parseColor("#666666")
+                    }
+                    
+                    chipBackgroundColor = android.content.res.ColorStateList.valueOf(chipBgColor)
+                    val textColor = if (isColorDark(chipBgColor)) android.graphics.Color.WHITE else android.graphics.Color.BLACK
+                    setTextColor(textColor)
+                    
+                    setOnCheckedChangeListener { _, isChecked ->
+                        if (isChecked) selectedTagIds.add(tag.id)
+                        else selectedTagIds.remove(tag.id)
+                    }
+                }
+                dialogBinding.tagsChipGroup.addView(chip)
+            }
+        }
+        
+        // Handle "Add New Tag" button
+        dialogBinding.addNewTagButton.setOnClickListener {
+            showCreateTagDialog { newTagId ->
+                selectedTagIds.add(newTagId)
+            }
+        }
         
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.add_persona))
@@ -146,7 +307,10 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton(getString(R.string.done)) { _, _ ->
                 val name = dialogBinding.personaNameEditText.text?.toString()?.trim()
                 if (!name.isNullOrEmpty()) {
-                    viewModel.insertPersona(name)
+                    lifecycleScope.launch {
+                        val personaId = viewModel.insertPersonaSync(name)
+                        tagViewModel.setTagsForPersona(personaId, selectedTagIds.toList())
+                    }
                 } else {
                     Toast.makeText(this, "Please enter a persona name", Toast.LENGTH_SHORT).show()
                 }
@@ -156,12 +320,63 @@ class MainActivity : AppCompatActivity() {
 
         dialog.show()
     }
+    
+    private fun isColorDark(color: Int): Boolean {
+        val darkness = 1 - (0.299 * android.graphics.Color.red(color) + 
+                           0.587 * android.graphics.Color.green(color) + 
+                           0.114 * android.graphics.Color.blue(color)) / 255
+        return darkness >= 0.5
+    }
 
     private fun showEditPersonaDialog(persona: com.samsara.polymath.data.Persona) {
         val dialogBinding = DialogAddPersonaBinding.inflate(LayoutInflater.from(this))
         dialogBinding.personaNameEditText.setText(persona.name)
-        // Select all text for easy editing
         dialogBinding.personaNameEditText.selectAll()
+        
+        val selectedTagIds = mutableSetOf<Long>()
+        
+        // Observe all tags and persona's current tags
+        tagViewModel.allTags.observe(this) { allTags ->
+            tagViewModel.getTagsForPersona(persona.id).observe(this) { personaTags ->
+                dialogBinding.tagsChipGroup.removeAllViews()
+                
+                // Pre-populate selected tags
+                selectedTagIds.clear()
+                selectedTagIds.addAll(personaTags.map { it.id })
+                
+                allTags.forEach { tag ->
+                    val chip = com.google.android.material.chip.Chip(this).apply {
+                        text = tag.name
+                        isCheckable = true
+                        isChecked = tag.id in selectedTagIds
+                        
+                        val chipBgColor = try {
+                            if (tag.color != null) android.graphics.Color.parseColor(tag.color)
+                            else android.graphics.Color.parseColor("#666666")
+                        } catch (e: Exception) {
+                            android.graphics.Color.parseColor("#666666")
+                        }
+                        
+                        chipBackgroundColor = android.content.res.ColorStateList.valueOf(chipBgColor)
+                        val textColor = if (isColorDark(chipBgColor)) android.graphics.Color.WHITE else android.graphics.Color.BLACK
+                        setTextColor(textColor)
+                        
+                        setOnCheckedChangeListener { _, isChecked ->
+                            if (isChecked) selectedTagIds.add(tag.id)
+                            else selectedTagIds.remove(tag.id)
+                        }
+                    }
+                    dialogBinding.tagsChipGroup.addView(chip)
+                }
+            }
+        }
+        
+        // Handle "Add New Tag" button
+        dialogBinding.addNewTagButton.setOnClickListener {
+            showCreateTagDialog { newTagId ->
+                selectedTagIds.add(newTagId)
+            }
+        }
         
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.edit_persona))
@@ -172,6 +387,7 @@ class MainActivity : AppCompatActivity() {
                     if (newName != persona.name) {
                         viewModel.updatePersonaName(persona.id, newName)
                     }
+                    tagViewModel.setTagsForPersona(persona.id, selectedTagIds.toList())
                 } else {
                     Toast.makeText(this, "Persona name cannot be empty", Toast.LENGTH_SHORT).show()
                 }
@@ -183,9 +399,32 @@ class MainActivity : AppCompatActivity() {
             .create()
 
         dialog.show()
-        
-        // Request focus and show keyboard
         dialogBinding.personaNameEditText.requestFocus()
+    }
+    
+    private fun showCreateTagDialog(onTagCreated: (Long) -> Unit) {
+        val createTagBinding = com.samsara.polymath.databinding.DialogCreateTagBinding.inflate(LayoutInflater.from(this))
+        
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.create_tag))
+            .setView(createTagBinding.root)
+            .setPositiveButton(getString(R.string.done)) { _, _ ->
+                val tagName = createTagBinding.tagNameEditText.text?.toString()?.trim()
+                val tagColor = createTagBinding.tagColorEditText.text?.toString()?.trim()
+                
+                if (!tagName.isNullOrEmpty()) {
+                    lifecycleScope.launch {
+                        val newTag = tagViewModel.createTag(tagName, tagColor)
+                        newTag?.let { onTagCreated(it.id) }
+                    }
+                } else {
+                    Toast.makeText(this, "Please enter a tag name", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .create()
+        
+        dialog.show()
     }
 
     private fun showDeletePersonaConfirmation(persona: com.samsara.polymath.data.Persona) {
@@ -227,11 +466,24 @@ class MainActivity : AppCompatActivity() {
                         .personaStatisticsDao()
                         .getStatisticsSince(0) // Get all statistics
 
+                    // Get all tags
+                    val allTags = AppDatabase.getDatabase(applicationContext)
+                        .tagDao()
+                        .getAllTagsSync()
+
+                    // Get all persona-tag associations
+                    val allPersonaTags = AppDatabase.getDatabase(applicationContext)
+                        .personaTagDao()
+                        .getAllSync()
+                        .map { com.samsara.polymath.data.PersonaTagExport(it.personaId, it.tagId, it.assignedAt) }
+
                     val exportData = ExportData(
                         personas = personas,
                         tasks = allTasks,
                         comments = allComments,
-                        statistics = allStatistics
+                        statistics = allStatistics,
+                        tags = allTags,
+                        personaTags = allPersonaTags
                     )
 
                     val json = gson.toJson(exportData)
@@ -280,7 +532,17 @@ class MainActivity : AppCompatActivity() {
                     // Delete all existing data
                     viewModel.deleteAllPersonas()
                     
-                    // Import personas first and create ID mapping
+                    // Import tags first and create ID mapping
+                    val tagIdMap = mutableMapOf<Long, Long>() // oldId -> newId
+                    val tagDao = AppDatabase.getDatabase(applicationContext).tagDao()
+                    exportData.tags.forEach { oldTag ->
+                        val newTagId = tagDao.insertTag(
+                            oldTag.copy(id = 0) // Reset ID to auto-generate
+                        )
+                        tagIdMap[oldTag.id] = newTagId
+                    }
+                    
+                    // Import personas and create ID mapping
                     val personaIdMap = mutableMapOf<Long, Long>()
                     exportData.personas.sortedBy { it.order }.forEach { oldPersona ->
                         val newId = viewModel.insertPersonaSync(
@@ -339,6 +601,23 @@ class MainActivity : AppCompatActivity() {
                                     totalTasks = oldStat.totalTasks,
                                     completedTasks = oldStat.completedTasks,
                                     score = oldStat.score
+                                )
+                            )
+                        }
+                    }
+
+                    // Import persona-tag associations with new IDs
+                    val personaTagDao = AppDatabase.getDatabase(applicationContext).personaTagDao()
+                    exportData.personaTags.forEach { personaTag ->
+                        val newPersonaId = personaIdMap[personaTag.personaId]
+                        val newTagId = tagIdMap[personaTag.tagId]
+                        
+                        if (newPersonaId != null && newTagId != null) {
+                            personaTagDao.insertPersonaTag(
+                                com.samsara.polymath.data.PersonaTag(
+                                    personaId = newPersonaId,
+                                    tagId = newTagId,
+                                    assignedAt = personaTag.assignedAt
                                 )
                             )
                         }

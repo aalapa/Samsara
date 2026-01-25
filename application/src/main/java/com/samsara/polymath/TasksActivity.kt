@@ -161,11 +161,7 @@ class TasksActivity : AppCompatActivity() {
                 pendingSwipeTask = task
                 pendingSwipePosition = position
 
-                // Restore the view immediately before showing dialog
-                // This prevents the refresh from happening behind the dialog
-                binding.tasksRecyclerView.post {
-                    adapter.notifyItemChanged(position)
-                }
+                // Don't restore immediately - keep card in swiped position until user decides
 
                 when (direction) {
                     ItemTouchHelper.LEFT -> {
@@ -311,10 +307,18 @@ class TasksActivity : AppCompatActivity() {
                 pendingSwipePosition = -1
             }
             .setNegativeButton(getString(R.string.no)) { _, _ ->
+                // User cancelled - restore card to original position
+                if (pendingSwipePosition != -1) {
+                    adapter.notifyItemChanged(pendingSwipePosition)
+                }
                 pendingSwipeTask = null
                 pendingSwipePosition = -1
             }
             .setOnDismissListener {
+                // Dialog dismissed without action - restore card
+                if (pendingSwipeTask != null && pendingSwipePosition != -1) {
+                    adapter.notifyItemChanged(pendingSwipePosition)
+                }
                 pendingSwipeTask = null
                 pendingSwipePosition = -1
             }
@@ -331,10 +335,18 @@ class TasksActivity : AppCompatActivity() {
                 pendingSwipePosition = -1
             }
             .setNegativeButton(getString(R.string.no)) { _, _ ->
+                // User cancelled - restore card to original position
+                if (pendingSwipePosition != -1) {
+                    adapter.notifyItemChanged(pendingSwipePosition)
+                }
                 pendingSwipeTask = null
                 pendingSwipePosition = -1
             }
             .setOnDismissListener {
+                // Dialog dismissed without action - restore card
+                if (pendingSwipeTask != null && pendingSwipePosition != -1) {
+                    adapter.notifyItemChanged(pendingSwipePosition)
+                }
                 pendingSwipeTask = null
                 pendingSwipePosition = -1
             }

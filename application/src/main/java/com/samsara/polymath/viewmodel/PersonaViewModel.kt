@@ -23,22 +23,39 @@ import kotlinx.coroutines.launch
 class PersonaViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PersonaRepository
     private val taskRepository: TaskRepository
+    private val tagDao: com.samsara.polymath.data.TagDao
+    private val personaTagDao: com.samsara.polymath.data.PersonaTagDao
     
     init {
         val database = AppDatabase.getDatabase(application)
         repository = PersonaRepository(database.personaDao())
         taskRepository = TaskRepository(database.taskDao())
+        tagDao = database.tagDao()
+        personaTagDao = database.personaTagDao()
     }
     
     fun getAllPersonas(): LiveData<List<Persona>> = repository.getAllPersonas().asLiveData()
     
     fun getAllPersonasWithTaskCount(): LiveData<List<PersonaWithTaskCount>> {
-        // Combine personas flow with all tasks flow so we update when either changes
+        // Combine personas, tasks, tags, and persona-tags flows so we update when any changes
         return combine(
             repository.getAllPersonas(),
-            taskRepository.getAllTasks()
-        ) { personas, allTasks ->
+            taskRepository.getAllTasks(),
+            tagDao.getAllTags(),
+            personaTagDao.getAllPersonaTags()
+        ) { personas, allTasks, allTags, personaTags ->
             val currentTime = System.currentTimeMillis()
+
+            // Create a map of tagId -> Tag for quick lookup
+            val tagMap = allTags.associateBy { it.id }
+            
+            // Create a map of personaId -> List<Tag>
+            val personaTagsMap = personaTags
+                .groupBy { it.personaId }
+                .mapValues { (_, ptList) ->
+                    ptList.mapNotNull { tagMap[it.tagId] }
+                        .sortedBy { it.name }
+                }
 
             // Calculate task counts and scores for each persona
             val personasWithStats = personas.map { persona ->
@@ -65,9 +82,10 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
                     persona = persona,
                     completedTaskCount = completedCount,
                     openTaskCount = openCount,
-                    emoji = "", // Will be assigned after sorting
+                    emoji = "", // Deprecated
                     score = score,
-                    decayLevel = decayLevel
+                    decayLevel = decayLevel,
+                    tags = personaTagsMap[persona.id] ?: emptyList()
                 )
             }
 
@@ -260,6 +278,25 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
     
     suspend fun insertPersonaSync(persona: Persona): Long {
         return repository.insertPersona(persona)
+    }
+    
+    suspend fun insertPersonaSync(name: String): Long {
+        val persona = Persona(
+            name = name,
+            backgroundColor = generatePersonaColor(),
+            createdAt = System.currentTimeMillis(),
+            lastOpenedAt = System.currentTimeMillis()
+        )
+        return repository.insertPersona(persona)
+    }
+    
+    private fun generatePersonaColor(): String {
+        val colors = listOf(
+            "#007AFF", "#FF2D55", "#FFD93D", "#F38181", "#32D74B",
+            "#00C7BE", "#FF6B6B", "#FFCC00", "#AF52DE", "#5AC8FA",
+            "#5856D6", "#34C759", "#FF9500", "#4ECDC4", "#AA96DA"
+        )
+        return colors.random()
     }
     
     suspend fun deleteAllPersonas() {

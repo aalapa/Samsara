@@ -4,11 +4,13 @@ package com.samsara.polymath.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.Button;
+import android.widget.ScrollView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import com.samsara.polymath.R;
 import java.lang.NullPointerException;
@@ -17,20 +19,28 @@ import java.lang.String;
 
 public final class DialogAddPersonaBinding implements ViewBinding {
   @NonNull
-  private final LinearLayout rootView;
+  private final ScrollView rootView;
+
+  @NonNull
+  public final Button addNewTagButton;
 
   @NonNull
   public final TextInputEditText personaNameEditText;
 
-  private DialogAddPersonaBinding(@NonNull LinearLayout rootView,
-      @NonNull TextInputEditText personaNameEditText) {
+  @NonNull
+  public final ChipGroup tagsChipGroup;
+
+  private DialogAddPersonaBinding(@NonNull ScrollView rootView, @NonNull Button addNewTagButton,
+      @NonNull TextInputEditText personaNameEditText, @NonNull ChipGroup tagsChipGroup) {
     this.rootView = rootView;
+    this.addNewTagButton = addNewTagButton;
     this.personaNameEditText = personaNameEditText;
+    this.tagsChipGroup = tagsChipGroup;
   }
 
   @Override
   @NonNull
-  public LinearLayout getRoot() {
+  public ScrollView getRoot() {
     return rootView;
   }
 
@@ -55,13 +65,26 @@ public final class DialogAddPersonaBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.addNewTagButton;
+      Button addNewTagButton = ViewBindings.findChildViewById(rootView, id);
+      if (addNewTagButton == null) {
+        break missingId;
+      }
+
       id = R.id.personaNameEditText;
       TextInputEditText personaNameEditText = ViewBindings.findChildViewById(rootView, id);
       if (personaNameEditText == null) {
         break missingId;
       }
 
-      return new DialogAddPersonaBinding((LinearLayout) rootView, personaNameEditText);
+      id = R.id.tagsChipGroup;
+      ChipGroup tagsChipGroup = ViewBindings.findChildViewById(rootView, id);
+      if (tagsChipGroup == null) {
+        break missingId;
+      }
+
+      return new DialogAddPersonaBinding((ScrollView) rootView, addNewTagButton,
+          personaNameEditText, tagsChipGroup);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

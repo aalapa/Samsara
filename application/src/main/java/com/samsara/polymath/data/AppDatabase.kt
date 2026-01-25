@@ -6,13 +6,15 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [Persona::class, Task::class, Comment::class, PersonaStatistics::class], version = 11, exportSchema = false)
+@Database(entities = [Persona::class, Task::class, Comment::class, PersonaStatistics::class, Tag::class, PersonaTag::class], version = 12, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun personaDao(): PersonaDao
     abstract fun taskDao(): TaskDao
     abstract fun commentDao(): CommentDao
     abstract fun personaStatisticsDao(): PersonaStatisticsDao
+    abstract fun tagDao(): TagDao
+    abstract fun personaTagDao(): PersonaTagDao
     
     companion object {
         @Volatile
@@ -25,7 +27,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "polymath_database"
                 )
-                .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11)
+                .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12)
                 .fallbackToDestructiveMigration() // For development - remove in production
                 .build()
                 INSTANCE = instance
@@ -111,6 +113,68 @@ abstract class AppDatabase : RoomDatabase() {
             override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
                 // Add isRecurring column to tasks table
                 database.execSQL("ALTER TABLE tasks ADD COLUMN isRecurring INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
+        private val MIGRATION_11_12 = object : androidx.room.migration.Migration(11, 12) {
+            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                // Create tags table
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS tags (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        name TEXT NOT NULL,
+                        color TEXT,
+                        created_at INTEGER NOT NULL,
+                        `order` INTEGER NOT NULL DEFAULT 0
+                    )
+                    """.trimIndent()
+                )
+                
+                // Create junction table
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS persona_tags (
+                        personaId INTEGER NOT NULL,
+                        tagId INTEGER NOT NULL,
+                        assigned_at INTEGER NOT NULL,
+                        PRIMARY KEY(personaId, tagId),
+                        FOREIGN KEY(personaId) REFERENCES personas(id) ON DELETE CASCADE,
+                        FOREIGN KEY(tagId) REFERENCES tags(id) ON DELETE CASCADE
+                    )
+                    """.trimIndent()
+                )
+                
+                // Create indices for better query performance
+                database.execSQL("CREATE INDEX IF NOT EXISTS index_persona_tags_personaId ON persona_tags(personaId)")
+                database.execSQL("CREATE INDEX IF NOT EXISTS index_persona_tags_tagId ON persona_tags(tagId)")
+                
+                // Pre-populate with default tags
+                val currentTime = System.currentTimeMillis()
+                val defaultTags = listOf(
+                    Triple("Physical", "#007AFF", 1),
+                    Triple("Martial Arts", "#FF2D55", 2),
+                    Triple("Financial", "#FFD93D", 3),
+                    Triple("Career", "#F38181", 4),
+                    Triple("Technical", "#32D74B", 5),
+                    Triple("Programming", "#00C7BE", 6),
+                    Triple("Creative", "#FF6B6B", 7),
+                    Triple("Music", "#FFCC00", 8),
+                    Triple("Family", "#AF52DE", 9),
+                    Triple("Relationships", "#5AC8FA", 10),
+                    Triple("Spiritual", "#5856D6", 11),
+                    Triple("Language", "#34C759", 12),
+                    Triple("Lifestyle", "#FF9500", 13),
+                    Triple("Travel", "#4ECDC4", 14),
+                    Triple("Aspirational", "#AA96DA", 15)
+                )
+                
+                defaultTags.forEach { (name, color, order) ->
+                    database.execSQL(
+                        "INSERT INTO tags (name, color, created_at, `order`) VALUES (?, ?, ?, ?)",
+                        arrayOf(name, color, currentTime, order)
+                    )
+                }
             }
         }
     }

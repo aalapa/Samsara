@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.samsara.polymath"
-    android:versionCode="27"
-    android:versionName="2.0.26" >
+    android:versionCode="32"
+    android:versionName="2.0.31" >
 
     <uses-sdk
         android:minSdkVersion="24"
@@ -46,6 +46,10 @@
             android:parentActivityName="com.samsara.polymath.MainActivity" />
         <activity
             android:name="com.samsara.polymath.PersonaReportActivity"
+            android:exported="false"
+            android:parentActivityName="com.samsara.polymath.MainActivity" />
+        <activity
+            android:name="com.samsara.polymath.TagManagementActivity"
             android:exported="false"
             android:parentActivityName="com.samsara.polymath.MainActivity" />
 

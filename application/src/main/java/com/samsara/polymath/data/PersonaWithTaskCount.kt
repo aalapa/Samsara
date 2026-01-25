@@ -49,6 +49,7 @@ data class PersonaWithTaskCount(
     val emoji: String = "",
     val score: Double = 0.0,
     val rankStatus: RankStatus = RankStatus.STABLE,
-    val decayLevel: DecayLevel = DecayLevel.NONE
+    val decayLevel: DecayLevel = DecayLevel.NONE,
+    val tags: List<Tag> = emptyList()
 )
 

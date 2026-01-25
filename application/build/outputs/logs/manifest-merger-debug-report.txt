@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:2:1-37:12
-INJECTED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:2:1-37:12
-INJECTED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:2:1-37:12
-INJECTED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:2:1-37:12
+ADDED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:2:1-41:12
+INJECTED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:2:1-41:12
+INJECTED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:2:1-41:12
+INJECTED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:2:1-41:12
 MERGED from [androidx.databinding:viewbinding:8.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/357b73d6e8baf22472b491e9cfe211dd/transformed/jetified-viewbinding-8.3.0/AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.android.material:material:1.11.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/04df93a5fe15833ed42375b9ca3f3497/transformed/material-1.11.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /Users/ragnor/.gradle/caches/8.11.1/transforms/3207cf96adf4e0f1af361e1b0671c7fa/transformed/constraintlayout-2.1.4/AndroidManifest.xml:2:1-11:12
@@ -79,8 +79,8 @@ ADDED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidMani
 	android:name
 		ADDED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:8:22-72
 application
-ADDED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:10:5-35:19
-INJECTED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:10:5-35:19
+ADDED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:10:5-39:19
+INJECTED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:10:5-39:19
 MERGED from [com.google.android.material:material:1.11.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/04df93a5fe15833ed42375b9ca3f3497/transformed/material-1.11.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.11.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/04df93a5fe15833ed42375b9ca3f3497/transformed/material-1.11.0/AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /Users/ragnor/.gradle/caches/8.11.1/transforms/3207cf96adf4e0f1af361e1b0671c7fa/transformed/constraintlayout-2.1.4/AndroidManifest.xml:9:5-20
@@ -151,6 +151,14 @@ ADDED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidMani
 		ADDED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:33:13-37
 	android:name
 		ADDED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:32:13-50
+activity#com.samsara.polymath.TagManagementActivity
+ADDED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:35:9-38:58
+	android:parentActivityName
+		ADDED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:38:13-55
+	android:exported
+		ADDED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:37:13-37
+	android:name
+		ADDED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:36:13-50
 uses-sdk
 INJECTED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml

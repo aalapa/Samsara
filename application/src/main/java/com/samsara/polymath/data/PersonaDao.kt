@@ -38,5 +38,25 @@ interface PersonaDao {
 
     @Query("SELECT * FROM personas ORDER BY createdAt ASC")
     suspend fun getAllPersonasList(): List<Persona>
+    
+    @Transaction
+    @Query("SELECT * FROM personas ORDER BY `order` ASC")
+    fun getAllPersonasWithTags(): Flow<List<PersonaWithTags>>
+    
+    @Transaction
+    @Query("SELECT * FROM personas WHERE id = :personaId")
+    suspend fun getPersonaWithTags(personaId: Long): PersonaWithTags?
+    
+    @Query("SELECT DISTINCT personas.* FROM personas " +
+           "INNER JOIN persona_tags ON personas.id = persona_tags.personaId " +
+           "WHERE persona_tags.tagId IN (:tagIds) " +
+           "ORDER BY personas.`order` ASC")
+    fun getPersonasByTags(tagIds: List<Long>): Flow<List<Persona>>
+    
+    @Query("SELECT personas.* FROM personas " +
+           "LEFT JOIN persona_tags ON personas.id = persona_tags.personaId " +
+           "WHERE persona_tags.personaId IS NULL " +
+           "ORDER BY personas.`order` ASC")
+    fun getUntaggedPersonas(): Flow<List<Persona>>
 }
 

@@ -4,6 +4,7 @@ package com.samsara.polymath.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +14,7 @@ import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.samsara.polymath.R;
 import java.lang.NullPointerException;
@@ -30,6 +32,12 @@ public final class ActivityMainBinding implements ViewBinding {
   public final AppBarLayout appBarLayout;
 
   @NonNull
+  public final ChipGroup filterChipGroup;
+
+  @NonNull
+  public final HorizontalScrollView filterChipsScrollView;
+
+  @NonNull
   public final ImageView menuButton;
 
   @NonNull
@@ -40,11 +48,14 @@ public final class ActivityMainBinding implements ViewBinding {
 
   private ActivityMainBinding(@NonNull ConstraintLayout rootView,
       @NonNull FloatingActionButton addPersonaFab, @NonNull AppBarLayout appBarLayout,
+      @NonNull ChipGroup filterChipGroup, @NonNull HorizontalScrollView filterChipsScrollView,
       @NonNull ImageView menuButton, @NonNull RecyclerView personasRecyclerView,
       @NonNull MaterialToolbar toolbar) {
     this.rootView = rootView;
     this.addPersonaFab = addPersonaFab;
     this.appBarLayout = appBarLayout;
+    this.filterChipGroup = filterChipGroup;
+    this.filterChipsScrollView = filterChipsScrollView;
     this.menuButton = menuButton;
     this.personasRecyclerView = personasRecyclerView;
     this.toolbar = toolbar;
@@ -89,6 +100,18 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.filterChipGroup;
+      ChipGroup filterChipGroup = ViewBindings.findChildViewById(rootView, id);
+      if (filterChipGroup == null) {
+        break missingId;
+      }
+
+      id = R.id.filterChipsScrollView;
+      HorizontalScrollView filterChipsScrollView = ViewBindings.findChildViewById(rootView, id);
+      if (filterChipsScrollView == null) {
+        break missingId;
+      }
+
       id = R.id.menuButton;
       ImageView menuButton = ViewBindings.findChildViewById(rootView, id);
       if (menuButton == null) {
@@ -108,7 +131,7 @@ public final class ActivityMainBinding implements ViewBinding {
       }
 
       return new ActivityMainBinding((ConstraintLayout) rootView, addPersonaFab, appBarLayout,
-          menuButton, personasRecyclerView, toolbar);
+          filterChipGroup, filterChipsScrollView, menuButton, personasRecyclerView, toolbar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));
