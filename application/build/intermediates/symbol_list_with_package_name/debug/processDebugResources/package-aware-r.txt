@@ -3504,6 +3504,7 @@ id radio
 id rankIndicatorImageView
 id ratio
 id rectangles
+id recurringCheckBox
 id report_drawn
 id reverseSawtooth
 id right
@@ -4055,6 +4056,7 @@ string rank_down_description
 string rank_indicator
 string rank_stable_description
 string rank_up_description
+string recurring_task
 string search_menu_title
 string searchbar_scrolling_view_behavior
 string searchview_clear_text_content_description

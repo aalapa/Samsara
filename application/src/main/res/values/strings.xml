@@ -40,5 +40,6 @@
     <string name="rank_stable_description">Rank stable</string>
     <string name="rank_up_description">Rank up</string>
     <string name="rank_down_description">Rank down</string>
+    <string name="recurring_task">Recurring task</string>
 </resources>
 

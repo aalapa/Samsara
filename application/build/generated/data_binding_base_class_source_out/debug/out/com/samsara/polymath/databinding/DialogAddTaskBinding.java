@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
+import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.textfield.TextInputEditText;
 import com.samsara.polymath.R;
 import java.lang.NullPointerException;
@@ -20,15 +21,20 @@ public final class DialogAddTaskBinding implements ViewBinding {
   private final LinearLayout rootView;
 
   @NonNull
+  public final MaterialCheckBox recurringCheckBox;
+
+  @NonNull
   public final TextInputEditText taskDescriptionEditText;
 
   @NonNull
   public final TextInputEditText taskTitleEditText;
 
   private DialogAddTaskBinding(@NonNull LinearLayout rootView,
+      @NonNull MaterialCheckBox recurringCheckBox,
       @NonNull TextInputEditText taskDescriptionEditText,
       @NonNull TextInputEditText taskTitleEditText) {
     this.rootView = rootView;
+    this.recurringCheckBox = recurringCheckBox;
     this.taskDescriptionEditText = taskDescriptionEditText;
     this.taskTitleEditText = taskTitleEditText;
   }
@@ -60,6 +66,12 @@ public final class DialogAddTaskBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.recurringCheckBox;
+      MaterialCheckBox recurringCheckBox = ViewBindings.findChildViewById(rootView, id);
+      if (recurringCheckBox == null) {
+        break missingId;
+      }
+
       id = R.id.taskDescriptionEditText;
       TextInputEditText taskDescriptionEditText = ViewBindings.findChildViewById(rootView, id);
       if (taskDescriptionEditText == null) {
@@ -72,8 +84,8 @@ public final class DialogAddTaskBinding implements ViewBinding {
         break missingId;
       }
 
-      return new DialogAddTaskBinding((LinearLayout) rootView, taskDescriptionEditText,
-          taskTitleEditText);
+      return new DialogAddTaskBinding((LinearLayout) rootView, recurringCheckBox,
+          taskDescriptionEditText, taskTitleEditText);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

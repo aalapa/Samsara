@@ -222,13 +222,14 @@ class TasksActivity : AppCompatActivity() {
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.done)) { _, _ ->
                 val title = dialogBinding.taskTitleEditText.text?.toString()?.trim()
                 val description = dialogBinding.taskDescriptionEditText.text?.toString()?.trim() ?: ""
+                val isRecurring = dialogBinding.recurringCheckBox.isChecked
                 
                 if (!title.isNullOrEmpty()) {
                     // Capitalize first letter of title (English rules: first letter uppercase, rest as typed)
                     val capitalizedTitle = title.replaceFirstChar { 
                         if (it.isLowerCase()) it.uppercaseChar() else it 
                     }
-                    viewModel.insertTask(personaId, capitalizedTitle, description, personaBackgroundColor)
+                    viewModel.insertTask(personaId, capitalizedTitle, description, personaBackgroundColor, isRecurring)
                 } else {
                     Toast.makeText(this, "Please enter a task title", Toast.LENGTH_SHORT).show()
                 }

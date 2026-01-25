@@ -21,7 +21,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     
     fun getTasksByPersona(personaId: Long): LiveData<List<Task>> = repository.getTasksByPersona(personaId).asLiveData()
     
-    fun insertTask(personaId: Long, title: String, description: String = "", personaBackgroundColor: String = "#007AFF") {
+    fun insertTask(personaId: Long, title: String, description: String = "", personaBackgroundColor: String = "#007AFF", isRecurring: Boolean = false) {
         viewModelScope.launch {
             val tasks = repository.getTasksByPersona(personaId)
             val taskList = tasks.first()
@@ -36,7 +36,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                     title = title,
                     description = description,
                     order = maxOrder + 1,
-                    backgroundColor = variantColor
+                    backgroundColor = variantColor,
+                    isRecurring = isRecurring
                 )
             )
         }
@@ -97,11 +98,31 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     
     fun markTaskAsComplete(task: Task) {
         viewModelScope.launch {
+            // Mark the current task as complete
             repository.updateTaskCompletion(
                 task.id,
                 isCompleted = true,
                 completedAt = System.currentTimeMillis()
             )
+            
+            // If it's a recurring task, create a new one with today's date
+            if (task.isRecurring) {
+                val tasks = repository.getTasksByPersona(task.personaId)
+                val taskList = tasks.first()
+                val maxOrder = taskList.maxOfOrNull { it.order } ?: 0
+                
+                repository.insertTask(
+                    Task(
+                        personaId = task.personaId,
+                        title = task.title,
+                        description = task.description,
+                        order = maxOrder + 1,
+                        backgroundColor = task.backgroundColor,
+                        isRecurring = true, // Keep it recurring
+                        createdAt = System.currentTimeMillis() // Today's date
+                    )
+                )
+            }
         }
     }
     
@@ -130,7 +151,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         isCompleted: Boolean = false, 
         completedAt: Long? = null, 
         backgroundColor: String = "#FFFFFF",
-        createdAt: Long = System.currentTimeMillis()  // Add createdAt parameter with default
+        createdAt: Long = System.currentTimeMillis(),  // Add createdAt parameter with default
+        isRecurring: Boolean = false  // Add isRecurring parameter with default
     ): Long {
         return repository.insertTask(
             Task(
@@ -141,7 +163,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                 isCompleted = isCompleted,
                 completedAt = completedAt,
                 backgroundColor = backgroundColor,
-                createdAt = createdAt  // Pass the createdAt timestamp
+                createdAt = createdAt,  // Pass the createdAt timestamp
+                isRecurring = isRecurring  // Pass the isRecurring flag
             )
         )
     }

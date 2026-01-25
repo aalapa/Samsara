@@ -303,7 +303,8 @@ class MainActivity : AppCompatActivity() {
                                 isCompleted = oldTask.isCompleted,
                                 completedAt = oldTask.completedAt,
                                 backgroundColor = oldTask.backgroundColor,
-                                createdAt = oldTask.createdAt  // Preserve the original creation timestamp
+                                createdAt = oldTask.createdAt,  // Preserve the original creation timestamp
+                                isRecurring = oldTask.isRecurring  // Preserve the recurring flag
                             )
                             taskIdMap[oldTask.id] = newTaskId
                         }

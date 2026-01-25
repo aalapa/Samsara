@@ -26,6 +26,7 @@ data class Task(
     val createdAt: Long = System.currentTimeMillis(),
     val completedAt: Long? = null,
     val isCompleted: Boolean = false,
+    val isRecurring: Boolean = false, // Track if this task should recur on completion
     val order: Int = 0,
     val backgroundColor: String = "#FFFFFF", // Inherited from persona with variant
     val previousOrder: Int = 0, // Track previous position for rank changes
