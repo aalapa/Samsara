@@ -51,13 +51,13 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
                 val decayMultiplier = getDecayMultiplier(decayLevel)
 
                 // Calculate progress score with decay penalty
-                // Base Score = (completedTasks / totalTasks) * openCount
+                // Base Score = (1 + completedTasks / totalTasks) * openCount
                 // Final Score = Base Score * decayMultiplier
                 val totalTasks = completedCount + openCount
                 val baseScore = if (totalTasks > 0) {
-                    (completedCount.toDouble() / totalTasks) * persona.openCount
+                    (1 + (completedCount.toDouble() / totalTasks)) * persona.openCount
                 } else {
-                    0.0
+                    persona.openCount.toDouble() // If no tasks, score = openCount
                 }
                 val score = baseScore * decayMultiplier
 
@@ -298,9 +298,9 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
                 val decayMultiplier = getDecayMultiplier(decayLevel)
 
                 val baseScore = if (totalTasks > 0) {
-                    (completedCount.toDouble() / totalTasks) * persona.openCount
+                    (1 + (completedCount.toDouble() / totalTasks)) * persona.openCount
                 } else {
-                    0.0
+                    persona.openCount.toDouble() // If no tasks, score = openCount
                 }
                 return baseScore * decayMultiplier
             }

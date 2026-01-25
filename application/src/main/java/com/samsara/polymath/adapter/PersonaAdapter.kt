@@ -78,9 +78,11 @@ class PersonaAdapter(
             // Store bgColor for decay visuals (used later)
             val finalBgColor = bgColor
             
-            // Show open count if greater than 0
-            if (persona.openCount > 0) {
-                binding.openCountTextView.text = persona.openCount.toString()
+            // Show score (rounded to integer) if greater than 0
+            // Score = (1 + completedTasks/totalTasks) × openCount × decayMultiplier
+            val score = personaWithCount.score
+            if (score > 0) {
+                binding.openCountTextView.text = score.toInt().toString()
                 binding.openCountTextView.visibility = View.VISIBLE
             } else {
                 binding.openCountTextView.visibility = View.GONE

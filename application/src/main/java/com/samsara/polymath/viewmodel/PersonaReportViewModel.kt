@@ -160,14 +160,20 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
             System.currentTimeMillis() - persona.lastOpenedAt
         )
         val decayMultiplier = when {
-            daysSinceLastOpened == 0L -> 1.0
-            daysSinceLastOpened <= 7 -> 0.9
-            daysSinceLastOpened <= 14 -> 0.7
-            daysSinceLastOpened <= 30 -> 0.5
-            else -> 0.3
+            daysSinceLastOpened <= 6 -> 1.0     // NONE: 0-6 days
+            daysSinceLastOpened <= 13 -> 0.85   // SLIGHT: 7-13 days
+            daysSinceLastOpened <= 20 -> 0.65   // MEDIUM: 14-20 days
+            else -> 0.4                          // SERIOUS: 21+ days
         }
         
-        return (completionRate * 50 + openCount * 0.5) * decayMultiplier
+        // Use the same formula as main ranking: (1 + completionRate) * openCount * decay
+        val baseScore = if (totalTasks > 0) {
+            (1 + completionRate) * openCount
+        } else {
+            openCount // If no tasks, score = openCount
+        }
+        
+        return baseScore * decayMultiplier
     }
 }
 

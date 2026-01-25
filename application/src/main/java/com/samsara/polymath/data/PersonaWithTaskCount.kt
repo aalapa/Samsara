@@ -4,7 +4,7 @@ package com.samsara.polymath.data
  * Wraps a Persona with its task statistics, progress score, and emoji indicator.
  *
  * Progress Score Calculation (with decay penalty):
- * Base Score = (completedTasks / totalTasks) * openCount
+ * Base Score = (1 + completedTasks / totalTasks) * openCount
  * Final Score = Base Score * decayMultiplier
  *
  * Decay Multipliers (based on days since last opened):
@@ -15,12 +15,17 @@ package com.samsara.polymath.data
  *
  * Where:
  * - totalTasks = completedTasks + openTasks
- * - If totalTasks = 0, score = 0 (no progress)
+ * - If totalTasks = 0, score = openCount (rewards engagement even without tasks)
  *
- * This formula rewards both:
- * 1. Completion rate (completedTasks / totalTasks) - how much progress you've made
- * 2. Engagement (openCount) - how often you work on this persona
+ * This formula rewards:
+ * 1. Base engagement (openCount) - everyone gets at least 1× their opens
+ * 2. Completion bonus (completedTasks / totalTasks) - adds up to 1× for 100% completion
  * 3. Recency (decay) - penalizes neglected personas
+ *
+ * Example scores (without decay):
+ * - 10 opens, 0% completion = 10 (1.0 × 10)
+ * - 10 opens, 50% completion = 15 (1.5 × 10)
+ * - 10 opens, 100% completion = 20 (2.0 × 10)
  *
  * Emoji Assignment:
  * - 😊 (smiling): Top 3 personas by score (if they have completed tasks)
