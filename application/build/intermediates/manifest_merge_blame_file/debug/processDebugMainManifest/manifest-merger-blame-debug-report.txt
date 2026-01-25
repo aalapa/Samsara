@@ -1,8 +1,8 @@
 1<?xml version="1.0" encoding="utf-8"?>
 2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 3    package="com.samsara.polymath"
-4    android:versionCode="34"
-5    android:versionName="2.0.33" >
+4    android:versionCode="35"
+5    android:versionName="2.0.34" >
 6
 7    <uses-sdk
 8        android:minSdkVersion="24"
@@ -20,154 +20,188 @@
 15    <uses-permission android:name="android.permission.READ_MEDIA_FILES" />
 15-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:8:5-75
 15-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:8:22-72
-16
-17    <permission
-17-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/ed4c62a7492f80f6942b0eef60e265ca/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
-18        android:name="com.samsara.polymath.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-18-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/ed4c62a7492f80f6942b0eef60e265ca/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
-19        android:protectionLevel="signature" />
-19-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/ed4c62a7492f80f6942b0eef60e265ca/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
+16    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+16-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:9:5-72
+16-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:9:22-69
+17
+18    <!-- suppress DeprecatedClassUsageInspection -->
+19    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+19-->[androidx.biometric:biometric:1.1.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/d4ce32ac96533711cc10a4843fa72bcd/transformed/biometric-1.1.0/AndroidManifest.xml:27:5-74
+19-->[androidx.biometric:biometric:1.1.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/d4ce32ac96533711cc10a4843fa72bcd/transformed/biometric-1.1.0/AndroidManifest.xml:27:22-71
 20
-21    <uses-permission android:name="com.samsara.polymath.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
-21-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/ed4c62a7492f80f6942b0eef60e265ca/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
-21-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/ed4c62a7492f80f6942b0eef60e265ca/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
-22
-23    <application
-23-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:10:5-39:19
-24        android:allowBackup="true"
-24-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:11:9-35
-25        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-25-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/ed4c62a7492f80f6942b0eef60e265ca/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
-26        android:debuggable="true"
-27        android:extractNativeLibs="false"
-28        android:icon="@mipmap/ic_launcher"
-28-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:12:9-43
-29        android:label="@string/app_name"
-29-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:13:9-41
-30        android:roundIcon="@mipmap/ic_launcher_round"
-30-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:14:9-54
-31        android:supportsRtl="true"
-31-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:15:9-35
-32        android:theme="@style/Theme.Samsara" >
-32-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:16:9-45
-33        <activity
-33-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:18:9-26:20
-34            android:name="com.samsara.polymath.MainActivity"
-34-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:19:13-41
-35            android:exported="true"
-35-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:20:13-36
-36            android:label="@string/app_name" >
-36-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:21:13-45
-37            <intent-filter>
-37-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:22:13-25:29
-38                <action android:name="android.intent.action.MAIN" />
-38-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:23:17-69
-38-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:23:25-66
-39
-40                <category android:name="android.intent.category.LAUNCHER" />
-40-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:24:17-77
-40-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:24:27-74
-41            </intent-filter>
-42        </activity>
-43        <activity
-43-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:27:9-30:58
-44            android:name="com.samsara.polymath.TasksActivity"
-44-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:28:13-42
-45            android:exported="false"
-45-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:29:13-37
-46            android:parentActivityName="com.samsara.polymath.MainActivity" />
-46-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:30:13-55
+21    <permission
+21-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/ed4c62a7492f80f6942b0eef60e265ca/transformed/core-1.12.0/AndroidManifest.xml:22:5-24:47
+22        android:name="com.samsara.polymath.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+22-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/ed4c62a7492f80f6942b0eef60e265ca/transformed/core-1.12.0/AndroidManifest.xml:23:9-81
+23        android:protectionLevel="signature" />
+23-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/ed4c62a7492f80f6942b0eef60e265ca/transformed/core-1.12.0/AndroidManifest.xml:24:9-44
+24
+25    <uses-permission android:name="com.samsara.polymath.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+25-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/ed4c62a7492f80f6942b0eef60e265ca/transformed/core-1.12.0/AndroidManifest.xml:26:5-97
+25-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/ed4c62a7492f80f6942b0eef60e265ca/transformed/core-1.12.0/AndroidManifest.xml:26:22-94
+26
+27    <application
+27-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:11:5-53:19
+28        android:allowBackup="true"
+28-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:12:9-35
+29        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+29-->[androidx.core:core:1.12.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/ed4c62a7492f80f6942b0eef60e265ca/transformed/core-1.12.0/AndroidManifest.xml:28:18-86
+30        android:debuggable="true"
+31        android:extractNativeLibs="false"
+32        android:icon="@mipmap/ic_launcher"
+32-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:13:9-43
+33        android:label="@string/app_name"
+33-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:14:9-41
+34        android:roundIcon="@mipmap/ic_launcher_round"
+34-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:15:9-54
+35        android:supportsRtl="true"
+35-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:16:9-35
+36        android:theme="@style/Theme.Samsara" >
+36-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:17:9-45
+37        <activity
+37-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:19:9-27:20
+38            android:name="com.samsara.polymath.MainActivity"
+38-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:20:13-41
+39            android:exported="true"
+39-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:21:13-36
+40            android:label="@string/app_name" >
+40-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:22:13-45
+41            <intent-filter>
+41-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:23:13-26:29
+42                <action android:name="android.intent.action.MAIN" />
+42-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:24:17-69
+42-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:24:25-66
+43
+44                <category android:name="android.intent.category.LAUNCHER" />
+44-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:25:17-77
+44-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:25:27-74
+45            </intent-filter>
+46        </activity>
 47        <activity
-47-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:31:9-34:58
-48            android:name="com.samsara.polymath.PersonaReportActivity"
-48-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:32:13-50
+47-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:28:9-31:58
+48            android:name="com.samsara.polymath.TasksActivity"
+48-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:29:13-42
 49            android:exported="false"
-49-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:33:13-37
+49-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:30:13-37
 50            android:parentActivityName="com.samsara.polymath.MainActivity" />
-50-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:34:13-55
+50-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:31:13-55
 51        <activity
-51-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:35:9-38:58
-52            android:name="com.samsara.polymath.TagManagementActivity"
-52-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:36:13-50
+51-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:32:9-35:58
+52            android:name="com.samsara.polymath.PersonaReportActivity"
+52-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:33:13-50
 53            android:exported="false"
-53-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:37:13-37
+53-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:34:13-37
 54            android:parentActivityName="com.samsara.polymath.MainActivity" />
-54-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:38:13-55
-55
-56        <provider
-56-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/b6fd3b63fc97330d05e8c0501010047a/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
-57            android:name="androidx.startup.InitializationProvider"
-57-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/b6fd3b63fc97330d05e8c0501010047a/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:25:13-67
-58            android:authorities="com.samsara.polymath.androidx-startup"
-58-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/b6fd3b63fc97330d05e8c0501010047a/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:26:13-68
-59            android:exported="false" >
-59-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/b6fd3b63fc97330d05e8c0501010047a/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:27:13-37
-60            <meta-data
-60-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/b6fd3b63fc97330d05e8c0501010047a/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:29:13-31:52
-61                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-61-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/b6fd3b63fc97330d05e8c0501010047a/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:30:17-75
-62                android:value="androidx.startup" />
-62-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/b6fd3b63fc97330d05e8c0501010047a/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:31:17-49
-63            <meta-data
-63-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/c7f0e38817fcab01412eb4c753ac3d5f/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:29:13-31:52
-64                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-64-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/c7f0e38817fcab01412eb4c753ac3d5f/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:30:17-78
-65                android:value="androidx.startup" />
-65-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/c7f0e38817fcab01412eb4c753ac3d5f/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:31:17-49
-66            <meta-data
-66-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:29:13-31:52
-67                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-67-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:30:17-85
-68                android:value="androidx.startup" />
-68-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:31:17-49
-69        </provider>
-70
-71        <service
-71-->[androidx.room:room-runtime:2.6.1] /Users/ragnor/.gradle/caches/8.11.1/transforms/fa4ee7045d1c9c10c4d4b29a98ee7fdf/transformed/room-runtime-2.6.1/AndroidManifest.xml:24:9-28:63
-72            android:name="androidx.room.MultiInstanceInvalidationService"
-72-->[androidx.room:room-runtime:2.6.1] /Users/ragnor/.gradle/caches/8.11.1/transforms/fa4ee7045d1c9c10c4d4b29a98ee7fdf/transformed/room-runtime-2.6.1/AndroidManifest.xml:25:13-74
-73            android:directBootAware="true"
-73-->[androidx.room:room-runtime:2.6.1] /Users/ragnor/.gradle/caches/8.11.1/transforms/fa4ee7045d1c9c10c4d4b29a98ee7fdf/transformed/room-runtime-2.6.1/AndroidManifest.xml:26:13-43
-74            android:exported="false" />
-74-->[androidx.room:room-runtime:2.6.1] /Users/ragnor/.gradle/caches/8.11.1/transforms/fa4ee7045d1c9c10c4d4b29a98ee7fdf/transformed/room-runtime-2.6.1/AndroidManifest.xml:27:13-37
-75
-76        <receiver
-76-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:34:9-52:20
-77            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-77-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:35:13-76
-78            android:directBootAware="false"
-78-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:36:13-44
-79            android:enabled="true"
-79-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:37:13-35
-80            android:exported="true"
-80-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:38:13-36
-81            android:permission="android.permission.DUMP" >
-81-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:39:13-57
-82            <intent-filter>
-82-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:40:13-42:29
-83                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-83-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:17-91
-83-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:25-88
-84            </intent-filter>
-85            <intent-filter>
-85-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:43:13-45:29
-86                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-86-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:17-85
-86-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:25-82
-87            </intent-filter>
-88            <intent-filter>
-88-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:46:13-48:29
-89                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-89-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:17-88
-89-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:25-85
-90            </intent-filter>
-91            <intent-filter>
-91-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:49:13-51:29
-92                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-92-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:17-95
-92-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:25-92
-93            </intent-filter>
-94        </receiver>
-95    </application>
-96
-97</manifest>
+54-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:35:13-55
+55        <activity
+55-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:36:9-39:58
+56            android:name="com.samsara.polymath.TagManagementActivity"
+56-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:37:13-50
+57            android:exported="false"
+57-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:38:13-37
+58            android:parentActivityName="com.samsara.polymath.MainActivity" />
+58-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:39:13-55
+59        <activity
+59-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:40:9-44:49
+60            android:name="com.samsara.polymath.LockActivity"
+60-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:41:13-41
+61            android:excludeFromRecents="true"
+61-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:44:13-46
+62            android:exported="false"
+62-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:42:13-37
+63            android:launchMode="singleTask" />
+63-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:43:13-44
+64        <activity
+64-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:45:9-48:47
+65            android:name="com.samsara.polymath.PinSetupActivity"
+65-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:46:13-45
+66            android:exported="false"
+66-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:47:13-37
+67            android:launchMode="singleTask" />
+67-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:48:13-44
+68        <activity
+68-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:49:9-52:58
+69            android:name="com.samsara.polymath.SettingsActivity"
+69-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:50:13-45
+70            android:exported="false"
+70-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:51:13-37
+71            android:parentActivityName="com.samsara.polymath.MainActivity" />
+71-->/Users/ragnor/StudioProjects/Samsara/application/src/main/AndroidManifest.xml:52:13-55
+72
+73        <provider
+73-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/b6fd3b63fc97330d05e8c0501010047a/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
+74            android:name="androidx.startup.InitializationProvider"
+74-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/b6fd3b63fc97330d05e8c0501010047a/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:25:13-67
+75            android:authorities="com.samsara.polymath.androidx-startup"
+75-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/b6fd3b63fc97330d05e8c0501010047a/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:26:13-68
+76            android:exported="false" >
+76-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/b6fd3b63fc97330d05e8c0501010047a/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:27:13-37
+77            <meta-data
+77-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/b6fd3b63fc97330d05e8c0501010047a/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:29:13-31:52
+78                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+78-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/b6fd3b63fc97330d05e8c0501010047a/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:30:17-75
+79                android:value="androidx.startup" />
+79-->[androidx.emoji2:emoji2:1.2.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/b6fd3b63fc97330d05e8c0501010047a/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:31:17-49
+80            <meta-data
+80-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/c7f0e38817fcab01412eb4c753ac3d5f/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:29:13-31:52
+81                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+81-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/c7f0e38817fcab01412eb4c753ac3d5f/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:30:17-78
+82                android:value="androidx.startup" />
+82-->[androidx.lifecycle:lifecycle-process:2.7.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/c7f0e38817fcab01412eb4c753ac3d5f/transformed/jetified-lifecycle-process-2.7.0/AndroidManifest.xml:31:17-49
+83            <meta-data
+83-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:29:13-31:52
+84                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+84-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:30:17-85
+85                android:value="androidx.startup" />
+85-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:31:17-49
+86        </provider>
+87
+88        <service
+88-->[androidx.room:room-runtime:2.6.1] /Users/ragnor/.gradle/caches/8.11.1/transforms/fa4ee7045d1c9c10c4d4b29a98ee7fdf/transformed/room-runtime-2.6.1/AndroidManifest.xml:24:9-28:63
+89            android:name="androidx.room.MultiInstanceInvalidationService"
+89-->[androidx.room:room-runtime:2.6.1] /Users/ragnor/.gradle/caches/8.11.1/transforms/fa4ee7045d1c9c10c4d4b29a98ee7fdf/transformed/room-runtime-2.6.1/AndroidManifest.xml:25:13-74
+90            android:directBootAware="true"
+90-->[androidx.room:room-runtime:2.6.1] /Users/ragnor/.gradle/caches/8.11.1/transforms/fa4ee7045d1c9c10c4d4b29a98ee7fdf/transformed/room-runtime-2.6.1/AndroidManifest.xml:26:13-43
+91            android:exported="false" />
+91-->[androidx.room:room-runtime:2.6.1] /Users/ragnor/.gradle/caches/8.11.1/transforms/fa4ee7045d1c9c10c4d4b29a98ee7fdf/transformed/room-runtime-2.6.1/AndroidManifest.xml:27:13-37
+92
+93        <receiver
+93-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:34:9-52:20
+94            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+94-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:35:13-76
+95            android:directBootAware="false"
+95-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:36:13-44
+96            android:enabled="true"
+96-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:37:13-35
+97            android:exported="true"
+97-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:38:13-36
+98            android:permission="android.permission.DUMP" >
+98-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:39:13-57
+99            <intent-filter>
+99-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:40:13-42:29
+100                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+100-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:17-91
+100-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:25-88
+101            </intent-filter>
+102            <intent-filter>
+102-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:43:13-45:29
+103                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+103-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:17-85
+103-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:25-82
+104            </intent-filter>
+105            <intent-filter>
+105-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:46:13-48:29
+106                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+106-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:17-88
+106-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:25-85
+107            </intent-filter>
+108            <intent-filter>
+108-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:49:13-51:29
+109                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+109-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:17-95
+109-->[androidx.profileinstaller:profileinstaller:1.3.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/6dea1970373a049efa461c60a765b141/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:25-92
+110            </intent-filter>
+111        </receiver>
+112    </application>
+113
+114</manifest>

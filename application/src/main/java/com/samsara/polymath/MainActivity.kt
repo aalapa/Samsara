@@ -61,6 +61,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Check authentication
+        val authManager = com.samsara.polymath.util.AuthManager(this)
+        if (authManager.isAuthEnabled() && !authManager.isAuthenticated()) {
+            // Redirect to lock screen
+            val intent = Intent(this, LockActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+            return
+        }
+        
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -195,6 +207,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.action_settings -> {
+                startActivity(Intent(this, SettingsActivity::class.java))
+                true
+            }
             R.id.action_manage_tags -> {
                 startActivity(Intent(this, TagManagementActivity::class.java))
                 true
@@ -632,6 +648,15 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this@MainActivity, "${getString(R.string.import_error)}: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
+        }
+    }
+    
+    override fun onStop() {
+        super.onStop()
+        // Lock app when going to background
+        val authManager = com.samsara.polymath.util.AuthManager(this)
+        if (authManager.isAuthEnabled()) {
+            authManager.lockApp()
         }
     }
 }

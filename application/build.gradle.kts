@@ -118,6 +118,12 @@ dependencies {
     // Gson for JSON
     implementation("com.google.code.gson:gson:2.10.1")
     
+    // Biometric Authentication
+    implementation("androidx.biometric:biometric:1.1.0")
+    
+    // Encrypted SharedPreferences
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

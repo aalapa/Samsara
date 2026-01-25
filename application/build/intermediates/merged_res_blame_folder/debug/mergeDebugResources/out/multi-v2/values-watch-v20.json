@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.samsara.polymath.application-mergeDebugResources-37:/values-watch-v20/values-watch-v20.xml",
+            "outputFile": "com.samsara.polymath.application-mergeDebugResources-39:/values-watch-v20/values-watch-v20.xml",
             "map": [
                 {
                     "source": "/Users/ragnor/.gradle/caches/8.11.1/transforms/eec16b13506bce269821a2c956324e38/transformed/appcompat-1.6.1/res/values-watch-v20/values-watch-v20.xml",
