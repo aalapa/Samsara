@@ -30,14 +30,18 @@ class TaskAdapter(
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val totalTaskCount = currentList.size
+        holder.bind(getItem(position), totalTaskCount)
     }
 
     inner class TaskViewHolder(
         private val binding: ItemTaskBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(task: Task) {
+        fun bind(task: Task, totalTaskCount: Int) {
+            // Adjust dimensions if more than 7 tasks (instead of scaling)
+            val isCompact = totalTaskCount > 7
+            
             binding.taskTitleTextView.text = task.title
             
             if (task.description.isNotEmpty()) {
@@ -45,6 +49,73 @@ class TaskAdapter(
                 binding.taskDescriptionTextView.visibility = View.VISIBLE
             } else {
                 binding.taskDescriptionTextView.visibility = View.GONE
+            }
+            
+            // Adjust card layout for compact mode
+            val density = binding.root.context.resources.displayMetrics.density
+            
+            // Adjust bottom margin (gap between cards)
+            val layoutParams = binding.root.layoutParams as? ViewGroup.MarginLayoutParams
+            if (layoutParams != null) {
+                val marginDp = if (isCompact) 6 else 9
+                layoutParams.bottomMargin = (marginDp * density).toInt()
+                binding.root.layoutParams = layoutParams
+            }
+            
+            // Adjust inner padding (the LinearLayout inside the card)
+            val paddingDp = if (isCompact) 11 else 15
+            val paddingPx = (paddingDp * density).toInt()
+            if (binding.root.childCount > 0) {
+                val innerLayout = binding.root.getChildAt(0)
+                if (innerLayout is ViewGroup) {
+                    innerLayout.setPadding(paddingPx, paddingPx, paddingPx, paddingPx)
+                }
+            }
+            
+            // Adjust circle size
+            val circleSizeDp = if (isCompact) 34 else 45
+            val circleSizePx = (circleSizeDp * density).toInt()
+            val circleLayoutParams = binding.daysTextView.layoutParams as? ViewGroup.MarginLayoutParams
+            if (circleLayoutParams != null) {
+                circleLayoutParams.width = circleSizePx
+                circleLayoutParams.height = circleSizePx
+                // Adjust circle right margin
+                val circleMarginDp = if (isCompact) 9 else 12
+                circleLayoutParams.marginEnd = (circleMarginDp * density).toInt()
+                binding.daysTextView.layoutParams = circleLayoutParams
+            }
+            
+            // Adjust rank indicator size and margin
+            val rankSizeDp = if (isCompact) 16 else 20
+            val rankSizePx = (rankSizeDp * density).toInt()
+            val rankLayoutParams = binding.rankIndicatorImageView.layoutParams as? ViewGroup.MarginLayoutParams
+            if (rankLayoutParams != null) {
+                rankLayoutParams.width = rankSizePx
+                rankLayoutParams.height = rankSizePx
+                val rankMarginDp = if (isCompact) 6 else 8
+                rankLayoutParams.marginStart = (rankMarginDp * density).toInt()
+                binding.rankIndicatorImageView.layoutParams = rankLayoutParams
+            }
+            
+            // Adjust font sizes (using sp to maintain accessibility)
+            binding.taskTitleTextView.textSize = if (isCompact) 13f else 15f
+            binding.taskDescriptionTextView.textSize = if (isCompact) 11f else 13f
+            binding.daysTextView.textSize = if (isCompact) 12f else 14f
+            binding.completionInfoTextView.textSize = if (isCompact) 9f else 11f
+            
+            // Adjust margins for description and completion info
+            val descLayoutParams = binding.taskDescriptionTextView.layoutParams as? ViewGroup.MarginLayoutParams
+            if (descLayoutParams != null) {
+                val descMarginDp = if (isCompact) 3 else 4
+                descLayoutParams.topMargin = (descMarginDp * density).toInt()
+                binding.taskDescriptionTextView.layoutParams = descLayoutParams
+            }
+            
+            val completionLayoutParams = binding.completionInfoTextView.layoutParams as? ViewGroup.MarginLayoutParams
+            if (completionLayoutParams != null) {
+                val completionMarginDp = if (isCompact) 6 else 8
+                completionLayoutParams.topMargin = (completionMarginDp * density).toInt()
+                binding.completionInfoTextView.layoutParams = completionLayoutParams
             }
 
             // Apply background color from task (inherited from persona with variant)

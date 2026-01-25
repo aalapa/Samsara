@@ -205,6 +205,15 @@ class TasksActivity : AppCompatActivity() {
             .setView(dialogBinding.root)
             .create()
         
+        // Set dialog text colors for dark background
+        dialog.setOnShowListener {
+            val titleView = dialog.findViewById<android.widget.TextView>(android.R.id.title)
+            titleView?.setTextColor(android.graphics.Color.WHITE)
+            
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(android.graphics.Color.WHITE)
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(android.graphics.Color.WHITE)
+        }
+        
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.done)) { _, _ ->
                 val title = dialogBinding.taskTitleEditText.text?.toString()?.trim()
                 val description = dialogBinding.taskDescriptionEditText.text?.toString()?.trim() ?: ""
@@ -298,8 +307,13 @@ class TasksActivity : AppCompatActivity() {
             .create()
         
         dialog.setOnShowListener {
+            val titleView = dialog.findViewById<android.widget.TextView>(android.R.id.title)
+            titleView?.setTextColor(android.graphics.Color.WHITE)
+            
             val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            positiveButton?.setTextColor(android.graphics.Color.WHITE)
+            negativeButton?.setTextColor(android.graphics.Color.WHITE)
             
             // Override positive button to keep dialog open when adding comment
             positiveButton?.setOnClickListener {

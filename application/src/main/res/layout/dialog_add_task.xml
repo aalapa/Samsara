@@ -10,6 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/task_title_hint"
+        app:hintTextColor="#FFFFFF"
+        app:boxStrokeColor="#FFFFFF"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -17,7 +19,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="text"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#AAAAAA" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -26,6 +30,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:hint="@string/task_description_hint"
+        app:hintTextColor="#FFFFFF"
+        app:boxStrokeColor="#FFFFFF"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -33,7 +39,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
-            android:maxLines="3" />
+            android:maxLines="3"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#AAAAAA" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -42,7 +50,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/recurring_task" />
+        android:text="@string/recurring_task"
+        android:textColor="#FFFFFF"
+        app:buttonTint="#FFFFFF" />
 
 </LinearLayout>
 

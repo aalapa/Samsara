@@ -34,6 +34,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/comment_hint"
+        app:hintTextColor="#FFFFFF"
+        app:boxStrokeColor="#FFFFFF"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -41,7 +43,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
-            android:maxLines="3" />
+            android:maxLines="3"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#AAAAAA" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
