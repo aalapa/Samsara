@@ -27,6 +27,9 @@ public final class ItemTaskBinding implements ViewBinding {
   public final TextView daysTextView;
 
   @NonNull
+  public final ImageView dragHandleImageView;
+
+  @NonNull
   public final ImageView rankIndicatorImageView;
 
   @NonNull
@@ -40,11 +43,13 @@ public final class ItemTaskBinding implements ViewBinding {
 
   private ItemTaskBinding(@NonNull MaterialCardView rootView,
       @NonNull TextView completionInfoTextView, @NonNull TextView daysTextView,
-      @NonNull ImageView rankIndicatorImageView, @NonNull MaterialCardView taskCard,
-      @NonNull TextView taskDescriptionTextView, @NonNull TextView taskTitleTextView) {
+      @NonNull ImageView dragHandleImageView, @NonNull ImageView rankIndicatorImageView,
+      @NonNull MaterialCardView taskCard, @NonNull TextView taskDescriptionTextView,
+      @NonNull TextView taskTitleTextView) {
     this.rootView = rootView;
     this.completionInfoTextView = completionInfoTextView;
     this.daysTextView = daysTextView;
+    this.dragHandleImageView = dragHandleImageView;
     this.rankIndicatorImageView = rankIndicatorImageView;
     this.taskCard = taskCard;
     this.taskDescriptionTextView = taskDescriptionTextView;
@@ -90,6 +95,12 @@ public final class ItemTaskBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.dragHandleImageView;
+      ImageView dragHandleImageView = ViewBindings.findChildViewById(rootView, id);
+      if (dragHandleImageView == null) {
+        break missingId;
+      }
+
       id = R.id.rankIndicatorImageView;
       ImageView rankIndicatorImageView = ViewBindings.findChildViewById(rootView, id);
       if (rankIndicatorImageView == null) {
@@ -111,7 +122,8 @@ public final class ItemTaskBinding implements ViewBinding {
       }
 
       return new ItemTaskBinding((MaterialCardView) rootView, completionInfoTextView, daysTextView,
-          rankIndicatorImageView, taskCard, taskDescriptionTextView, taskTitleTextView);
+          dragHandleImageView, rankIndicatorImageView, taskCard, taskDescriptionTextView,
+          taskTitleTextView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

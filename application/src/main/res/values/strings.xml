@@ -41,5 +41,7 @@
     <string name="rank_up_description">Rank up</string>
     <string name="rank_down_description">Rank down</string>
     <string name="recurring_task">Recurring task</string>
+    <string name="edit_task">Edit Task</string>
+    <string name="drag_handle">Drag to reorder</string>
 </resources>
 

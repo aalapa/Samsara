@@ -3286,6 +3286,7 @@ id dragAnticlockwise
 id dragClockwise
 id dragDown
 id dragEnd
+id dragHandleImageView
 id dragLeft
 id dragRight
 id dragStart
@@ -3925,7 +3926,9 @@ string done
 string done_day_ago
 string done_days_ago
 string done_today
+string drag_handle
 string edit_persona
+string edit_task
 string error_a11y_label
 string error_icon_content_description
 string export_data

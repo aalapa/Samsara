@@ -17,7 +17,9 @@ import java.util.concurrent.TimeUnit
 class TaskAdapter(
     private val onTaskClick: (Task) -> Unit,
     private val onTaskDelete: (Task) -> Unit,
-    private val onTaskComplete: (Task) -> Unit
+    private val onTaskComplete: (Task) -> Unit,
+    private val onTaskLongClick: (Task) -> Unit,
+    private val onStartDrag: (RecyclerView.ViewHolder) -> Unit
 ) : ListAdapter<Task, TaskAdapter.TaskViewHolder>(TaskDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
@@ -97,6 +99,18 @@ class TaskAdapter(
                 binding.rankIndicatorImageView.layoutParams = rankLayoutParams
             }
             
+            // Adjust drag handle size and margin
+            val dragHandleSizeDp = if (isCompact) 18 else 24
+            val dragHandleSizePx = (dragHandleSizeDp * density).toInt()
+            val dragHandleLayoutParams = binding.dragHandleImageView.layoutParams as? ViewGroup.MarginLayoutParams
+            if (dragHandleLayoutParams != null) {
+                dragHandleLayoutParams.width = dragHandleSizePx
+                dragHandleLayoutParams.height = dragHandleSizePx
+                val dragMarginDp = if (isCompact) 6 else 8
+                dragHandleLayoutParams.marginStart = (dragMarginDp * density).toInt()
+                binding.dragHandleImageView.layoutParams = dragHandleLayoutParams
+            }
+            
             // Adjust font sizes (using sp to maintain accessibility)
             binding.taskTitleTextView.textSize = if (isCompact) 13f else 15f
             binding.taskDescriptionTextView.textSize = if (isCompact) 11f else 13f
@@ -128,10 +142,14 @@ class TaskAdapter(
                 val textColor = if (isDark) Color.WHITE else Color.BLACK
                 binding.taskTitleTextView.setTextColor(textColor)
                 binding.taskDescriptionTextView.setTextColor(textColor)
+                
+                // Apply same color to drag handle icon
+                binding.dragHandleImageView.setColorFilter(textColor)
             } catch (e: Exception) {
                 // Fallback to default colors if parsing fails
                 binding.root.setCardBackgroundColor(Color.parseColor("#FFFFFF"))
                 binding.taskTitleTextView.setTextColor(Color.parseColor("#000000"))
+                binding.dragHandleImageView.setColorFilter(Color.parseColor("#000000"))
             }
 
             val currentTime = System.currentTimeMillis()
@@ -173,8 +191,23 @@ class TaskAdapter(
             }
             binding.rankIndicatorImageView.setImageResource(rankIcon)
 
+            // Single tap - show comments
             binding.root.setOnClickListener {
                 onTaskClick(task)
+            }
+            
+            // Long press (500ms) - edit task
+            binding.root.setOnLongClickListener {
+                onTaskLongClick(task)
+                true // Consume the event
+            }
+            
+            // Drag handle - long press to start drag
+            binding.dragHandleImageView.setOnTouchListener { view, event ->
+                if (event.action == android.view.MotionEvent.ACTION_DOWN) {
+                    onStartDrag(this)
+                }
+                false
             }
         }
 

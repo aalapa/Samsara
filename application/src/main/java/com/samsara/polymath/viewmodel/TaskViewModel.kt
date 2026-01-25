@@ -56,8 +56,9 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
             val b = cleanHex.substring(4, 6).toInt(16)
             
             // Increment each component by a small amount based on task order
-            // Use a small increment (e.g., 8 per task) to create subtle variations
-            val increment = taskOrder * 8
+            // Use a smaller increment (3 per task) to create subtle variations
+            // This keeps text color consistent across more tasks
+            val increment = taskOrder * 3
             
             // Calculate new RGB values (clamp to 0-255)
             val newR = (r + increment).coerceIn(0, 255)

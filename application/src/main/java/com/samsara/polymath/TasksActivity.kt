@@ -79,6 +79,8 @@ class TasksActivity : AppCompatActivity() {
         }
     }
 
+    private lateinit var itemTouchHelper: ItemTouchHelper
+    
     private fun setupRecyclerView() {
         adapter = TaskAdapter(
             onTaskClick = { task ->
@@ -89,22 +91,33 @@ class TasksActivity : AppCompatActivity() {
             },
             onTaskComplete = { task ->
                 showCompleteConfirmation(task)
+            },
+            onTaskLongClick = { task ->
+                showEditTaskDialog(task)
+            },
+            onStartDrag = { viewHolder ->
+                itemTouchHelper.startDrag(viewHolder)
             }
         )
 
         binding.tasksRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.tasksRecyclerView.adapter = adapter
 
-        // Setup ItemTouchHelper for drag and swipe
-        val itemTouchHelper = ItemTouchHelper(createItemTouchHelperCallback())
+        // Setup ItemTouchHelper for swipe only (drag initiated manually via handle)
+        itemTouchHelper = ItemTouchHelper(createItemTouchHelperCallback())
         itemTouchHelper.attachToRecyclerView(binding.tasksRecyclerView)
     }
 
     private fun createItemTouchHelperCallback(): ItemTouchHelper.SimpleCallback {
         return object : ItemTouchHelper.SimpleCallback(
-            ItemTouchHelper.UP or ItemTouchHelper.DOWN,
-            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN,  // Drag directions (manual via handle)
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT  // Swipe directions
         ) {
+            // Disable long press to drag - only manual drag via handle
+            override fun isLongPressDragEnabled(): Boolean = false
+            
+            // Enable swipe
+            override fun isItemViewSwipeEnabled(): Boolean = true
             override fun onMove(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
@@ -225,6 +238,57 @@ class TasksActivity : AppCompatActivity() {
                         if (it.isLowerCase()) it.uppercaseChar() else it 
                     }
                     viewModel.insertTask(personaId, capitalizedTitle, description, personaBackgroundColor, isRecurring)
+                } else {
+                    Toast.makeText(this, "Please enter a task title", Toast.LENGTH_SHORT).show()
+                }
+            }
+        
+        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.cancel)) { _, _ ->
+            // Cancel - do nothing
+        }
+
+        dialog.show()
+    }
+
+    private fun showEditTaskDialog(task: com.samsara.polymath.data.Task) {
+        val dialogBinding = DialogAddTaskBinding.inflate(LayoutInflater.from(this))
+        
+        // Pre-fill with existing task data
+        dialogBinding.taskTitleEditText.setText(task.title)
+        dialogBinding.taskDescriptionEditText.setText(task.description)
+        dialogBinding.recurringCheckBox.isChecked = task.isRecurring
+        
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle(getString(R.string.edit_task))
+            .setView(dialogBinding.root)
+            .create()
+        
+        // Set dialog text colors for dark background
+        dialog.setOnShowListener {
+            val titleView = dialog.findViewById<android.widget.TextView>(android.R.id.title)
+            titleView?.setTextColor(android.graphics.Color.WHITE)
+            
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(android.graphics.Color.WHITE)
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(android.graphics.Color.WHITE)
+        }
+        
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.done)) { _, _ ->
+                val title = dialogBinding.taskTitleEditText.text?.toString()?.trim()
+                val description = dialogBinding.taskDescriptionEditText.text?.toString()?.trim() ?: ""
+                val isRecurring = dialogBinding.recurringCheckBox.isChecked
+                
+                if (!title.isNullOrEmpty()) {
+                    // Capitalize first letter of title
+                    val capitalizedTitle = title.replaceFirstChar { 
+                        if (it.isLowerCase()) it.uppercaseChar() else it 
+                    }
+                    // Update the existing task
+                    val updatedTask = task.copy(
+                        title = capitalizedTitle,
+                        description = description,
+                        isRecurring = isRecurring
+                    )
+                    viewModel.updateTask(updatedTask)
                 } else {
                     Toast.makeText(this, "Please enter a task title", Toast.LENGTH_SHORT).show()
                 }
