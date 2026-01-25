@@ -41,14 +41,9 @@ class PersonaAdapter(
         fun bind(personaWithCount: PersonaWithTaskCount) {
             val persona = personaWithCount.persona
             val completedCount = personaWithCount.completedTaskCount
-            val emoji = personaWithCount.emoji
             
-            // Display persona name with completed task count prefix and emoji
-            val displayText = if (emoji.isNotEmpty()) {
-                "$emoji $completedCount ${persona.name}"
-            } else {
-                "$completedCount ${persona.name}"
-            }
+            // Display persona name with completed task count prefix
+            val displayText = "$completedCount ${persona.name}"
             binding.personaNameTextView.text = displayText
             
             // Helper function to determine if color is dark
@@ -194,7 +189,6 @@ class PersonaAdapter(
             return oldItem.persona == newItem.persona
                 && oldItem.completedTaskCount == newItem.completedTaskCount
                 && oldItem.openTaskCount == newItem.openTaskCount
-                && oldItem.emoji == newItem.emoji
                 && oldItem.score == newItem.score
                 && oldItem.rankStatus == newItem.rankStatus
                 && oldItem.decayLevel == newItem.decayLevel

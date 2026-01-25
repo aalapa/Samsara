@@ -1,7 +1,7 @@
 package com.samsara.polymath.data
 
 /**
- * Wraps a Persona with its task statistics, progress score, and emoji indicator.
+ * Wraps a Persona with its task statistics, progress score, and visual indicators.
  *
  * Progress Score Calculation (with decay penalty):
  * Base Score = (1 + completedTasks / totalTasks) * openCount
@@ -27,17 +27,17 @@ package com.samsara.polymath.data
  * - 10 opens, 50% completion = 15 (1.5 × 10)
  * - 10 opens, 100% completion = 20 (2.0 × 10)
  *
- * Emoji Assignment:
- * - 😊 (smiling): Top 3 personas by score (if they have completed tasks)
- * - 😢 (sad): Bottom 3 personas by score, OR any persona with no completed tasks
- * - Empty: All other personas
+ * Visual Feedback:
+ * - Score displayed next to persona (matches ranking order)
+ * - Rank arrows (↑↓) show position changes
+ * - Decay visuals (opacity/desaturation) show neglect
  *
  * Tie-breaking: When scores are equal, personas with higher openCount rank higher.
  *
  * @param persona The persona entity
  * @param completedTaskCount Number of completed tasks for this persona
  * @param openTaskCount Number of open (incomplete) tasks for this persona
- * @param emoji Emoji indicator (😊 for top 3, 😢 for bottom 3, empty for others)
+ * @param emoji Deprecated - no longer used (kept for backward compatibility)
  * @param score Progress score calculated using the formula above (with decay applied)
  * @param rankStatus Track movement: UP, DOWN, STABLE
  * @param decayLevel Decay level based on days since last opened

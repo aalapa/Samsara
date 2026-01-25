@@ -77,22 +77,9 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
                     .thenByDescending { it.persona.openCount }
             )
 
-            // Assign emojis: top 3 get 😊, bottom 3 get 😢
-            // Personas with no completed tasks always get 😢
-            sortedPersonas.mapIndexed { index, personaWithStats ->
-                val emoji = when {
-                    // Personas with no completed tasks get sad emoji
-                    personaWithStats.completedTaskCount == 0 -> "😢"
-                    // Top 3 get smiling emoji
-                    index < 3 -> "😊"
-                    // Bottom 3 get sad emoji (only if there are at least 6 personas)
-                    sortedPersonas.size >= 6 && index >= sortedPersonas.size - 3 -> "😢"
-                    // Others get no emoji
-                    else -> ""
-                }
-                // Include rank status from persona
+            // Include rank status from persona
+            sortedPersonas.map { personaWithStats ->
                 personaWithStats.copy(
-                    emoji = emoji,
                     rankStatus = personaWithStats.persona.rankStatus
                 )
             }
