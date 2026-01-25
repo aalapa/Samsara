@@ -145,55 +145,8 @@ class PersonaAdapter(
                 onPersonaClick(persona)
             }
             
-            // Display tags
-            displayTags(personaWithCount.tags, textColor)
-        }
-        
-        private fun displayTags(tags: List<com.samsara.polymath.data.Tag>, textColor: Int) {
-            binding.tagsChipGroup.removeAllViews()
-            
-            if (tags.isEmpty()) {
-                binding.tagsChipGroup.visibility = View.GONE
-                return
-            }
-            
-            binding.tagsChipGroup.visibility = View.VISIBLE
-            
-            tags.forEach { tag ->
-                val chip = com.google.android.material.chip.Chip(binding.root.context).apply {
-                    text = tag.name
-                    isClickable = false
-                    isCheckable = false
-                    
-                    // Parse tag color if available
-                    val chipBgColor = try {
-                        if (tag.color != null) {
-                            Color.parseColor(tag.color)
-                        } else {
-                            Color.parseColor("#666666") // Default gray
-                        }
-                    } catch (e: Exception) {
-                        Color.parseColor("#666666")
-                    }
-                    
-                    chipBackgroundColor = android.content.res.ColorStateList.valueOf(chipBgColor)
-                    
-                    // Determine text color based on chip background brightness
-                    val chipTextColor = if (isColorDark(chipBgColor)) Color.WHITE else Color.BLACK
-                    setTextColor(chipTextColor)
-                    
-                    // Smaller chip styling
-                    textSize = 10f
-                    chipMinHeight = 24f
-                    setPadding(8, 0, 8, 0)
-                }
-                binding.tagsChipGroup.addView(chip)
-            }
-        }
-        
-        private fun isColorDark(color: Int): Boolean {
-            val darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
-            return darkness >= 0.5
+            // Keep tags hidden to maintain compact card size
+            binding.tagsChipGroup.visibility = View.GONE
         }
 
         /**
