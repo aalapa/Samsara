@@ -1,6 +1,3 @@
-// Apply init script to intercept signing config injection early
-apply(from = "init.gradle.kts")
-
 pluginManagement {
     repositories {
         google()
@@ -17,5 +14,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Samsara"
-include(":app")
+include(":application")
 

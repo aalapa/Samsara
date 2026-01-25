@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_report"
+        android:title="@string/view_report"
+        android:icon="@android:drawable/ic_menu_info_details"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_export"
+        android:title="@string/export_data"
+        android:icon="@android:drawable/ic_menu_share"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_import"
+        android:title="@string/import_data"
+        android:icon="@android:drawable/ic_menu_upload"
+        app:showAsAction="never" />
+</menu>
+
