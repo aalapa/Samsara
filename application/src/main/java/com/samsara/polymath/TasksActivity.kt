@@ -200,24 +200,10 @@ class TasksActivity : AppCompatActivity() {
     private fun showAddTaskDialog() {
         val dialogBinding = DialogAddTaskBinding.inflate(LayoutInflater.from(this))
         
-        // Set text colors to white for dark background
-        dialogBinding.taskTitleEditText.setTextColor(android.graphics.Color.WHITE)
-        dialogBinding.taskDescriptionEditText.setTextColor(android.graphics.Color.WHITE)
-        
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.add_task))
             .setView(dialogBinding.root)
             .create()
-        
-        // Set text colors to white for dark background
-        dialog.setOnShowListener {
-            val titleView = dialog.findViewById<android.widget.TextView>(android.R.id.title)
-            titleView?.setTextColor(android.graphics.Color.WHITE)
-            
-            // Set button text colors to white
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(android.graphics.Color.WHITE)
-            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(android.graphics.Color.WHITE)
-        }
         
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.done)) { _, _ ->
                 val title = dialogBinding.taskTitleEditText.text?.toString()?.trim()
@@ -304,9 +290,6 @@ class TasksActivity : AppCompatActivity() {
             }
         }
         
-        // Set text colors to white for dark background
-        dialogBinding.commentEditText.setTextColor(android.graphics.Color.WHITE)
-        
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.comments))
             .setView(dialogBinding.root)
@@ -314,16 +297,9 @@ class TasksActivity : AppCompatActivity() {
             .setNegativeButton(getString(R.string.cancel), null)
             .create()
         
-        // Set text colors to white for dark background
         dialog.setOnShowListener {
-            val titleView = dialog.findViewById<android.widget.TextView>(android.R.id.title)
-            titleView?.setTextColor(android.graphics.Color.WHITE)
-            
-            // Set button text colors to white
             val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-            positiveButton?.setTextColor(android.graphics.Color.WHITE)
-            negativeButton?.setTextColor(android.graphics.Color.WHITE)
             
             // Override positive button to keep dialog open when adding comment
             positiveButton?.setOnClickListener {

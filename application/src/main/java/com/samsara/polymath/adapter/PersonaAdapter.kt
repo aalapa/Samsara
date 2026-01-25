@@ -52,26 +52,41 @@ class PersonaAdapter(
                 return darkness >= 0.5
             }
             
-            // Apply background and text colors
+            // Helper function to desaturate a color (0.0 = grayscale, 1.0 = full color)
+            fun desaturateColor(color: Int, saturation: Float): Int {
+                val r = Color.red(color)
+                val g = Color.green(color)
+                val b = Color.blue(color)
+                val gray = (0.299 * r + 0.587 * g + 0.114 * b).toInt()
+                val newR = (gray + saturation * (r - gray)).toInt().coerceIn(0, 255)
+                val newG = (gray + saturation * (g - gray)).toInt().coerceIn(0, 255)
+                val newB = (gray + saturation * (b - gray)).toInt().coerceIn(0, 255)
+                return Color.rgb(newR, newG, newB)
+            }
+            
+            // Parse original background color
             var bgColor = Color.parseColor("#FFFFFF")
             try {
                 bgColor = Color.parseColor(persona.backgroundColor)
-                val textColor = Color.parseColor(persona.textColor)
-                binding.root.setCardBackgroundColor(bgColor)
-                binding.personaNameTextView.setTextColor(textColor)
-                binding.openCountTextView.setTextColor(textColor)
-                // Menu icon should be visible - use text color or white/black based on background
-                val menuIconColor = if (isColorDark(bgColor)) Color.WHITE else Color.BLACK
-                binding.menuButton.setColorFilter(menuIconColor)
             } catch (e: Exception) {
-                // Fallback to default colors if parsing fails
-                binding.root.setCardBackgroundColor(bgColor)
-                binding.personaNameTextView.setTextColor(Color.parseColor("#000000"))
-                binding.menuButton.setColorFilter(Color.parseColor("#8E8E93"))
+                // Fallback to white if parsing fails
+                bgColor = Color.parseColor("#FFFFFF")
             }
 
-            // Store bgColor for decay visuals (used later)
-            val finalBgColor = bgColor
+            // Calculate FINAL background color after applying decay
+            val finalBgColor = when (personaWithCount.decayLevel) {
+                DecayLevel.SERIOUS -> desaturateColor(bgColor, 0.3f)
+                else -> bgColor
+            }
+            
+            // Calculate text color based on FINAL background color
+            val textColor = if (isColorDark(finalBgColor)) Color.WHITE else Color.BLACK
+            val menuIconColor = if (isColorDark(finalBgColor)) Color.WHITE else Color.BLACK
+            
+            // Apply colors to UI
+            binding.personaNameTextView.setTextColor(textColor)
+            binding.openCountTextView.setTextColor(textColor)
+            binding.menuButton.setColorFilter(menuIconColor)
             
             // Show score (rounded to integer) if greater than 0
             // Score = (1 + completedTasks/totalTasks) × openCount × decayMultiplier
