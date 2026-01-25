@@ -116,6 +116,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
                         android:textStyle="bold"
+                        android:textColor="#1B5E20"
                         tools:text="Developer" />
 
                     <TextView
@@ -123,6 +124,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
+                        android:textColor="#2E7D32"
                         tools:text="Opened 25 times" />
 
                 </LinearLayout>
@@ -157,6 +159,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
                         android:textStyle="bold"
+                        android:textColor="#0D47A1"
                         tools:text="Writer" />
 
                     <TextView
@@ -164,6 +167,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
+                        android:textColor="#1565C0"
                         tools:text="Completion rate: 45% → 85% (+40%)" />
 
                 </LinearLayout>
@@ -198,6 +202,7 @@
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
                         android:textStyle="bold"
+                        android:textColor="#B71C1C"
                         tools:text="Musician" />
 
                     <TextView
@@ -205,6 +210,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
+                        android:textColor="#C62828"
                         tools:text="Not opened in 7 days" />
 
                 </LinearLayout>
