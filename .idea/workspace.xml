@@ -17,44 +17,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8839fe3f-3fd4-404e-92da-8ab4ba616565" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/checksums/sha1-checksums.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.11.1/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/Samsara.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/application/Samsara.application.androidTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/application/Samsara.application.androidTest.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/application/Samsara.application.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/application/Samsara.application.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/application/Samsara.application.main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/application/Samsara.application.unitTest.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/LockActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/LockActivity.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/PersonaReportActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/PersonaReportActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/PinSetupActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/PinSetupActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/SettingsActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/SettingsActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/adapter/PersonaReportAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/adapter/PersonaReportAdapter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/adapter/TagManagementAdapter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/adapter/TagManagementAdapter.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/data/PersonaReport.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/data/PersonaReport.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/data/PersonaTag.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/data/PersonaTag.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/data/PersonaWithTags.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/data/PersonaWithTags.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/data/Tag.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/data/Tag.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/data/TagDao.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/data/TagDao.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/repository/TagRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/repository/TagRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/util/AuthManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/util/AuthManager.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/viewmodel/PersonaReportViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/viewmodel/PersonaReportViewModel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/res/drawable/pin_dot_empty.xml" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/res/drawable/pin_dot_empty.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/res/drawable/pin_dot_filled.xml" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/res/drawable/pin_dot_filled.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/res/layout/activity_lock.xml" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/res/layout/activity_lock.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/src/main/res/layout/activity_persona_report.xml" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/res/layout/activity_persona_report.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/res/layout/activity_pin_setup.xml" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/res/layout/activity_pin_setup.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/res/layout/activity_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/res/layout/activity_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/res/layout/activity_tag_management.xml" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/res/layout/activity_tag_management.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/res/layout/dialog_create_tag.xml" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/res/layout/dialog_create_tag.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/res/layout/item_persona_report.xml" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/res/layout/item_persona_report.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/res/layout/item_tag_management.xml" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/res/layout/item_tag_management.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/res/menu/tag_menu.xml" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/res/menu/tag_menu.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build-clean.sh" beforeDir="false" afterPath="$PROJECT_DIR$/build-clean.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/reports/problems/problems-report.html" beforeDir="false" afterPath="$PROJECT_DIR$/build/reports/problems/problems-report.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/version.properties" beforeDir="false" afterPath="$PROJECT_DIR$/version.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

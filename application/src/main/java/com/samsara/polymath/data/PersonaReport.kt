@@ -25,7 +25,20 @@ data class ReportSummary(
     val personaReports: List<PersonaReport>,
     val mostImproved: List<PersonaReport>,
     val needsAttention: List<PersonaReport>,
-    val mostActive: List<PersonaReport>
+    val mostActive: List<PersonaReport>,
+    val tagsMostActive: List<TagReport> = emptyList(),
+    val tagsMostImproved: List<TagReport> = emptyList(),
+    val tagsNeedAttention: List<TagReport> = emptyList()
+)
+
+data class TagReport(
+    val tag: Tag,
+    val personaCount: Int,
+    val avgCompletionRate: Double,
+    val avgPreviousCompletionRate: Double,
+    val avgOpenCount: Double,
+    val avgImprovementScore: Double,
+    val completionRateTrend: TrendDirection
 )
 
 enum class ReportType {

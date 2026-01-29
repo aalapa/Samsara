@@ -115,6 +115,72 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
   public final RecyclerView personaReportsRecyclerView;
 
   @NonNull
+  public final TextView tagInsightsLabel;
+
+  @NonNull
+  public final TextView tagMostActive1Name;
+
+  @NonNull
+  public final TextView tagMostActive1Stats;
+
+  @NonNull
+  public final TextView tagMostActive2Name;
+
+  @NonNull
+  public final TextView tagMostActive2Stats;
+
+  @NonNull
+  public final MaterialCardView tagMostActiveCard1;
+
+  @NonNull
+  public final MaterialCardView tagMostActiveCard2;
+
+  @NonNull
+  public final TextView tagMostActiveLabel;
+
+  @NonNull
+  public final TextView tagMostImproved1Name;
+
+  @NonNull
+  public final TextView tagMostImproved1Stats;
+
+  @NonNull
+  public final TextView tagMostImproved2Name;
+
+  @NonNull
+  public final TextView tagMostImproved2Stats;
+
+  @NonNull
+  public final MaterialCardView tagMostImprovedCard1;
+
+  @NonNull
+  public final MaterialCardView tagMostImprovedCard2;
+
+  @NonNull
+  public final TextView tagMostImprovedLabel;
+
+  @NonNull
+  public final TextView tagNeedAttention1Name;
+
+  @NonNull
+  public final TextView tagNeedAttention1Stats;
+
+  @NonNull
+  public final TextView tagNeedAttention2Name;
+
+  @NonNull
+  public final TextView tagNeedAttention2Stats;
+
+  @NonNull
+  public final MaterialCardView tagNeedAttentionCard1;
+
+  @NonNull
+  public final MaterialCardView tagNeedAttentionCard2;
+
+  @NonNull
+  public final TextView tagNeedAttentionLabel;
+
+  @NonNull
   public final MaterialToolbar toolbar;
 
   @NonNull
@@ -136,6 +202,18 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
       @NonNull TextView needsAttention2PersonaStats, @NonNull ChipGroup needsAttention2Tags,
       @NonNull MaterialCardView needsAttentionCard1, @NonNull MaterialCardView needsAttentionCard2,
       @NonNull TextView needsAttentionLabel, @NonNull RecyclerView personaReportsRecyclerView,
+      @NonNull TextView tagInsightsLabel, @NonNull TextView tagMostActive1Name,
+      @NonNull TextView tagMostActive1Stats, @NonNull TextView tagMostActive2Name,
+      @NonNull TextView tagMostActive2Stats, @NonNull MaterialCardView tagMostActiveCard1,
+      @NonNull MaterialCardView tagMostActiveCard2, @NonNull TextView tagMostActiveLabel,
+      @NonNull TextView tagMostImproved1Name, @NonNull TextView tagMostImproved1Stats,
+      @NonNull TextView tagMostImproved2Name, @NonNull TextView tagMostImproved2Stats,
+      @NonNull MaterialCardView tagMostImprovedCard1,
+      @NonNull MaterialCardView tagMostImprovedCard2, @NonNull TextView tagMostImprovedLabel,
+      @NonNull TextView tagNeedAttention1Name, @NonNull TextView tagNeedAttention1Stats,
+      @NonNull TextView tagNeedAttention2Name, @NonNull TextView tagNeedAttention2Stats,
+      @NonNull MaterialCardView tagNeedAttentionCard1,
+      @NonNull MaterialCardView tagNeedAttentionCard2, @NonNull TextView tagNeedAttentionLabel,
       @NonNull MaterialToolbar toolbar, @NonNull MaterialButton weeklyButton) {
     this.rootView = rootView;
     this.dateRangeTextView = dateRangeTextView;
@@ -168,6 +246,28 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
     this.needsAttentionCard2 = needsAttentionCard2;
     this.needsAttentionLabel = needsAttentionLabel;
     this.personaReportsRecyclerView = personaReportsRecyclerView;
+    this.tagInsightsLabel = tagInsightsLabel;
+    this.tagMostActive1Name = tagMostActive1Name;
+    this.tagMostActive1Stats = tagMostActive1Stats;
+    this.tagMostActive2Name = tagMostActive2Name;
+    this.tagMostActive2Stats = tagMostActive2Stats;
+    this.tagMostActiveCard1 = tagMostActiveCard1;
+    this.tagMostActiveCard2 = tagMostActiveCard2;
+    this.tagMostActiveLabel = tagMostActiveLabel;
+    this.tagMostImproved1Name = tagMostImproved1Name;
+    this.tagMostImproved1Stats = tagMostImproved1Stats;
+    this.tagMostImproved2Name = tagMostImproved2Name;
+    this.tagMostImproved2Stats = tagMostImproved2Stats;
+    this.tagMostImprovedCard1 = tagMostImprovedCard1;
+    this.tagMostImprovedCard2 = tagMostImprovedCard2;
+    this.tagMostImprovedLabel = tagMostImprovedLabel;
+    this.tagNeedAttention1Name = tagNeedAttention1Name;
+    this.tagNeedAttention1Stats = tagNeedAttention1Stats;
+    this.tagNeedAttention2Name = tagNeedAttention2Name;
+    this.tagNeedAttention2Stats = tagNeedAttention2Stats;
+    this.tagNeedAttentionCard1 = tagNeedAttentionCard1;
+    this.tagNeedAttentionCard2 = tagNeedAttentionCard2;
+    this.tagNeedAttentionLabel = tagNeedAttentionLabel;
     this.toolbar = toolbar;
     this.weeklyButton = weeklyButton;
   }
@@ -379,6 +479,138 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tagInsightsLabel;
+      TextView tagInsightsLabel = ViewBindings.findChildViewById(rootView, id);
+      if (tagInsightsLabel == null) {
+        break missingId;
+      }
+
+      id = R.id.tagMostActive1Name;
+      TextView tagMostActive1Name = ViewBindings.findChildViewById(rootView, id);
+      if (tagMostActive1Name == null) {
+        break missingId;
+      }
+
+      id = R.id.tagMostActive1Stats;
+      TextView tagMostActive1Stats = ViewBindings.findChildViewById(rootView, id);
+      if (tagMostActive1Stats == null) {
+        break missingId;
+      }
+
+      id = R.id.tagMostActive2Name;
+      TextView tagMostActive2Name = ViewBindings.findChildViewById(rootView, id);
+      if (tagMostActive2Name == null) {
+        break missingId;
+      }
+
+      id = R.id.tagMostActive2Stats;
+      TextView tagMostActive2Stats = ViewBindings.findChildViewById(rootView, id);
+      if (tagMostActive2Stats == null) {
+        break missingId;
+      }
+
+      id = R.id.tagMostActiveCard1;
+      MaterialCardView tagMostActiveCard1 = ViewBindings.findChildViewById(rootView, id);
+      if (tagMostActiveCard1 == null) {
+        break missingId;
+      }
+
+      id = R.id.tagMostActiveCard2;
+      MaterialCardView tagMostActiveCard2 = ViewBindings.findChildViewById(rootView, id);
+      if (tagMostActiveCard2 == null) {
+        break missingId;
+      }
+
+      id = R.id.tagMostActiveLabel;
+      TextView tagMostActiveLabel = ViewBindings.findChildViewById(rootView, id);
+      if (tagMostActiveLabel == null) {
+        break missingId;
+      }
+
+      id = R.id.tagMostImproved1Name;
+      TextView tagMostImproved1Name = ViewBindings.findChildViewById(rootView, id);
+      if (tagMostImproved1Name == null) {
+        break missingId;
+      }
+
+      id = R.id.tagMostImproved1Stats;
+      TextView tagMostImproved1Stats = ViewBindings.findChildViewById(rootView, id);
+      if (tagMostImproved1Stats == null) {
+        break missingId;
+      }
+
+      id = R.id.tagMostImproved2Name;
+      TextView tagMostImproved2Name = ViewBindings.findChildViewById(rootView, id);
+      if (tagMostImproved2Name == null) {
+        break missingId;
+      }
+
+      id = R.id.tagMostImproved2Stats;
+      TextView tagMostImproved2Stats = ViewBindings.findChildViewById(rootView, id);
+      if (tagMostImproved2Stats == null) {
+        break missingId;
+      }
+
+      id = R.id.tagMostImprovedCard1;
+      MaterialCardView tagMostImprovedCard1 = ViewBindings.findChildViewById(rootView, id);
+      if (tagMostImprovedCard1 == null) {
+        break missingId;
+      }
+
+      id = R.id.tagMostImprovedCard2;
+      MaterialCardView tagMostImprovedCard2 = ViewBindings.findChildViewById(rootView, id);
+      if (tagMostImprovedCard2 == null) {
+        break missingId;
+      }
+
+      id = R.id.tagMostImprovedLabel;
+      TextView tagMostImprovedLabel = ViewBindings.findChildViewById(rootView, id);
+      if (tagMostImprovedLabel == null) {
+        break missingId;
+      }
+
+      id = R.id.tagNeedAttention1Name;
+      TextView tagNeedAttention1Name = ViewBindings.findChildViewById(rootView, id);
+      if (tagNeedAttention1Name == null) {
+        break missingId;
+      }
+
+      id = R.id.tagNeedAttention1Stats;
+      TextView tagNeedAttention1Stats = ViewBindings.findChildViewById(rootView, id);
+      if (tagNeedAttention1Stats == null) {
+        break missingId;
+      }
+
+      id = R.id.tagNeedAttention2Name;
+      TextView tagNeedAttention2Name = ViewBindings.findChildViewById(rootView, id);
+      if (tagNeedAttention2Name == null) {
+        break missingId;
+      }
+
+      id = R.id.tagNeedAttention2Stats;
+      TextView tagNeedAttention2Stats = ViewBindings.findChildViewById(rootView, id);
+      if (tagNeedAttention2Stats == null) {
+        break missingId;
+      }
+
+      id = R.id.tagNeedAttentionCard1;
+      MaterialCardView tagNeedAttentionCard1 = ViewBindings.findChildViewById(rootView, id);
+      if (tagNeedAttentionCard1 == null) {
+        break missingId;
+      }
+
+      id = R.id.tagNeedAttentionCard2;
+      MaterialCardView tagNeedAttentionCard2 = ViewBindings.findChildViewById(rootView, id);
+      if (tagNeedAttentionCard2 == null) {
+        break missingId;
+      }
+
+      id = R.id.tagNeedAttentionLabel;
+      TextView tagNeedAttentionLabel = ViewBindings.findChildViewById(rootView, id);
+      if (tagNeedAttentionLabel == null) {
+        break missingId;
+      }
+
       id = R.id.toolbar;
       MaterialToolbar toolbar = ViewBindings.findChildViewById(rootView, id);
       if (toolbar == null) {
@@ -399,8 +631,13 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
           mostImprovedCard1, mostImprovedCard2, mostImprovedLabel, needsAttention1PersonaName,
           needsAttention1PersonaStats, needsAttention1Tags, needsAttention2PersonaName,
           needsAttention2PersonaStats, needsAttention2Tags, needsAttentionCard1,
-          needsAttentionCard2, needsAttentionLabel, personaReportsRecyclerView, toolbar,
-          weeklyButton);
+          needsAttentionCard2, needsAttentionLabel, personaReportsRecyclerView, tagInsightsLabel,
+          tagMostActive1Name, tagMostActive1Stats, tagMostActive2Name, tagMostActive2Stats,
+          tagMostActiveCard1, tagMostActiveCard2, tagMostActiveLabel, tagMostImproved1Name,
+          tagMostImproved1Stats, tagMostImproved2Name, tagMostImproved2Stats, tagMostImprovedCard1,
+          tagMostImprovedCard2, tagMostImprovedLabel, tagNeedAttention1Name, tagNeedAttention1Stats,
+          tagNeedAttention2Name, tagNeedAttention2Stats, tagNeedAttentionCard1,
+          tagNeedAttentionCard2, tagNeedAttentionLabel, toolbar, weeklyButton);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

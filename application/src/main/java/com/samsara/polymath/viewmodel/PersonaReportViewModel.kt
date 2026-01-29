@@ -58,6 +58,23 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
             .sortedBy { it.currentOpenCount }
             .take(2)
 
+        // Generate tag-level insights by aggregating persona stats per tag
+        val tagReports = generateTagReports(personaReports)
+
+        val tagsMostActive = tagReports
+            .sortedByDescending { it.avgOpenCount }
+            .take(2)
+
+        val tagsMostImproved = tagReports
+            .filter { it.avgImprovementScore > 0 }
+            .sortedByDescending { it.avgImprovementScore }
+            .take(2)
+
+        val tagsNeedAttention = tagReports
+            .filter { it.avgOpenCount < 1.0 || it.avgCompletionRate < 0.3 }
+            .sortedBy { it.avgOpenCount }
+            .take(2)
+
         return ReportSummary(
             reportType = reportType,
             startDate = startTime,
@@ -65,7 +82,10 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
             personaReports = personaReports,
             mostImproved = mostImproved,
             needsAttention = needsAttention,
-            mostActive = mostActive
+            mostActive = mostActive,
+            tagsMostActive = tagsMostActive,
+            tagsMostImproved = tagsMostImproved,
+            tagsNeedAttention = tagsNeedAttention
         )
     }
 
@@ -134,6 +154,42 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
             improvementScore = improvementScore,
             tags = tags
         )
+    }
+
+    private fun generateTagReports(personaReports: List<PersonaReport>): List<TagReport> {
+        // Build a map of tag -> list of persona reports that have that tag
+        val tagToReports = mutableMapOf<Long, MutableList<PersonaReport>>()
+        val tagMap = mutableMapOf<Long, Tag>()
+
+        for (report in personaReports) {
+            for (tag in report.tags) {
+                tagMap[tag.id] = tag
+                tagToReports.getOrPut(tag.id) { mutableListOf() }.add(report)
+            }
+        }
+
+        return tagToReports.map { (tagId, reports) ->
+            val avgCompletionRate = reports.map { it.currentCompletionRate }.average()
+            val avgPreviousCompletionRate = reports.map { it.previousCompletionRate }.average()
+            val avgOpenCount = reports.map { it.currentOpenCount.toDouble() }.average()
+            val avgImprovementScore = reports.map { it.improvementScore }.average()
+
+            val completionRateTrend = when {
+                avgCompletionRate > avgPreviousCompletionRate + 0.05 -> TrendDirection.UP
+                avgCompletionRate < avgPreviousCompletionRate - 0.05 -> TrendDirection.DOWN
+                else -> TrendDirection.STABLE
+            }
+
+            TagReport(
+                tag = tagMap[tagId]!!,
+                personaCount = reports.size,
+                avgCompletionRate = avgCompletionRate,
+                avgPreviousCompletionRate = avgPreviousCompletionRate,
+                avgOpenCount = avgOpenCount,
+                avgImprovementScore = avgImprovementScore,
+                completionRateTrend = completionRateTrend
+            )
+        }
     }
 
     // Call this periodically to save current statistics for future comparisons

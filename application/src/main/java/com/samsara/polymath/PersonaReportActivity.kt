@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.samsara.polymath.adapter.PersonaReportAdapter
 import com.samsara.polymath.data.PersonaReport
 import com.samsara.polymath.data.ReportType
+import com.samsara.polymath.data.TagReport
 import com.samsara.polymath.databinding.ActivityPersonaReportBinding
 import com.samsara.polymath.viewmodel.PersonaReportViewModel
 import kotlinx.coroutines.launch
@@ -153,6 +154,79 @@ class PersonaReportActivity : AppCompatActivity() {
 
                 binding.needsAttentionLabel.visibility = if (report.needsAttention.isEmpty()) View.GONE else View.VISIBLE
 
+                // Tag Insights
+                val hasTagInsights = report.tagsMostActive.isNotEmpty() ||
+                        report.tagsMostImproved.isNotEmpty() ||
+                        report.tagsNeedAttention.isNotEmpty()
+                binding.tagInsightsLabel.visibility = if (hasTagInsights) View.VISIBLE else View.GONE
+
+                // Tags Most Active
+                bindTagCard(
+                    report.tagsMostActive.getOrNull(0),
+                    binding.tagMostActiveCard1,
+                    binding.tagMostActive1Name,
+                    binding.tagMostActive1Stats
+                ) { t -> "${t.personaCount} personas, avg ${String.format("%.1f", t.avgOpenCount)} opens" }
+
+                bindTagCard(
+                    report.tagsMostActive.getOrNull(1),
+                    binding.tagMostActiveCard2,
+                    binding.tagMostActive2Name,
+                    binding.tagMostActive2Stats
+                ) { t -> "${t.personaCount} personas, avg ${String.format("%.1f", t.avgOpenCount)} opens" }
+
+                binding.tagMostActiveLabel.visibility = if (report.tagsMostActive.isEmpty()) View.GONE else View.VISIBLE
+
+                // Tags Most Improved
+                bindTagCard(
+                    report.tagsMostImproved.getOrNull(0),
+                    binding.tagMostImprovedCard1,
+                    binding.tagMostImproved1Name,
+                    binding.tagMostImproved1Stats
+                ) { t ->
+                    val prev = (t.avgPreviousCompletionRate * 100).toInt()
+                    val curr = (t.avgCompletionRate * 100).toInt()
+                    "${t.personaCount} personas, completion: $prev% → $curr%"
+                }
+
+                bindTagCard(
+                    report.tagsMostImproved.getOrNull(1),
+                    binding.tagMostImprovedCard2,
+                    binding.tagMostImproved2Name,
+                    binding.tagMostImproved2Stats
+                ) { t ->
+                    val prev = (t.avgPreviousCompletionRate * 100).toInt()
+                    val curr = (t.avgCompletionRate * 100).toInt()
+                    "${t.personaCount} personas, completion: $prev% → $curr%"
+                }
+
+                binding.tagMostImprovedLabel.visibility = if (report.tagsMostImproved.isEmpty()) View.GONE else View.VISIBLE
+
+                // Tags Need Attention
+                bindTagCard(
+                    report.tagsNeedAttention.getOrNull(0),
+                    binding.tagNeedAttentionCard1,
+                    binding.tagNeedAttention1Name,
+                    binding.tagNeedAttention1Stats
+                ) { t ->
+                    val completion = (t.avgCompletionRate * 100).toInt()
+                    if (t.avgOpenCount < 1.0) "${t.personaCount} personas, not opened"
+                    else "${t.personaCount} personas, avg completion: $completion%"
+                }
+
+                bindTagCard(
+                    report.tagsNeedAttention.getOrNull(1),
+                    binding.tagNeedAttentionCard2,
+                    binding.tagNeedAttention2Name,
+                    binding.tagNeedAttention2Stats
+                ) { t ->
+                    val completion = (t.avgCompletionRate * 100).toInt()
+                    if (t.avgOpenCount < 1.0) "${t.personaCount} personas, not opened"
+                    else "${t.personaCount} personas, avg completion: $completion%"
+                }
+
+                binding.tagNeedAttentionLabel.visibility = if (report.tagsNeedAttention.isEmpty()) View.GONE else View.VISIBLE
+
                 // Update list
                 adapter.submitList(report.personaReports)
             } catch (e: Exception) {
@@ -166,6 +240,16 @@ class PersonaReportActivity : AppCompatActivity() {
                 binding.needsAttentionLabel.visibility = View.GONE
                 binding.needsAttentionCard1.visibility = View.GONE
                 binding.needsAttentionCard2.visibility = View.GONE
+                binding.tagInsightsLabel.visibility = View.GONE
+                binding.tagMostActiveLabel.visibility = View.GONE
+                binding.tagMostActiveCard1.visibility = View.GONE
+                binding.tagMostActiveCard2.visibility = View.GONE
+                binding.tagMostImprovedLabel.visibility = View.GONE
+                binding.tagMostImprovedCard1.visibility = View.GONE
+                binding.tagMostImprovedCard2.visibility = View.GONE
+                binding.tagNeedAttentionLabel.visibility = View.GONE
+                binding.tagNeedAttentionCard1.visibility = View.GONE
+                binding.tagNeedAttentionCard2.visibility = View.GONE
                 adapter.submitList(emptyList())
             }
         }
@@ -187,6 +271,22 @@ class PersonaReportActivity : AppCompatActivity() {
         nameView.text = report.persona.name
         statsView.text = statsFormatter(report)
         PersonaReportAdapter.populateTags(tagsChipGroup, report.tags)
+    }
+
+    private fun bindTagCard(
+        tagReport: TagReport?,
+        card: View,
+        nameView: android.widget.TextView,
+        statsView: android.widget.TextView,
+        statsFormatter: (TagReport) -> String
+    ) {
+        if (tagReport == null) {
+            card.visibility = View.GONE
+            return
+        }
+        card.visibility = View.VISIBLE
+        nameView.text = tagReport.tag.name
+        statsView.text = statsFormatter(tagReport)
     }
 
     private fun getNeedsAttentionMessage(report: PersonaReport): String {
