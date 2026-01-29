@@ -4,6 +4,8 @@ package com.samsara.polymath.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,7 +16,6 @@ import androidx.viewbinding.ViewBindings;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.chip.ChipGroup;
 import com.samsara.polymath.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -23,6 +24,12 @@ import java.lang.String;
 public final class ActivityPersonaReportBinding implements ViewBinding {
   @NonNull
   private final CoordinatorLayout rootView;
+
+  @NonNull
+  public final ImageView allPersonasArrow;
+
+  @NonNull
+  public final LinearLayout allPersonasHeader;
 
   @NonNull
   public final TextView dateRangeTextView;
@@ -37,7 +44,7 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
   public final TextView mostActive1PersonaStats;
 
   @NonNull
-  public final ChipGroup mostActive1Tags;
+  public final LinearLayout mostActive1Tags;
 
   @NonNull
   public final TextView mostActive2PersonaName;
@@ -46,13 +53,22 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
   public final TextView mostActive2PersonaStats;
 
   @NonNull
-  public final ChipGroup mostActive2Tags;
+  public final LinearLayout mostActive2Tags;
+
+  @NonNull
+  public final ImageView mostActiveArrow;
 
   @NonNull
   public final MaterialCardView mostActiveCard1;
 
   @NonNull
   public final MaterialCardView mostActiveCard2;
+
+  @NonNull
+  public final LinearLayout mostActiveContent;
+
+  @NonNull
+  public final LinearLayout mostActiveHeader;
 
   @NonNull
   public final TextView mostActiveLabel;
@@ -64,7 +80,7 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
   public final TextView mostImproved1PersonaStats;
 
   @NonNull
-  public final ChipGroup mostImproved1Tags;
+  public final LinearLayout mostImproved1Tags;
 
   @NonNull
   public final TextView mostImproved2PersonaName;
@@ -73,13 +89,22 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
   public final TextView mostImproved2PersonaStats;
 
   @NonNull
-  public final ChipGroup mostImproved2Tags;
+  public final LinearLayout mostImproved2Tags;
+
+  @NonNull
+  public final ImageView mostImprovedArrow;
 
   @NonNull
   public final MaterialCardView mostImprovedCard1;
 
   @NonNull
   public final MaterialCardView mostImprovedCard2;
+
+  @NonNull
+  public final LinearLayout mostImprovedContent;
+
+  @NonNull
+  public final LinearLayout mostImprovedHeader;
 
   @NonNull
   public final TextView mostImprovedLabel;
@@ -91,7 +116,7 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
   public final TextView needsAttention1PersonaStats;
 
   @NonNull
-  public final ChipGroup needsAttention1Tags;
+  public final LinearLayout needsAttention1Tags;
 
   @NonNull
   public final TextView needsAttention2PersonaName;
@@ -100,7 +125,10 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
   public final TextView needsAttention2PersonaStats;
 
   @NonNull
-  public final ChipGroup needsAttention2Tags;
+  public final LinearLayout needsAttention2Tags;
+
+  @NonNull
+  public final ImageView needsAttentionArrow;
 
   @NonNull
   public final MaterialCardView needsAttentionCard1;
@@ -109,10 +137,25 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
   public final MaterialCardView needsAttentionCard2;
 
   @NonNull
+  public final LinearLayout needsAttentionContent;
+
+  @NonNull
+  public final LinearLayout needsAttentionHeader;
+
+  @NonNull
   public final TextView needsAttentionLabel;
 
   @NonNull
   public final RecyclerView personaReportsRecyclerView;
+
+  @NonNull
+  public final ImageView tagInsightsArrow;
+
+  @NonNull
+  public final LinearLayout tagInsightsContent;
+
+  @NonNull
+  public final LinearLayout tagInsightsHeader;
 
   @NonNull
   public final TextView tagInsightsLabel;
@@ -187,21 +230,28 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
   public final MaterialButton weeklyButton;
 
   private ActivityPersonaReportBinding(@NonNull CoordinatorLayout rootView,
+      @NonNull ImageView allPersonasArrow, @NonNull LinearLayout allPersonasHeader,
       @NonNull TextView dateRangeTextView, @NonNull MaterialButton monthlyButton,
       @NonNull TextView mostActive1PersonaName, @NonNull TextView mostActive1PersonaStats,
-      @NonNull ChipGroup mostActive1Tags, @NonNull TextView mostActive2PersonaName,
-      @NonNull TextView mostActive2PersonaStats, @NonNull ChipGroup mostActive2Tags,
-      @NonNull MaterialCardView mostActiveCard1, @NonNull MaterialCardView mostActiveCard2,
-      @NonNull TextView mostActiveLabel, @NonNull TextView mostImproved1PersonaName,
-      @NonNull TextView mostImproved1PersonaStats, @NonNull ChipGroup mostImproved1Tags,
-      @NonNull TextView mostImproved2PersonaName, @NonNull TextView mostImproved2PersonaStats,
-      @NonNull ChipGroup mostImproved2Tags, @NonNull MaterialCardView mostImprovedCard1,
-      @NonNull MaterialCardView mostImprovedCard2, @NonNull TextView mostImprovedLabel,
+      @NonNull LinearLayout mostActive1Tags, @NonNull TextView mostActive2PersonaName,
+      @NonNull TextView mostActive2PersonaStats, @NonNull LinearLayout mostActive2Tags,
+      @NonNull ImageView mostActiveArrow, @NonNull MaterialCardView mostActiveCard1,
+      @NonNull MaterialCardView mostActiveCard2, @NonNull LinearLayout mostActiveContent,
+      @NonNull LinearLayout mostActiveHeader, @NonNull TextView mostActiveLabel,
+      @NonNull TextView mostImproved1PersonaName, @NonNull TextView mostImproved1PersonaStats,
+      @NonNull LinearLayout mostImproved1Tags, @NonNull TextView mostImproved2PersonaName,
+      @NonNull TextView mostImproved2PersonaStats, @NonNull LinearLayout mostImproved2Tags,
+      @NonNull ImageView mostImprovedArrow, @NonNull MaterialCardView mostImprovedCard1,
+      @NonNull MaterialCardView mostImprovedCard2, @NonNull LinearLayout mostImprovedContent,
+      @NonNull LinearLayout mostImprovedHeader, @NonNull TextView mostImprovedLabel,
       @NonNull TextView needsAttention1PersonaName, @NonNull TextView needsAttention1PersonaStats,
-      @NonNull ChipGroup needsAttention1Tags, @NonNull TextView needsAttention2PersonaName,
-      @NonNull TextView needsAttention2PersonaStats, @NonNull ChipGroup needsAttention2Tags,
-      @NonNull MaterialCardView needsAttentionCard1, @NonNull MaterialCardView needsAttentionCard2,
-      @NonNull TextView needsAttentionLabel, @NonNull RecyclerView personaReportsRecyclerView,
+      @NonNull LinearLayout needsAttention1Tags, @NonNull TextView needsAttention2PersonaName,
+      @NonNull TextView needsAttention2PersonaStats, @NonNull LinearLayout needsAttention2Tags,
+      @NonNull ImageView needsAttentionArrow, @NonNull MaterialCardView needsAttentionCard1,
+      @NonNull MaterialCardView needsAttentionCard2, @NonNull LinearLayout needsAttentionContent,
+      @NonNull LinearLayout needsAttentionHeader, @NonNull TextView needsAttentionLabel,
+      @NonNull RecyclerView personaReportsRecyclerView, @NonNull ImageView tagInsightsArrow,
+      @NonNull LinearLayout tagInsightsContent, @NonNull LinearLayout tagInsightsHeader,
       @NonNull TextView tagInsightsLabel, @NonNull TextView tagMostActive1Name,
       @NonNull TextView tagMostActive1Stats, @NonNull TextView tagMostActive2Name,
       @NonNull TextView tagMostActive2Stats, @NonNull MaterialCardView tagMostActiveCard1,
@@ -216,6 +266,8 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
       @NonNull MaterialCardView tagNeedAttentionCard2, @NonNull TextView tagNeedAttentionLabel,
       @NonNull MaterialToolbar toolbar, @NonNull MaterialButton weeklyButton) {
     this.rootView = rootView;
+    this.allPersonasArrow = allPersonasArrow;
+    this.allPersonasHeader = allPersonasHeader;
     this.dateRangeTextView = dateRangeTextView;
     this.monthlyButton = monthlyButton;
     this.mostActive1PersonaName = mostActive1PersonaName;
@@ -224,8 +276,11 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
     this.mostActive2PersonaName = mostActive2PersonaName;
     this.mostActive2PersonaStats = mostActive2PersonaStats;
     this.mostActive2Tags = mostActive2Tags;
+    this.mostActiveArrow = mostActiveArrow;
     this.mostActiveCard1 = mostActiveCard1;
     this.mostActiveCard2 = mostActiveCard2;
+    this.mostActiveContent = mostActiveContent;
+    this.mostActiveHeader = mostActiveHeader;
     this.mostActiveLabel = mostActiveLabel;
     this.mostImproved1PersonaName = mostImproved1PersonaName;
     this.mostImproved1PersonaStats = mostImproved1PersonaStats;
@@ -233,8 +288,11 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
     this.mostImproved2PersonaName = mostImproved2PersonaName;
     this.mostImproved2PersonaStats = mostImproved2PersonaStats;
     this.mostImproved2Tags = mostImproved2Tags;
+    this.mostImprovedArrow = mostImprovedArrow;
     this.mostImprovedCard1 = mostImprovedCard1;
     this.mostImprovedCard2 = mostImprovedCard2;
+    this.mostImprovedContent = mostImprovedContent;
+    this.mostImprovedHeader = mostImprovedHeader;
     this.mostImprovedLabel = mostImprovedLabel;
     this.needsAttention1PersonaName = needsAttention1PersonaName;
     this.needsAttention1PersonaStats = needsAttention1PersonaStats;
@@ -242,10 +300,16 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
     this.needsAttention2PersonaName = needsAttention2PersonaName;
     this.needsAttention2PersonaStats = needsAttention2PersonaStats;
     this.needsAttention2Tags = needsAttention2Tags;
+    this.needsAttentionArrow = needsAttentionArrow;
     this.needsAttentionCard1 = needsAttentionCard1;
     this.needsAttentionCard2 = needsAttentionCard2;
+    this.needsAttentionContent = needsAttentionContent;
+    this.needsAttentionHeader = needsAttentionHeader;
     this.needsAttentionLabel = needsAttentionLabel;
     this.personaReportsRecyclerView = personaReportsRecyclerView;
+    this.tagInsightsArrow = tagInsightsArrow;
+    this.tagInsightsContent = tagInsightsContent;
+    this.tagInsightsHeader = tagInsightsHeader;
     this.tagInsightsLabel = tagInsightsLabel;
     this.tagMostActive1Name = tagMostActive1Name;
     this.tagMostActive1Stats = tagMostActive1Stats;
@@ -299,6 +363,18 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.allPersonasArrow;
+      ImageView allPersonasArrow = ViewBindings.findChildViewById(rootView, id);
+      if (allPersonasArrow == null) {
+        break missingId;
+      }
+
+      id = R.id.allPersonasHeader;
+      LinearLayout allPersonasHeader = ViewBindings.findChildViewById(rootView, id);
+      if (allPersonasHeader == null) {
+        break missingId;
+      }
+
       id = R.id.dateRangeTextView;
       TextView dateRangeTextView = ViewBindings.findChildViewById(rootView, id);
       if (dateRangeTextView == null) {
@@ -324,7 +400,7 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
       }
 
       id = R.id.mostActive1Tags;
-      ChipGroup mostActive1Tags = ViewBindings.findChildViewById(rootView, id);
+      LinearLayout mostActive1Tags = ViewBindings.findChildViewById(rootView, id);
       if (mostActive1Tags == null) {
         break missingId;
       }
@@ -342,8 +418,14 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
       }
 
       id = R.id.mostActive2Tags;
-      ChipGroup mostActive2Tags = ViewBindings.findChildViewById(rootView, id);
+      LinearLayout mostActive2Tags = ViewBindings.findChildViewById(rootView, id);
       if (mostActive2Tags == null) {
+        break missingId;
+      }
+
+      id = R.id.mostActiveArrow;
+      ImageView mostActiveArrow = ViewBindings.findChildViewById(rootView, id);
+      if (mostActiveArrow == null) {
         break missingId;
       }
 
@@ -356,6 +438,18 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
       id = R.id.mostActiveCard2;
       MaterialCardView mostActiveCard2 = ViewBindings.findChildViewById(rootView, id);
       if (mostActiveCard2 == null) {
+        break missingId;
+      }
+
+      id = R.id.mostActiveContent;
+      LinearLayout mostActiveContent = ViewBindings.findChildViewById(rootView, id);
+      if (mostActiveContent == null) {
+        break missingId;
+      }
+
+      id = R.id.mostActiveHeader;
+      LinearLayout mostActiveHeader = ViewBindings.findChildViewById(rootView, id);
+      if (mostActiveHeader == null) {
         break missingId;
       }
 
@@ -378,7 +472,7 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
       }
 
       id = R.id.mostImproved1Tags;
-      ChipGroup mostImproved1Tags = ViewBindings.findChildViewById(rootView, id);
+      LinearLayout mostImproved1Tags = ViewBindings.findChildViewById(rootView, id);
       if (mostImproved1Tags == null) {
         break missingId;
       }
@@ -396,8 +490,14 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
       }
 
       id = R.id.mostImproved2Tags;
-      ChipGroup mostImproved2Tags = ViewBindings.findChildViewById(rootView, id);
+      LinearLayout mostImproved2Tags = ViewBindings.findChildViewById(rootView, id);
       if (mostImproved2Tags == null) {
+        break missingId;
+      }
+
+      id = R.id.mostImprovedArrow;
+      ImageView mostImprovedArrow = ViewBindings.findChildViewById(rootView, id);
+      if (mostImprovedArrow == null) {
         break missingId;
       }
 
@@ -410,6 +510,18 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
       id = R.id.mostImprovedCard2;
       MaterialCardView mostImprovedCard2 = ViewBindings.findChildViewById(rootView, id);
       if (mostImprovedCard2 == null) {
+        break missingId;
+      }
+
+      id = R.id.mostImprovedContent;
+      LinearLayout mostImprovedContent = ViewBindings.findChildViewById(rootView, id);
+      if (mostImprovedContent == null) {
+        break missingId;
+      }
+
+      id = R.id.mostImprovedHeader;
+      LinearLayout mostImprovedHeader = ViewBindings.findChildViewById(rootView, id);
+      if (mostImprovedHeader == null) {
         break missingId;
       }
 
@@ -432,7 +544,7 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
       }
 
       id = R.id.needsAttention1Tags;
-      ChipGroup needsAttention1Tags = ViewBindings.findChildViewById(rootView, id);
+      LinearLayout needsAttention1Tags = ViewBindings.findChildViewById(rootView, id);
       if (needsAttention1Tags == null) {
         break missingId;
       }
@@ -450,8 +562,14 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
       }
 
       id = R.id.needsAttention2Tags;
-      ChipGroup needsAttention2Tags = ViewBindings.findChildViewById(rootView, id);
+      LinearLayout needsAttention2Tags = ViewBindings.findChildViewById(rootView, id);
       if (needsAttention2Tags == null) {
+        break missingId;
+      }
+
+      id = R.id.needsAttentionArrow;
+      ImageView needsAttentionArrow = ViewBindings.findChildViewById(rootView, id);
+      if (needsAttentionArrow == null) {
         break missingId;
       }
 
@@ -467,6 +585,18 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.needsAttentionContent;
+      LinearLayout needsAttentionContent = ViewBindings.findChildViewById(rootView, id);
+      if (needsAttentionContent == null) {
+        break missingId;
+      }
+
+      id = R.id.needsAttentionHeader;
+      LinearLayout needsAttentionHeader = ViewBindings.findChildViewById(rootView, id);
+      if (needsAttentionHeader == null) {
+        break missingId;
+      }
+
       id = R.id.needsAttentionLabel;
       TextView needsAttentionLabel = ViewBindings.findChildViewById(rootView, id);
       if (needsAttentionLabel == null) {
@@ -476,6 +606,24 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
       id = R.id.personaReportsRecyclerView;
       RecyclerView personaReportsRecyclerView = ViewBindings.findChildViewById(rootView, id);
       if (personaReportsRecyclerView == null) {
+        break missingId;
+      }
+
+      id = R.id.tagInsightsArrow;
+      ImageView tagInsightsArrow = ViewBindings.findChildViewById(rootView, id);
+      if (tagInsightsArrow == null) {
+        break missingId;
+      }
+
+      id = R.id.tagInsightsContent;
+      LinearLayout tagInsightsContent = ViewBindings.findChildViewById(rootView, id);
+      if (tagInsightsContent == null) {
+        break missingId;
+      }
+
+      id = R.id.tagInsightsHeader;
+      LinearLayout tagInsightsHeader = ViewBindings.findChildViewById(rootView, id);
+      if (tagInsightsHeader == null) {
         break missingId;
       }
 
@@ -623,21 +771,25 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityPersonaReportBinding((CoordinatorLayout) rootView, dateRangeTextView,
-          monthlyButton, mostActive1PersonaName, mostActive1PersonaStats, mostActive1Tags,
-          mostActive2PersonaName, mostActive2PersonaStats, mostActive2Tags, mostActiveCard1,
-          mostActiveCard2, mostActiveLabel, mostImproved1PersonaName, mostImproved1PersonaStats,
+      return new ActivityPersonaReportBinding((CoordinatorLayout) rootView, allPersonasArrow,
+          allPersonasHeader, dateRangeTextView, monthlyButton, mostActive1PersonaName,
+          mostActive1PersonaStats, mostActive1Tags, mostActive2PersonaName, mostActive2PersonaStats,
+          mostActive2Tags, mostActiveArrow, mostActiveCard1, mostActiveCard2, mostActiveContent,
+          mostActiveHeader, mostActiveLabel, mostImproved1PersonaName, mostImproved1PersonaStats,
           mostImproved1Tags, mostImproved2PersonaName, mostImproved2PersonaStats, mostImproved2Tags,
-          mostImprovedCard1, mostImprovedCard2, mostImprovedLabel, needsAttention1PersonaName,
+          mostImprovedArrow, mostImprovedCard1, mostImprovedCard2, mostImprovedContent,
+          mostImprovedHeader, mostImprovedLabel, needsAttention1PersonaName,
           needsAttention1PersonaStats, needsAttention1Tags, needsAttention2PersonaName,
-          needsAttention2PersonaStats, needsAttention2Tags, needsAttentionCard1,
-          needsAttentionCard2, needsAttentionLabel, personaReportsRecyclerView, tagInsightsLabel,
-          tagMostActive1Name, tagMostActive1Stats, tagMostActive2Name, tagMostActive2Stats,
-          tagMostActiveCard1, tagMostActiveCard2, tagMostActiveLabel, tagMostImproved1Name,
-          tagMostImproved1Stats, tagMostImproved2Name, tagMostImproved2Stats, tagMostImprovedCard1,
-          tagMostImprovedCard2, tagMostImprovedLabel, tagNeedAttention1Name, tagNeedAttention1Stats,
-          tagNeedAttention2Name, tagNeedAttention2Stats, tagNeedAttentionCard1,
-          tagNeedAttentionCard2, tagNeedAttentionLabel, toolbar, weeklyButton);
+          needsAttention2PersonaStats, needsAttention2Tags, needsAttentionArrow,
+          needsAttentionCard1, needsAttentionCard2, needsAttentionContent, needsAttentionHeader,
+          needsAttentionLabel, personaReportsRecyclerView, tagInsightsArrow, tagInsightsContent,
+          tagInsightsHeader, tagInsightsLabel, tagMostActive1Name, tagMostActive1Stats,
+          tagMostActive2Name, tagMostActive2Stats, tagMostActiveCard1, tagMostActiveCard2,
+          tagMostActiveLabel, tagMostImproved1Name, tagMostImproved1Stats, tagMostImproved2Name,
+          tagMostImproved2Stats, tagMostImprovedCard1, tagMostImprovedCard2, tagMostImprovedLabel,
+          tagNeedAttention1Name, tagNeedAttention1Stats, tagNeedAttention2Name,
+          tagNeedAttention2Stats, tagNeedAttentionCard1, tagNeedAttentionCard2,
+          tagNeedAttentionLabel, toolbar, weeklyButton);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

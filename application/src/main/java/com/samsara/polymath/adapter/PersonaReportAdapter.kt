@@ -1,14 +1,17 @@
 package com.samsara.polymath.adapter
 
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
 import com.samsara.polymath.R
 import com.samsara.polymath.data.PersonaReport
 import com.samsara.polymath.data.Tag
@@ -95,8 +98,8 @@ class PersonaReportAdapter : ListAdapter<PersonaReport, PersonaReportAdapter.Per
             // Tasks summary
             binding.tasksTextView.text = "${report.completedTasks} completed / ${report.totalTasks} total tasks"
 
-            // Tags
-            populateTags(binding.tagsChipGroup, report.tags)
+            // Tags as circles on the right
+            populateTagCircles(binding.tagsContainer, report.tags)
         }
     }
 
@@ -111,32 +114,41 @@ class PersonaReportAdapter : ListAdapter<PersonaReport, PersonaReportAdapter.Per
     }
 
     companion object {
-        fun populateTags(chipGroup: ChipGroup, tags: List<Tag>) {
-            chipGroup.removeAllViews()
+        fun populateTagCircles(container: LinearLayout, tags: List<Tag>) {
+            container.removeAllViews()
             if (tags.isEmpty()) {
-                chipGroup.visibility = View.GONE
+                container.visibility = View.GONE
                 return
             }
-            chipGroup.visibility = View.VISIBLE
+            container.visibility = View.VISIBLE
+            val sizePx = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 28f, container.resources.displayMetrics
+            ).toInt()
+            val marginPx = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 4f, container.resources.displayMetrics
+            ).toInt()
+
             for (tag in tags) {
-                val chip = Chip(chipGroup.context).apply {
-                    text = tag.name
-                    isClickable = false
-                    isCheckable = false
-                    textSize = 10f
-                    chipMinHeight = 24f
-                    ensureAccessibleTouchTarget(0)
-                    tag.color?.let { colorStr ->
-                        try {
-                            val color = Color.parseColor(colorStr)
-                            chipBackgroundColor = android.content.res.ColorStateList.valueOf(color)
-                            // Use white text on dark backgrounds
-                            val luminance = (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
-                            setTextColor(if (luminance < 0.5) Color.WHITE else Color.BLACK)
-                        } catch (_: Exception) { }
+                val tv = TextView(container.context).apply {
+                    text = tag.name.firstOrNull()?.uppercase() ?: "?"
+                    setTextColor(Color.WHITE)
+                    textSize = 12f
+                    gravity = Gravity.CENTER
+                    val bg = GradientDrawable().apply {
+                        shape = GradientDrawable.OVAL
+                        val bgColor = try {
+                            tag.color?.let { Color.parseColor(it) } ?: 0xFF90A4AE.toInt()
+                        } catch (_: Exception) {
+                            0xFF90A4AE.toInt()
+                        }
+                        setColor(bgColor)
+                    }
+                    background = bg
+                    layoutParams = LinearLayout.LayoutParams(sizePx, sizePx).apply {
+                        marginStart = marginPx
                     }
                 }
-                chipGroup.addView(chip)
+                container.addView(tv)
             }
         }
     }

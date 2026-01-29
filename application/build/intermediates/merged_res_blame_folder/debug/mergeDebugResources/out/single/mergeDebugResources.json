@@ -4,12 +4,12 @@
         "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-43:/mipmap-xxxhdpi/ic_launcher_foreground.webp"
     },
     {
-        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-debug-41:/layout_dialog_add_task.xml.flat",
-        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-43:/layout/dialog_add_task.xml"
-    },
-    {
         "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-debug-41:/layout_activity_lock.xml.flat",
         "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-43:/layout/activity_lock.xml"
+    },
+    {
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-debug-41:/layout_dialog_add_task.xml.flat",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-43:/layout/dialog_add_task.xml"
     },
     {
         "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-debug-41:/mipmap-anydpi-v26_ic_launcher.xml.flat",
@@ -66,6 +66,10 @@
     {
         "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-debug-41:/layout_activity_pin_setup.xml.flat",
         "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-43:/layout/activity_pin_setup.xml"
+    },
+    {
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-debug-41:/drawable_tag_circle.xml.flat",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-43:/drawable/tag_circle.xml"
     },
     {
         "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-debug-41:/drawable_ic_rank_stable.xml.flat",
@@ -126,6 +130,10 @@
     {
         "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-debug-41:/mipmap-hdpi_ic_launcher.webp.flat",
         "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-43:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-debug-41:/drawable_ic_expand_more.xml.flat",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-43:/drawable/ic_expand_more.xml"
     },
     {
         "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-debug-41:/menu_main_menu.xml.flat",

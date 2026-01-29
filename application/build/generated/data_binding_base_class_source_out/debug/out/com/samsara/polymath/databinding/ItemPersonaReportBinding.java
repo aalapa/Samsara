@@ -5,13 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.chip.ChipGroup;
 import com.samsara.polymath.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -43,7 +43,7 @@ public final class ItemPersonaReportBinding implements ViewBinding {
   public final TextView personaNameTextView;
 
   @NonNull
-  public final ChipGroup tagsChipGroup;
+  public final LinearLayout tagsContainer;
 
   @NonNull
   public final TextView tasksTextView;
@@ -55,7 +55,7 @@ public final class ItemPersonaReportBinding implements ViewBinding {
       @NonNull TextView completionRateChangeTextView, @NonNull TextView completionRateTextView,
       @NonNull ImageView completionRateTrendImageView, @NonNull TextView openCountChangeTextView,
       @NonNull TextView openCountTextView, @NonNull ImageView openCountTrendImageView,
-      @NonNull TextView personaNameTextView, @NonNull ChipGroup tagsChipGroup,
+      @NonNull TextView personaNameTextView, @NonNull LinearLayout tagsContainer,
       @NonNull TextView tasksTextView, @NonNull ImageView trendIndicatorImageView) {
     this.rootView = rootView;
     this.completionRateChangeTextView = completionRateChangeTextView;
@@ -65,7 +65,7 @@ public final class ItemPersonaReportBinding implements ViewBinding {
     this.openCountTextView = openCountTextView;
     this.openCountTrendImageView = openCountTrendImageView;
     this.personaNameTextView = personaNameTextView;
-    this.tagsChipGroup = tagsChipGroup;
+    this.tagsContainer = tagsContainer;
     this.tasksTextView = tasksTextView;
     this.trendIndicatorImageView = trendIndicatorImageView;
   }
@@ -139,9 +139,9 @@ public final class ItemPersonaReportBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.tagsChipGroup;
-      ChipGroup tagsChipGroup = ViewBindings.findChildViewById(rootView, id);
-      if (tagsChipGroup == null) {
+      id = R.id.tagsContainer;
+      LinearLayout tagsContainer = ViewBindings.findChildViewById(rootView, id);
+      if (tagsContainer == null) {
         break missingId;
       }
 
@@ -159,7 +159,7 @@ public final class ItemPersonaReportBinding implements ViewBinding {
 
       return new ItemPersonaReportBinding((MaterialCardView) rootView, completionRateChangeTextView,
           completionRateTextView, completionRateTrendImageView, openCountChangeTextView,
-          openCountTextView, openCountTrendImageView, personaNameTextView, tagsChipGroup,
+          openCountTextView, openCountTrendImageView, personaNameTextView, tagsContainer,
           tasksTextView, trendIndicatorImageView);
     }
     String missingId = rootView.getResources().getResourceName(id);
