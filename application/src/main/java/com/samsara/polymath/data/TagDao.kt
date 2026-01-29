@@ -31,6 +31,12 @@ interface TagDao {
            "WHERE persona_tags.personaId = :personaId " +
            "ORDER BY tags.name ASC")
     fun getTagsForPersona(personaId: Long): Flow<List<Tag>>
+
+    @Query("SELECT tags.* FROM tags " +
+           "INNER JOIN persona_tags ON tags.id = persona_tags.tagId " +
+           "WHERE persona_tags.personaId = :personaId " +
+           "ORDER BY tags.name ASC")
+    suspend fun getTagsForPersonaSync(personaId: Long): List<Tag>
     
     @Query("SELECT COUNT(*) FROM persona_tags WHERE tagId = :tagId")
     suspend fun getPersonaCountForTag(tagId: Long): Int
@@ -48,4 +54,5 @@ data class TagWithUsageCount(
     @ColumnInfo(name = "usage_count")
     val usageCount: Int
 )
+
 

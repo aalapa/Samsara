@@ -131,6 +131,13 @@
             android:textColor="@android:color/darker_gray"
             tools:text="15 completed / 20 total tasks" />
 
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/tagsChipGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            app:singleLine="true" />
+
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

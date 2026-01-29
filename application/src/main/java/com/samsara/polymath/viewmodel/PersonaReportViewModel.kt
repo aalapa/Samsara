@@ -12,18 +12,20 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
 class PersonaReportViewModel(application: Application) : AndroidViewModel(application) {
-    
+
     private val personaRepository: PersonaRepository
     private val taskRepository: TaskRepository
     private val statisticsRepository: PersonaStatisticsRepository
-    
+    private val tagDao: TagDao
+
     init {
         val database = AppDatabase.getDatabase(application)
         personaRepository = PersonaRepository(database.personaDao())
         taskRepository = TaskRepository(database.taskDao())
         statisticsRepository = PersonaStatisticsRepository(database.personaStatisticsDao())
+        tagDao = database.tagDao()
     }
-    
+
     suspend fun generateReport(reportType: ReportType): ReportSummary {
         val now = System.currentTimeMillis()
         val daysToLookBack = when (reportType) {
@@ -32,22 +34,30 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
         }
         val startTime = now - TimeUnit.DAYS.toMillis(daysToLookBack.toLong())
         val previousPeriodStart = startTime - TimeUnit.DAYS.toMillis(daysToLookBack.toLong())
-        
+
         // Get all personas
         val personas = personaRepository.getAllPersonasSync()
-        
+
         // Get current and previous statistics for each persona
         val personaReports = personas.map { persona ->
             generatePersonaReport(persona, startTime, previousPeriodStart, now)
         }.sortedByDescending { it.improvementScore }
-        
-        // Find highlights
-        val mostActive = personaReports.maxByOrNull { it.currentOpenCount }
-        val mostImproved = personaReports.maxByOrNull { it.improvementScore }
-        val needsAttention = personaReports.filter { 
-            it.currentOpenCount == 0 || it.currentCompletionRate < 0.3 
-        }.minByOrNull { it.currentOpenCount }
-        
+
+        // Find highlights - top 2 each
+        val mostActive = personaReports
+            .sortedByDescending { it.currentOpenCount }
+            .take(2)
+
+        val mostImproved = personaReports
+            .filter { it.improvementScore > 0 }
+            .sortedByDescending { it.improvementScore }
+            .take(2)
+
+        val needsAttention = personaReports
+            .filter { it.currentOpenCount == 0 || it.currentCompletionRate < 0.3 }
+            .sortedBy { it.currentOpenCount }
+            .take(2)
+
         return ReportSummary(
             reportType = reportType,
             startDate = startTime,
@@ -58,7 +68,7 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
             mostActive = mostActive
         )
     }
-    
+
     private suspend fun generatePersonaReport(
         persona: Persona,
         startTime: Long,
@@ -74,40 +84,43 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
         } else {
             0.0
         }
-        
+
         // For open count, we'll use the current openCount from the persona
         val currentOpenCount = persona.openCount
-        
+
+        // Get tags for this persona
+        val tags = tagDao.getTagsForPersonaSync(persona.id)
+
         // Try to get previous period stats from saved statistics
         val previousStats = statisticsRepository.getStatisticsForPersona(persona.id, previousPeriodStart)
             .filter { it.timestamp < startTime }
             .maxByOrNull { it.timestamp }
-        
+
         val previousOpenCount = previousStats?.openCount ?: 0
         val previousCompletionRate = if (previousStats != null && previousStats.totalTasks > 0) {
             previousStats.completedTasks.toDouble() / previousStats.totalTasks
         } else {
             currentCompletionRate // If no previous data, assume same as current
         }
-        
+
         // Determine trends
         val openCountTrend = when {
             currentOpenCount > previousOpenCount -> TrendDirection.UP
             currentOpenCount < previousOpenCount -> TrendDirection.DOWN
             else -> TrendDirection.STABLE
         }
-        
+
         val completionRateTrend = when {
             currentCompletionRate > previousCompletionRate + 0.05 -> TrendDirection.UP
             currentCompletionRate < previousCompletionRate - 0.05 -> TrendDirection.DOWN
             else -> TrendDirection.STABLE
         }
-        
+
         // Calculate improvement score (higher is better)
         val completionRateImprovement = (currentCompletionRate - previousCompletionRate) * 100
         val openCountImprovement = (currentOpenCount - previousOpenCount).toDouble()
         val improvementScore = completionRateImprovement * 2 + openCountImprovement * 0.5
-        
+
         return PersonaReport(
             persona = persona,
             currentOpenCount = currentOpenCount,
@@ -118,22 +131,23 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
             previousCompletionRate = previousCompletionRate,
             openCountTrend = openCountTrend,
             completionRateTrend = completionRateTrend,
-            improvementScore = improvementScore
+            improvementScore = improvementScore,
+            tags = tags
         )
     }
-    
+
     // Call this periodically to save current statistics for future comparisons
     fun saveCurrentStatistics() {
         viewModelScope.launch {
             val personas = personaRepository.getAllPersonasSync()
             val now = System.currentTimeMillis()
-            
+
             personas.forEach { persona ->
                 val tasks = taskRepository.getTasksByPersonaSync(persona.id)
                 val completedTasks = tasks.count { it.isCompleted }
                 val totalTasks = tasks.size
                 val score = calculatePersonaScore(persona, totalTasks, completedTasks)
-                
+
                 statisticsRepository.insertStatistics(
                     PersonaStatistics(
                         personaId = persona.id,
@@ -145,17 +159,17 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
                     )
                 )
             }
-            
+
             // Clean up old statistics (keep last 90 days)
             val ninetyDaysAgo = now - TimeUnit.DAYS.toMillis(90)
             statisticsRepository.deleteOldStatistics(ninetyDaysAgo)
         }
     }
-    
+
     private fun calculatePersonaScore(persona: Persona, totalTasks: Int, completedTasks: Int): Double {
         val completionRate = if (totalTasks > 0) completedTasks.toDouble() / totalTasks else 0.0
         val openCount = persona.openCount.toDouble()
-        
+
         val daysSinceLastOpened = TimeUnit.MILLISECONDS.toDays(
             System.currentTimeMillis() - persona.lastOpenedAt
         )
@@ -165,15 +179,14 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
             daysSinceLastOpened <= 20 -> 0.65   // MEDIUM: 14-20 days
             else -> 0.4                          // SERIOUS: 21+ days
         }
-        
+
         // Use the same formula as main ranking: (1 + completionRate) * openCount * decay
         val baseScore = if (totalTasks > 0) {
             (1 + completionRate) * openCount
         } else {
             openCount // If no tasks, score = openCount
         }
-        
+
         return baseScore * decayMultiplier
     }
 }
-

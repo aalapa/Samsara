@@ -10,7 +10,8 @@ data class PersonaReport(
     val previousCompletionRate: Double,
     val openCountTrend: TrendDirection,
     val completionRateTrend: TrendDirection,
-    val improvementScore: Double // Combined score for ranking
+    val improvementScore: Double, // Combined score for ranking
+    val tags: List<Tag> = emptyList()
 )
 
 enum class TrendDirection {
@@ -22,12 +23,11 @@ data class ReportSummary(
     val startDate: Long,
     val endDate: Long,
     val personaReports: List<PersonaReport>,
-    val mostImproved: PersonaReport?,
-    val needsAttention: PersonaReport?,
-    val mostActive: PersonaReport?
+    val mostImproved: List<PersonaReport>,
+    val needsAttention: List<PersonaReport>,
+    val mostActive: List<PersonaReport>
 )
 
 enum class ReportType {
     WEEKLY, MONTHLY
 }
-

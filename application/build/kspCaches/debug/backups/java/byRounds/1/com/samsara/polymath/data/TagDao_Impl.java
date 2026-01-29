@@ -393,6 +393,54 @@ public final class TagDao_Impl implements TagDao {
   }
 
   @Override
+  public Object getTagsForPersonaSync(final long personaId,
+      final Continuation<? super List<Tag>> $completion) {
+    final String _sql = "SELECT tags.* FROM tags INNER JOIN persona_tags ON tags.id = persona_tags.tagId WHERE persona_tags.personaId = ? ORDER BY tags.name ASC";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, personaId);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<Tag>>() {
+      @Override
+      @NonNull
+      public List<Tag> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
+          final int _cursorIndexOfName = CursorUtil.getColumnIndexOrThrow(_cursor, "name");
+          final int _cursorIndexOfColor = CursorUtil.getColumnIndexOrThrow(_cursor, "color");
+          final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "created_at");
+          final int _cursorIndexOfOrder = CursorUtil.getColumnIndexOrThrow(_cursor, "order");
+          final List<Tag> _result = new ArrayList<Tag>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final Tag _item;
+            final long _tmpId;
+            _tmpId = _cursor.getLong(_cursorIndexOfId);
+            final String _tmpName;
+            _tmpName = _cursor.getString(_cursorIndexOfName);
+            final String _tmpColor;
+            if (_cursor.isNull(_cursorIndexOfColor)) {
+              _tmpColor = null;
+            } else {
+              _tmpColor = _cursor.getString(_cursorIndexOfColor);
+            }
+            final long _tmpCreatedAt;
+            _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
+            final int _tmpOrder;
+            _tmpOrder = _cursor.getInt(_cursorIndexOfOrder);
+            _item = new Tag(_tmpId,_tmpName,_tmpColor,_tmpCreatedAt,_tmpOrder);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
   public Object getPersonaCountForTag(final long tagId,
       final Continuation<? super Integer> $completion) {
     final String _sql = "SELECT COUNT(*) FROM persona_tags WHERE tagId = ?";

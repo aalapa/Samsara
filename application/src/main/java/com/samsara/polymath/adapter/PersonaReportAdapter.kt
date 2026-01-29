@@ -1,13 +1,17 @@
 package com.samsara.polymath.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.samsara.polymath.R
 import com.samsara.polymath.data.PersonaReport
+import com.samsara.polymath.data.Tag
 import com.samsara.polymath.data.TrendDirection
 import com.samsara.polymath.databinding.ItemPersonaReportBinding
 
@@ -31,7 +35,7 @@ class PersonaReportAdapter : ListAdapter<PersonaReport, PersonaReportAdapter.Per
 
         fun bind(report: PersonaReport) {
             binding.personaNameTextView.text = report.persona.name
-            
+
             // Set overall trend indicator
             when (report.completionRateTrend) {
                 TrendDirection.UP -> {
@@ -51,7 +55,7 @@ class PersonaReportAdapter : ListAdapter<PersonaReport, PersonaReportAdapter.Per
             // Open count
             binding.openCountTextView.text = report.currentOpenCount.toString()
             val openCountChange = report.currentOpenCount - report.previousOpenCount
-            
+
             if (openCountChange > 0) {
                 binding.openCountTrendImageView.setImageResource(R.drawable.ic_rank_up)
                 binding.openCountTrendImageView.visibility = View.VISIBLE
@@ -70,9 +74,9 @@ class PersonaReportAdapter : ListAdapter<PersonaReport, PersonaReportAdapter.Per
             // Completion rate
             val completionRatePercentage = (report.currentCompletionRate * 100).toInt()
             binding.completionRateTextView.text = "$completionRatePercentage%"
-            
+
             val completionRateChange = ((report.currentCompletionRate - report.previousCompletionRate) * 100).toInt()
-            
+
             if (completionRateChange > 0) {
                 binding.completionRateTrendImageView.setImageResource(R.drawable.ic_rank_up)
                 binding.completionRateTrendImageView.visibility = View.VISIBLE
@@ -90,6 +94,9 @@ class PersonaReportAdapter : ListAdapter<PersonaReport, PersonaReportAdapter.Per
 
             // Tasks summary
             binding.tasksTextView.text = "${report.completedTasks} completed / ${report.totalTasks} total tasks"
+
+            // Tags
+            populateTags(binding.tagsChipGroup, report.tags)
         }
     }
 
@@ -102,5 +109,35 @@ class PersonaReportAdapter : ListAdapter<PersonaReport, PersonaReportAdapter.Per
             return oldItem == newItem
         }
     }
-}
 
+    companion object {
+        fun populateTags(chipGroup: ChipGroup, tags: List<Tag>) {
+            chipGroup.removeAllViews()
+            if (tags.isEmpty()) {
+                chipGroup.visibility = View.GONE
+                return
+            }
+            chipGroup.visibility = View.VISIBLE
+            for (tag in tags) {
+                val chip = Chip(chipGroup.context).apply {
+                    text = tag.name
+                    isClickable = false
+                    isCheckable = false
+                    textSize = 10f
+                    chipMinHeight = 24f
+                    ensureAccessibleTouchTarget(0)
+                    tag.color?.let { colorStr ->
+                        try {
+                            val color = Color.parseColor(colorStr)
+                            chipBackgroundColor = android.content.res.ColorStateList.valueOf(color)
+                            // Use white text on dark backgrounds
+                            val luminance = (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
+                            setTextColor(if (luminance < 0.5) Color.WHITE else Color.BLACK)
+                        } catch (_: Exception) { }
+                    }
+                }
+                chipGroup.addView(chip)
+            }
+        }
+    }
+}

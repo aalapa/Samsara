@@ -79,18 +79,18 @@
                 android:textColor="@android:color/darker_gray"
                 tools:text="Jan 17 - Jan 24, 2026" />
 
-            <!-- Highlights Section -->
+            <!-- Most Active Section -->
             <TextView
+                android:id="@+id/mostActiveLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="Highlights"
+                android:text="Most Active"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <!-- Most Active Persona -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/mostActiveCard"
+                android:id="@+id/mostActiveCard1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -104,14 +104,7 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="🏆 Most Active"
-                        android:textSize="12sp"
-                        android:textColor="#2E7D32" />
-
-                    <TextView
-                        android:id="@+id/mostActivePersonaName"
+                        android:id="@+id/mostActive1PersonaName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
@@ -120,20 +113,78 @@
                         tools:text="Developer" />
 
                     <TextView
-                        android:id="@+id/mostActivePersonaStats"
+                        android:id="@+id/mostActive1PersonaStats"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
                         android:textColor="#2E7D32"
                         tools:text="Opened 25 times" />
 
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/mostActive1Tags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        app:singleLine="true" />
+
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Most Improved Persona -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/mostImprovedCard"
+                android:id="@+id/mostActiveCard2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#E8F5E9"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/mostActive2PersonaName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#1B5E20"
+                        tools:text="Writer" />
+
+                    <TextView
+                        android:id="@+id/mostActive2PersonaStats"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="#2E7D32"
+                        tools:text="Opened 18 times" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/mostActive2Tags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        app:singleLine="true" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Most Improved Section -->
+            <TextView
+                android:id="@+id/mostImprovedLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Most Improved"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/mostImprovedCard1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -147,14 +198,7 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="📈 Most Improved"
-                        android:textSize="12sp"
-                        android:textColor="#1565C0" />
-
-                    <TextView
-                        android:id="@+id/mostImprovedPersonaName"
+                        android:id="@+id/mostImproved1PersonaName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
@@ -163,20 +207,120 @@
                         tools:text="Writer" />
 
                     <TextView
-                        android:id="@+id/mostImprovedPersonaStats"
+                        android:id="@+id/mostImproved1PersonaStats"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
                         android:textColor="#1565C0"
                         tools:text="Completion rate: 45% → 85% (+40%)" />
 
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/mostImproved1Tags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        app:singleLine="true" />
+
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Needs Attention Persona -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/needsAttentionCard"
+                android:id="@+id/mostImprovedCard2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="#E3F2FD"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/mostImproved2PersonaName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#0D47A1"
+                        tools:text="Musician" />
+
+                    <TextView
+                        android:id="@+id/mostImproved2PersonaStats"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="#1565C0"
+                        tools:text="Completion rate: 30% → 55% (+25%)" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/mostImproved2Tags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        app:singleLine="true" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Needs Attention Section -->
+            <TextView
+                android:id="@+id/needsAttentionLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Needs Attention"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/needsAttentionCard1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                app:cardBackgroundColor="#FFEBEE"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/needsAttention1PersonaName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#B71C1C"
+                        tools:text="Musician" />
+
+                    <TextView
+                        android:id="@+id/needsAttention1PersonaStats"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:textColor="#C62828"
+                        tools:text="Not opened in 7 days" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/needsAttention1Tags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        app:singleLine="true" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/needsAttentionCard2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -190,28 +334,28 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="⚠️ Needs Attention"
-                        android:textSize="12sp"
-                        android:textColor="#C62828" />
-
-                    <TextView
-                        android:id="@+id/needsAttentionPersonaName"
+                        android:id="@+id/needsAttention2PersonaName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
                         android:textStyle="bold"
                         android:textColor="#B71C1C"
-                        tools:text="Musician" />
+                        tools:text="Artist" />
 
                     <TextView
-                        android:id="@+id/needsAttentionPersonaStats"
+                        android:id="@+id/needsAttention2PersonaStats"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
                         android:textColor="#C62828"
-                        tools:text="Not opened in 7 days" />
+                        tools:text="Low completion rate: 15%" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/needsAttention2Tags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        app:singleLine="true" />
 
                 </LinearLayout>
 
@@ -239,4 +383,3 @@
     </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
-

@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.chip.ChipGroup;
 import com.samsara.polymath.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -42,6 +43,9 @@ public final class ItemPersonaReportBinding implements ViewBinding {
   public final TextView personaNameTextView;
 
   @NonNull
+  public final ChipGroup tagsChipGroup;
+
+  @NonNull
   public final TextView tasksTextView;
 
   @NonNull
@@ -51,8 +55,8 @@ public final class ItemPersonaReportBinding implements ViewBinding {
       @NonNull TextView completionRateChangeTextView, @NonNull TextView completionRateTextView,
       @NonNull ImageView completionRateTrendImageView, @NonNull TextView openCountChangeTextView,
       @NonNull TextView openCountTextView, @NonNull ImageView openCountTrendImageView,
-      @NonNull TextView personaNameTextView, @NonNull TextView tasksTextView,
-      @NonNull ImageView trendIndicatorImageView) {
+      @NonNull TextView personaNameTextView, @NonNull ChipGroup tagsChipGroup,
+      @NonNull TextView tasksTextView, @NonNull ImageView trendIndicatorImageView) {
     this.rootView = rootView;
     this.completionRateChangeTextView = completionRateChangeTextView;
     this.completionRateTextView = completionRateTextView;
@@ -61,6 +65,7 @@ public final class ItemPersonaReportBinding implements ViewBinding {
     this.openCountTextView = openCountTextView;
     this.openCountTrendImageView = openCountTrendImageView;
     this.personaNameTextView = personaNameTextView;
+    this.tagsChipGroup = tagsChipGroup;
     this.tasksTextView = tasksTextView;
     this.trendIndicatorImageView = trendIndicatorImageView;
   }
@@ -134,6 +139,12 @@ public final class ItemPersonaReportBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tagsChipGroup;
+      ChipGroup tagsChipGroup = ViewBindings.findChildViewById(rootView, id);
+      if (tagsChipGroup == null) {
+        break missingId;
+      }
+
       id = R.id.tasksTextView;
       TextView tasksTextView = ViewBindings.findChildViewById(rootView, id);
       if (tasksTextView == null) {
@@ -148,8 +159,8 @@ public final class ItemPersonaReportBinding implements ViewBinding {
 
       return new ItemPersonaReportBinding((MaterialCardView) rootView, completionRateChangeTextView,
           completionRateTextView, completionRateTrendImageView, openCountChangeTextView,
-          openCountTextView, openCountTrendImageView, personaNameTextView, tasksTextView,
-          trendIndicatorImageView);
+          openCountTextView, openCountTrendImageView, personaNameTextView, tagsChipGroup,
+          tasksTextView, trendIndicatorImageView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

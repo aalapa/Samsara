@@ -14,6 +14,7 @@ import androidx.viewbinding.ViewBindings;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.chip.ChipGroup;
 import com.samsara.polymath.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -30,31 +31,85 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
   public final MaterialButton monthlyButton;
 
   @NonNull
-  public final MaterialCardView mostActiveCard;
+  public final TextView mostActive1PersonaName;
 
   @NonNull
-  public final TextView mostActivePersonaName;
+  public final TextView mostActive1PersonaStats;
 
   @NonNull
-  public final TextView mostActivePersonaStats;
+  public final ChipGroup mostActive1Tags;
 
   @NonNull
-  public final MaterialCardView mostImprovedCard;
+  public final TextView mostActive2PersonaName;
 
   @NonNull
-  public final TextView mostImprovedPersonaName;
+  public final TextView mostActive2PersonaStats;
 
   @NonNull
-  public final TextView mostImprovedPersonaStats;
+  public final ChipGroup mostActive2Tags;
 
   @NonNull
-  public final MaterialCardView needsAttentionCard;
+  public final MaterialCardView mostActiveCard1;
 
   @NonNull
-  public final TextView needsAttentionPersonaName;
+  public final MaterialCardView mostActiveCard2;
 
   @NonNull
-  public final TextView needsAttentionPersonaStats;
+  public final TextView mostActiveLabel;
+
+  @NonNull
+  public final TextView mostImproved1PersonaName;
+
+  @NonNull
+  public final TextView mostImproved1PersonaStats;
+
+  @NonNull
+  public final ChipGroup mostImproved1Tags;
+
+  @NonNull
+  public final TextView mostImproved2PersonaName;
+
+  @NonNull
+  public final TextView mostImproved2PersonaStats;
+
+  @NonNull
+  public final ChipGroup mostImproved2Tags;
+
+  @NonNull
+  public final MaterialCardView mostImprovedCard1;
+
+  @NonNull
+  public final MaterialCardView mostImprovedCard2;
+
+  @NonNull
+  public final TextView mostImprovedLabel;
+
+  @NonNull
+  public final TextView needsAttention1PersonaName;
+
+  @NonNull
+  public final TextView needsAttention1PersonaStats;
+
+  @NonNull
+  public final ChipGroup needsAttention1Tags;
+
+  @NonNull
+  public final TextView needsAttention2PersonaName;
+
+  @NonNull
+  public final TextView needsAttention2PersonaStats;
+
+  @NonNull
+  public final ChipGroup needsAttention2Tags;
+
+  @NonNull
+  public final MaterialCardView needsAttentionCard1;
+
+  @NonNull
+  public final MaterialCardView needsAttentionCard2;
+
+  @NonNull
+  public final TextView needsAttentionLabel;
 
   @NonNull
   public final RecyclerView personaReportsRecyclerView;
@@ -67,25 +122,51 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
 
   private ActivityPersonaReportBinding(@NonNull CoordinatorLayout rootView,
       @NonNull TextView dateRangeTextView, @NonNull MaterialButton monthlyButton,
-      @NonNull MaterialCardView mostActiveCard, @NonNull TextView mostActivePersonaName,
-      @NonNull TextView mostActivePersonaStats, @NonNull MaterialCardView mostImprovedCard,
-      @NonNull TextView mostImprovedPersonaName, @NonNull TextView mostImprovedPersonaStats,
-      @NonNull MaterialCardView needsAttentionCard, @NonNull TextView needsAttentionPersonaName,
-      @NonNull TextView needsAttentionPersonaStats,
-      @NonNull RecyclerView personaReportsRecyclerView, @NonNull MaterialToolbar toolbar,
-      @NonNull MaterialButton weeklyButton) {
+      @NonNull TextView mostActive1PersonaName, @NonNull TextView mostActive1PersonaStats,
+      @NonNull ChipGroup mostActive1Tags, @NonNull TextView mostActive2PersonaName,
+      @NonNull TextView mostActive2PersonaStats, @NonNull ChipGroup mostActive2Tags,
+      @NonNull MaterialCardView mostActiveCard1, @NonNull MaterialCardView mostActiveCard2,
+      @NonNull TextView mostActiveLabel, @NonNull TextView mostImproved1PersonaName,
+      @NonNull TextView mostImproved1PersonaStats, @NonNull ChipGroup mostImproved1Tags,
+      @NonNull TextView mostImproved2PersonaName, @NonNull TextView mostImproved2PersonaStats,
+      @NonNull ChipGroup mostImproved2Tags, @NonNull MaterialCardView mostImprovedCard1,
+      @NonNull MaterialCardView mostImprovedCard2, @NonNull TextView mostImprovedLabel,
+      @NonNull TextView needsAttention1PersonaName, @NonNull TextView needsAttention1PersonaStats,
+      @NonNull ChipGroup needsAttention1Tags, @NonNull TextView needsAttention2PersonaName,
+      @NonNull TextView needsAttention2PersonaStats, @NonNull ChipGroup needsAttention2Tags,
+      @NonNull MaterialCardView needsAttentionCard1, @NonNull MaterialCardView needsAttentionCard2,
+      @NonNull TextView needsAttentionLabel, @NonNull RecyclerView personaReportsRecyclerView,
+      @NonNull MaterialToolbar toolbar, @NonNull MaterialButton weeklyButton) {
     this.rootView = rootView;
     this.dateRangeTextView = dateRangeTextView;
     this.monthlyButton = monthlyButton;
-    this.mostActiveCard = mostActiveCard;
-    this.mostActivePersonaName = mostActivePersonaName;
-    this.mostActivePersonaStats = mostActivePersonaStats;
-    this.mostImprovedCard = mostImprovedCard;
-    this.mostImprovedPersonaName = mostImprovedPersonaName;
-    this.mostImprovedPersonaStats = mostImprovedPersonaStats;
-    this.needsAttentionCard = needsAttentionCard;
-    this.needsAttentionPersonaName = needsAttentionPersonaName;
-    this.needsAttentionPersonaStats = needsAttentionPersonaStats;
+    this.mostActive1PersonaName = mostActive1PersonaName;
+    this.mostActive1PersonaStats = mostActive1PersonaStats;
+    this.mostActive1Tags = mostActive1Tags;
+    this.mostActive2PersonaName = mostActive2PersonaName;
+    this.mostActive2PersonaStats = mostActive2PersonaStats;
+    this.mostActive2Tags = mostActive2Tags;
+    this.mostActiveCard1 = mostActiveCard1;
+    this.mostActiveCard2 = mostActiveCard2;
+    this.mostActiveLabel = mostActiveLabel;
+    this.mostImproved1PersonaName = mostImproved1PersonaName;
+    this.mostImproved1PersonaStats = mostImproved1PersonaStats;
+    this.mostImproved1Tags = mostImproved1Tags;
+    this.mostImproved2PersonaName = mostImproved2PersonaName;
+    this.mostImproved2PersonaStats = mostImproved2PersonaStats;
+    this.mostImproved2Tags = mostImproved2Tags;
+    this.mostImprovedCard1 = mostImprovedCard1;
+    this.mostImprovedCard2 = mostImprovedCard2;
+    this.mostImprovedLabel = mostImprovedLabel;
+    this.needsAttention1PersonaName = needsAttention1PersonaName;
+    this.needsAttention1PersonaStats = needsAttention1PersonaStats;
+    this.needsAttention1Tags = needsAttention1Tags;
+    this.needsAttention2PersonaName = needsAttention2PersonaName;
+    this.needsAttention2PersonaStats = needsAttention2PersonaStats;
+    this.needsAttention2Tags = needsAttention2Tags;
+    this.needsAttentionCard1 = needsAttentionCard1;
+    this.needsAttentionCard2 = needsAttentionCard2;
+    this.needsAttentionLabel = needsAttentionLabel;
     this.personaReportsRecyclerView = personaReportsRecyclerView;
     this.toolbar = toolbar;
     this.weeklyButton = weeklyButton;
@@ -130,57 +211,165 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
         break missingId;
       }
 
-      id = R.id.mostActiveCard;
-      MaterialCardView mostActiveCard = ViewBindings.findChildViewById(rootView, id);
-      if (mostActiveCard == null) {
+      id = R.id.mostActive1PersonaName;
+      TextView mostActive1PersonaName = ViewBindings.findChildViewById(rootView, id);
+      if (mostActive1PersonaName == null) {
         break missingId;
       }
 
-      id = R.id.mostActivePersonaName;
-      TextView mostActivePersonaName = ViewBindings.findChildViewById(rootView, id);
-      if (mostActivePersonaName == null) {
+      id = R.id.mostActive1PersonaStats;
+      TextView mostActive1PersonaStats = ViewBindings.findChildViewById(rootView, id);
+      if (mostActive1PersonaStats == null) {
         break missingId;
       }
 
-      id = R.id.mostActivePersonaStats;
-      TextView mostActivePersonaStats = ViewBindings.findChildViewById(rootView, id);
-      if (mostActivePersonaStats == null) {
+      id = R.id.mostActive1Tags;
+      ChipGroup mostActive1Tags = ViewBindings.findChildViewById(rootView, id);
+      if (mostActive1Tags == null) {
         break missingId;
       }
 
-      id = R.id.mostImprovedCard;
-      MaterialCardView mostImprovedCard = ViewBindings.findChildViewById(rootView, id);
-      if (mostImprovedCard == null) {
+      id = R.id.mostActive2PersonaName;
+      TextView mostActive2PersonaName = ViewBindings.findChildViewById(rootView, id);
+      if (mostActive2PersonaName == null) {
         break missingId;
       }
 
-      id = R.id.mostImprovedPersonaName;
-      TextView mostImprovedPersonaName = ViewBindings.findChildViewById(rootView, id);
-      if (mostImprovedPersonaName == null) {
+      id = R.id.mostActive2PersonaStats;
+      TextView mostActive2PersonaStats = ViewBindings.findChildViewById(rootView, id);
+      if (mostActive2PersonaStats == null) {
         break missingId;
       }
 
-      id = R.id.mostImprovedPersonaStats;
-      TextView mostImprovedPersonaStats = ViewBindings.findChildViewById(rootView, id);
-      if (mostImprovedPersonaStats == null) {
+      id = R.id.mostActive2Tags;
+      ChipGroup mostActive2Tags = ViewBindings.findChildViewById(rootView, id);
+      if (mostActive2Tags == null) {
         break missingId;
       }
 
-      id = R.id.needsAttentionCard;
-      MaterialCardView needsAttentionCard = ViewBindings.findChildViewById(rootView, id);
-      if (needsAttentionCard == null) {
+      id = R.id.mostActiveCard1;
+      MaterialCardView mostActiveCard1 = ViewBindings.findChildViewById(rootView, id);
+      if (mostActiveCard1 == null) {
         break missingId;
       }
 
-      id = R.id.needsAttentionPersonaName;
-      TextView needsAttentionPersonaName = ViewBindings.findChildViewById(rootView, id);
-      if (needsAttentionPersonaName == null) {
+      id = R.id.mostActiveCard2;
+      MaterialCardView mostActiveCard2 = ViewBindings.findChildViewById(rootView, id);
+      if (mostActiveCard2 == null) {
         break missingId;
       }
 
-      id = R.id.needsAttentionPersonaStats;
-      TextView needsAttentionPersonaStats = ViewBindings.findChildViewById(rootView, id);
-      if (needsAttentionPersonaStats == null) {
+      id = R.id.mostActiveLabel;
+      TextView mostActiveLabel = ViewBindings.findChildViewById(rootView, id);
+      if (mostActiveLabel == null) {
+        break missingId;
+      }
+
+      id = R.id.mostImproved1PersonaName;
+      TextView mostImproved1PersonaName = ViewBindings.findChildViewById(rootView, id);
+      if (mostImproved1PersonaName == null) {
+        break missingId;
+      }
+
+      id = R.id.mostImproved1PersonaStats;
+      TextView mostImproved1PersonaStats = ViewBindings.findChildViewById(rootView, id);
+      if (mostImproved1PersonaStats == null) {
+        break missingId;
+      }
+
+      id = R.id.mostImproved1Tags;
+      ChipGroup mostImproved1Tags = ViewBindings.findChildViewById(rootView, id);
+      if (mostImproved1Tags == null) {
+        break missingId;
+      }
+
+      id = R.id.mostImproved2PersonaName;
+      TextView mostImproved2PersonaName = ViewBindings.findChildViewById(rootView, id);
+      if (mostImproved2PersonaName == null) {
+        break missingId;
+      }
+
+      id = R.id.mostImproved2PersonaStats;
+      TextView mostImproved2PersonaStats = ViewBindings.findChildViewById(rootView, id);
+      if (mostImproved2PersonaStats == null) {
+        break missingId;
+      }
+
+      id = R.id.mostImproved2Tags;
+      ChipGroup mostImproved2Tags = ViewBindings.findChildViewById(rootView, id);
+      if (mostImproved2Tags == null) {
+        break missingId;
+      }
+
+      id = R.id.mostImprovedCard1;
+      MaterialCardView mostImprovedCard1 = ViewBindings.findChildViewById(rootView, id);
+      if (mostImprovedCard1 == null) {
+        break missingId;
+      }
+
+      id = R.id.mostImprovedCard2;
+      MaterialCardView mostImprovedCard2 = ViewBindings.findChildViewById(rootView, id);
+      if (mostImprovedCard2 == null) {
+        break missingId;
+      }
+
+      id = R.id.mostImprovedLabel;
+      TextView mostImprovedLabel = ViewBindings.findChildViewById(rootView, id);
+      if (mostImprovedLabel == null) {
+        break missingId;
+      }
+
+      id = R.id.needsAttention1PersonaName;
+      TextView needsAttention1PersonaName = ViewBindings.findChildViewById(rootView, id);
+      if (needsAttention1PersonaName == null) {
+        break missingId;
+      }
+
+      id = R.id.needsAttention1PersonaStats;
+      TextView needsAttention1PersonaStats = ViewBindings.findChildViewById(rootView, id);
+      if (needsAttention1PersonaStats == null) {
+        break missingId;
+      }
+
+      id = R.id.needsAttention1Tags;
+      ChipGroup needsAttention1Tags = ViewBindings.findChildViewById(rootView, id);
+      if (needsAttention1Tags == null) {
+        break missingId;
+      }
+
+      id = R.id.needsAttention2PersonaName;
+      TextView needsAttention2PersonaName = ViewBindings.findChildViewById(rootView, id);
+      if (needsAttention2PersonaName == null) {
+        break missingId;
+      }
+
+      id = R.id.needsAttention2PersonaStats;
+      TextView needsAttention2PersonaStats = ViewBindings.findChildViewById(rootView, id);
+      if (needsAttention2PersonaStats == null) {
+        break missingId;
+      }
+
+      id = R.id.needsAttention2Tags;
+      ChipGroup needsAttention2Tags = ViewBindings.findChildViewById(rootView, id);
+      if (needsAttention2Tags == null) {
+        break missingId;
+      }
+
+      id = R.id.needsAttentionCard1;
+      MaterialCardView needsAttentionCard1 = ViewBindings.findChildViewById(rootView, id);
+      if (needsAttentionCard1 == null) {
+        break missingId;
+      }
+
+      id = R.id.needsAttentionCard2;
+      MaterialCardView needsAttentionCard2 = ViewBindings.findChildViewById(rootView, id);
+      if (needsAttentionCard2 == null) {
+        break missingId;
+      }
+
+      id = R.id.needsAttentionLabel;
+      TextView needsAttentionLabel = ViewBindings.findChildViewById(rootView, id);
+      if (needsAttentionLabel == null) {
         break missingId;
       }
 
@@ -203,10 +392,15 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
       }
 
       return new ActivityPersonaReportBinding((CoordinatorLayout) rootView, dateRangeTextView,
-          monthlyButton, mostActiveCard, mostActivePersonaName, mostActivePersonaStats,
-          mostImprovedCard, mostImprovedPersonaName, mostImprovedPersonaStats, needsAttentionCard,
-          needsAttentionPersonaName, needsAttentionPersonaStats, personaReportsRecyclerView,
-          toolbar, weeklyButton);
+          monthlyButton, mostActive1PersonaName, mostActive1PersonaStats, mostActive1Tags,
+          mostActive2PersonaName, mostActive2PersonaStats, mostActive2Tags, mostActiveCard1,
+          mostActiveCard2, mostActiveLabel, mostImproved1PersonaName, mostImproved1PersonaStats,
+          mostImproved1Tags, mostImproved2PersonaName, mostImproved2PersonaStats, mostImproved2Tags,
+          mostImprovedCard1, mostImprovedCard2, mostImprovedLabel, needsAttention1PersonaName,
+          needsAttention1PersonaStats, needsAttention1Tags, needsAttention2PersonaName,
+          needsAttention2PersonaStats, needsAttention2Tags, needsAttentionCard1,
+          needsAttentionCard2, needsAttentionLabel, personaReportsRecyclerView, toolbar,
+          weeklyButton);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));
