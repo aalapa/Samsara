@@ -42,11 +42,11 @@ public final class AppDatabase_Impl extends AppDatabase {
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(12) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(13) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `personas` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `order` INTEGER NOT NULL, `openCount` INTEGER NOT NULL, `backgroundColor` TEXT NOT NULL, `textColor` TEXT NOT NULL, `previousOpenCount` INTEGER NOT NULL, `rankStatus` TEXT NOT NULL, `lastOpenedAt` INTEGER NOT NULL)");
-        db.execSQL("CREATE TABLE IF NOT EXISTS `tasks` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `personaId` INTEGER NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `completedAt` INTEGER, `isCompleted` INTEGER NOT NULL, `isRecurring` INTEGER NOT NULL, `order` INTEGER NOT NULL, `backgroundColor` TEXT NOT NULL, `previousOrder` INTEGER NOT NULL, `rankStatus` TEXT NOT NULL, FOREIGN KEY(`personaId`) REFERENCES `personas`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `tasks` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `personaId` INTEGER NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `completedAt` INTEGER, `isCompleted` INTEGER NOT NULL, `isRecurring` INTEGER NOT NULL, `order` INTEGER NOT NULL, `backgroundColor` TEXT NOT NULL, `previousOrder` INTEGER NOT NULL, `rankStatus` TEXT NOT NULL, `recurringFrequency` TEXT, `recurringDays` TEXT, FOREIGN KEY(`personaId`) REFERENCES `personas`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_tasks_personaId` ON `tasks` (`personaId`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `comments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `text` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `tasks`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_comments_taskId` ON `comments` (`taskId`)");
@@ -56,7 +56,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_persona_tags_personaId` ON `persona_tags` (`personaId`)");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_persona_tags_tagId` ON `persona_tags` (`tagId`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '69b9d133746cb035540cd49143909b66')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2c448fdb5ec79e3104521860f9fb54c0')");
       }
 
       @Override
@@ -131,7 +131,7 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoPersonas + "\n"
                   + " Found:\n" + _existingPersonas);
         }
-        final HashMap<String, TableInfo.Column> _columnsTasks = new HashMap<String, TableInfo.Column>(12);
+        final HashMap<String, TableInfo.Column> _columnsTasks = new HashMap<String, TableInfo.Column>(14);
         _columnsTasks.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTasks.put("personaId", new TableInfo.Column("personaId", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTasks.put("title", new TableInfo.Column("title", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -144,6 +144,8 @@ public final class AppDatabase_Impl extends AppDatabase {
         _columnsTasks.put("backgroundColor", new TableInfo.Column("backgroundColor", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTasks.put("previousOrder", new TableInfo.Column("previousOrder", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTasks.put("rankStatus", new TableInfo.Column("rankStatus", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsTasks.put("recurringFrequency", new TableInfo.Column("recurringFrequency", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsTasks.put("recurringDays", new TableInfo.Column("recurringDays", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysTasks = new HashSet<TableInfo.ForeignKey>(1);
         _foreignKeysTasks.add(new TableInfo.ForeignKey("personas", "CASCADE", "NO ACTION", Arrays.asList("personaId"), Arrays.asList("id")));
         final HashSet<TableInfo.Index> _indicesTasks = new HashSet<TableInfo.Index>(1);
@@ -222,7 +224,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "69b9d133746cb035540cd49143909b66", "afef88ca4f34f995aa4392cc9eedd16d");
+    }, "2c448fdb5ec79e3104521860f9fb54c0", "a64e51057ba0393877c74115f3cb7276");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;

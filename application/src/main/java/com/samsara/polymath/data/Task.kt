@@ -30,8 +30,14 @@ data class Task(
     val order: Int = 0,
     val backgroundColor: String = "#FFFFFF", // Inherited from persona with variant
     val previousOrder: Int = 0, // Track previous position for rank changes
-    val rankStatus: RankStatus = RankStatus.STABLE // Track movement: STABLE, UP, DOWN
+    val rankStatus: RankStatus = RankStatus.STABLE, // Track movement: STABLE, UP, DOWN
+    val recurringFrequency: String? = null, // DAILY, WEEKLY, MONTHLY, CUSTOM
+    val recurringDays: String? = null // Comma-separated Calendar.DAY_OF_WEEK values for CUSTOM; single day for WEEKLY/MONTHLY
 )
+
+enum class RecurringFrequency {
+    DAILY, WEEKLY, MONTHLY, CUSTOM
+}
 
 enum class RankStatus {
     STABLE,  // Task hasn't moved or was always at top (shows square)

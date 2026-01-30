@@ -2,6 +2,8 @@ package com.samsara.polymath
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
+import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -208,94 +210,213 @@ class TasksActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupFrequencyPicker(dialogBinding: DialogAddTaskBinding, existingFrequency: String? = null, existingDays: String? = null) {
+        val cal = java.util.Calendar.getInstance()
+        val dayNames = arrayOf(
+            getString(R.string.sun), getString(R.string.mon), getString(R.string.tue),
+            getString(R.string.wed), getString(R.string.thu), getString(R.string.fri), getString(R.string.sat)
+        )
+
+        // Toggle frequency container visibility
+        dialogBinding.recurringCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            dialogBinding.frequencyContainer.visibility = if (isChecked) View.VISIBLE else View.GONE
+        }
+
+        // Show frequency container if already recurring
+        if (existingFrequency != null) {
+            dialogBinding.frequencyContainer.visibility = View.VISIBLE
+        }
+
+        // Setup month interval picker
+        dialogBinding.monthIntervalPicker.minValue = 1
+        dialogBinding.monthIntervalPicker.maxValue = 12
+        dialogBinding.monthIntervalPicker.wrapSelectorWheel = false
+        // Parse existing interval if monthly
+        if (existingFrequency == "MONTHLY" && existingDays != null) {
+            val parts = existingDays.split(",")
+            if (parts.size >= 2) {
+                dialogBinding.monthIntervalPicker.value = parts[1].trim().toIntOrNull() ?: 1
+            }
+        }
+
+        // Create day-of-week chips
+        val selectedDays = mutableSetOf<Int>()
+        if (existingFrequency == "CUSTOM") {
+            existingDays?.split(",")?.mapNotNull { it.trim().toIntOrNull() }?.let { selectedDays.addAll(it) }
+        }
+
+        // Calendar.SUNDAY=1, MONDAY=2, ..., SATURDAY=7
+        for (dayIndex in 0..6) {
+            val dayOfWeek = if (dayIndex == 0) java.util.Calendar.SUNDAY else dayIndex + 1
+            val chip = com.google.android.material.chip.Chip(this).apply {
+                text = dayNames[dayIndex]
+                isCheckable = true
+                isChecked = dayOfWeek in selectedDays
+                setTextColor(android.graphics.Color.WHITE)
+                chipBackgroundColor = android.content.res.ColorStateList(
+                    arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+                    intArrayOf(android.graphics.Color.parseColor("#007AFF"), android.graphics.Color.parseColor("#444444"))
+                )
+                tag = dayOfWeek
+                setOnCheckedChangeListener { _, checked ->
+                    if (checked) selectedDays.add(dayOfWeek) else selectedDays.remove(dayOfWeek)
+                }
+            }
+            dialogBinding.dayChipGroup.addView(chip)
+        }
+
+        // Pre-select radio button only if frequency was previously set
+        when (existingFrequency) {
+            "DAILY" -> dialogBinding.radioDaily.isChecked = true
+            "WEEKLY" -> dialogBinding.radioWeekly.isChecked = true
+            "MONTHLY" -> dialogBinding.radioMonthly.isChecked = true
+            "CUSTOM" -> dialogBinding.radioCustom.isChecked = true
+            // null -> no radio selected (recurring without schedule)
+        }
+
+        fun updateFrequencyUI(checkedId: Int) {
+            dialogBinding.dayChipGroup.visibility = View.GONE
+            dialogBinding.frequencyInfoLabel.visibility = View.GONE
+            dialogBinding.monthIntervalContainer.visibility = View.GONE
+            when (checkedId) {
+                R.id.radioWeekly -> {
+                    val dayOfWeek = cal.get(java.util.Calendar.DAY_OF_WEEK)
+                    val dayName = dayNames[if (dayOfWeek == 1) 0 else dayOfWeek - 1]
+                    dialogBinding.frequencyInfoLabel.text = getString(R.string.every_week_on, dayName)
+                    dialogBinding.frequencyInfoLabel.visibility = View.VISIBLE
+                }
+                R.id.radioMonthly -> {
+                    val dayOfMonth = cal.get(java.util.Calendar.DAY_OF_MONTH)
+                    val suffix = when {
+                        dayOfMonth in 11..13 -> "th"
+                        dayOfMonth % 10 == 1 -> "st"
+                        dayOfMonth % 10 == 2 -> "nd"
+                        dayOfMonth % 10 == 3 -> "rd"
+                        else -> "th"
+                    }
+                    dialogBinding.frequencyInfoLabel.text = getString(R.string.every_month_on, "$dayOfMonth$suffix")
+                    dialogBinding.frequencyInfoLabel.visibility = View.VISIBLE
+                    dialogBinding.monthIntervalContainer.visibility = View.VISIBLE
+                }
+                R.id.radioCustom -> {
+                    dialogBinding.dayChipGroup.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        dialogBinding.frequencyRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+            updateFrequencyUI(checkedId)
+        }
+
+        // Initial UI state
+        updateFrequencyUI(dialogBinding.frequencyRadioGroup.checkedRadioButtonId)
+    }
+
+    private fun getFrequencyFromDialog(dialogBinding: DialogAddTaskBinding): Pair<String?, String?> {
+        if (!dialogBinding.recurringCheckBox.isChecked) return null to null
+        val cal = java.util.Calendar.getInstance()
+        return when (dialogBinding.frequencyRadioGroup.checkedRadioButtonId) {
+            R.id.radioDaily -> "DAILY" to null
+            R.id.radioWeekly -> "WEEKLY" to cal.get(java.util.Calendar.DAY_OF_WEEK).toString()
+            R.id.radioMonthly -> {
+                val dayOfMonth = cal.get(java.util.Calendar.DAY_OF_MONTH)
+                val interval = dialogBinding.monthIntervalPicker.value
+                "MONTHLY" to "$dayOfMonth,$interval"
+            }
+            R.id.radioCustom -> {
+                val days = mutableListOf<Int>()
+                for (i in 0 until dialogBinding.dayChipGroup.childCount) {
+                    val chip = dialogBinding.dayChipGroup.getChildAt(i) as? com.google.android.material.chip.Chip
+                    if (chip?.isChecked == true) {
+                        days.add(chip.tag as Int)
+                    }
+                }
+                "CUSTOM" to days.joinToString(",")
+            }
+            else -> null to null // No frequency selected = recurring without schedule
+        }
+    }
+
     private fun showAddTaskDialog() {
         val dialogBinding = DialogAddTaskBinding.inflate(LayoutInflater.from(this))
-        
+        setupFrequencyPicker(dialogBinding)
+
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.add_task))
             .setView(dialogBinding.root)
             .create()
-        
-        // Set dialog text colors for dark background
+
         dialog.setOnShowListener {
             val titleView = dialog.findViewById<android.widget.TextView>(android.R.id.title)
             titleView?.setTextColor(android.graphics.Color.WHITE)
-            
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(android.graphics.Color.WHITE)
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(android.graphics.Color.WHITE)
         }
-        
+
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.done)) { _, _ ->
-                val title = dialogBinding.taskTitleEditText.text?.toString()?.trim()
-                val description = dialogBinding.taskDescriptionEditText.text?.toString()?.trim() ?: ""
-                val isRecurring = dialogBinding.recurringCheckBox.isChecked
-                
-                if (!title.isNullOrEmpty()) {
-                    // Capitalize first letter of title (English rules: first letter uppercase, rest as typed)
-                    val capitalizedTitle = title.replaceFirstChar { 
-                        if (it.isLowerCase()) it.uppercaseChar() else it 
-                    }
-                    viewModel.insertTask(personaId, capitalizedTitle, description, personaBackgroundColor, isRecurring)
-                } else {
-                    Toast.makeText(this, "Please enter a task title", Toast.LENGTH_SHORT).show()
+            val title = dialogBinding.taskTitleEditText.text?.toString()?.trim()
+            val description = dialogBinding.taskDescriptionEditText.text?.toString()?.trim() ?: ""
+            val isRecurring = dialogBinding.recurringCheckBox.isChecked
+            val (frequency, days) = getFrequencyFromDialog(dialogBinding)
+
+            if (!title.isNullOrEmpty()) {
+                val capitalizedTitle = title.replaceFirstChar {
+                    if (it.isLowerCase()) it.uppercaseChar() else it
                 }
+                viewModel.insertTask(personaId, capitalizedTitle, description, personaBackgroundColor, isRecurring, frequency, days)
+            } else {
+                Toast.makeText(this, "Please enter a task title", Toast.LENGTH_SHORT).show()
             }
-        
-        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.cancel)) { _, _ ->
-            // Cancel - do nothing
         }
 
+        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.cancel)) { _, _ -> }
         dialog.show()
     }
 
     private fun showEditTaskDialog(task: com.samsara.polymath.data.Task) {
         val dialogBinding = DialogAddTaskBinding.inflate(LayoutInflater.from(this))
-        
-        // Pre-fill with existing task data
+
         dialogBinding.taskTitleEditText.setText(task.title)
         dialogBinding.taskDescriptionEditText.setText(task.description)
         dialogBinding.recurringCheckBox.isChecked = task.isRecurring
-        
+        setupFrequencyPicker(dialogBinding, task.recurringFrequency, task.recurringDays)
+
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.edit_task))
             .setView(dialogBinding.root)
             .create()
-        
-        // Set dialog text colors for dark background
+
         dialog.setOnShowListener {
             val titleView = dialog.findViewById<android.widget.TextView>(android.R.id.title)
             titleView?.setTextColor(android.graphics.Color.WHITE)
-            
             dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(android.graphics.Color.WHITE)
             dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(android.graphics.Color.WHITE)
         }
-        
+
         dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.done)) { _, _ ->
-                val title = dialogBinding.taskTitleEditText.text?.toString()?.trim()
-                val description = dialogBinding.taskDescriptionEditText.text?.toString()?.trim() ?: ""
-                val isRecurring = dialogBinding.recurringCheckBox.isChecked
-                
-                if (!title.isNullOrEmpty()) {
-                    // Capitalize first letter of title
-                    val capitalizedTitle = title.replaceFirstChar { 
-                        if (it.isLowerCase()) it.uppercaseChar() else it 
-                    }
-                    // Update the existing task
-                    val updatedTask = task.copy(
-                        title = capitalizedTitle,
-                        description = description,
-                        isRecurring = isRecurring
-                    )
-                    viewModel.updateTask(updatedTask)
-                } else {
-                    Toast.makeText(this, "Please enter a task title", Toast.LENGTH_SHORT).show()
+            val title = dialogBinding.taskTitleEditText.text?.toString()?.trim()
+            val description = dialogBinding.taskDescriptionEditText.text?.toString()?.trim() ?: ""
+            val isRecurring = dialogBinding.recurringCheckBox.isChecked
+            val (frequency, days) = getFrequencyFromDialog(dialogBinding)
+
+            if (!title.isNullOrEmpty()) {
+                val capitalizedTitle = title.replaceFirstChar {
+                    if (it.isLowerCase()) it.uppercaseChar() else it
                 }
+                val updatedTask = task.copy(
+                    title = capitalizedTitle,
+                    description = description,
+                    isRecurring = isRecurring,
+                    recurringFrequency = frequency,
+                    recurringDays = days
+                )
+                viewModel.updateTask(updatedTask)
+            } else {
+                Toast.makeText(this, "Please enter a task title", Toast.LENGTH_SHORT).show()
             }
-        
-        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.cancel)) { _, _ ->
-            // Cancel - do nothing
         }
 
+        dialog.setButton(AlertDialog.BUTTON_NEGATIVE, getString(R.string.cancel)) { _, _ -> }
         dialog.show()
     }
 

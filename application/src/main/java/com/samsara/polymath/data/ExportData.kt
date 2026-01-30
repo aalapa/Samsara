@@ -8,7 +8,7 @@ data class ExportData(
     val tags: List<Tag> = emptyList(), // Added in version 4
     val personaTags: List<PersonaTagExport> = emptyList(), // Added in version 4
     val exportDate: Long = System.currentTimeMillis(),
-    val version: Int = 4 // Bumped to version 4 to include tags
+    val version: Int = 5 // Bumped to version 5 for recurring frequency
 )
 
 data class PersonaTagExport(

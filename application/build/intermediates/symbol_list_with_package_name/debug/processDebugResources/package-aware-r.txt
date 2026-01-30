@@ -3281,6 +3281,7 @@ id commentDateTextView
 id commentEditText
 id commentTextTextView
 id commentsRecyclerView
+id completeButton
 id completionInfoTextView
 id completionRateChangeTextView
 id completionRateTextView
@@ -3301,8 +3302,10 @@ id currentState
 id custom
 id customPanel
 id cut
+id dailyTasksRecyclerView
 id dateRangeTextView
 id date_picker_actions
+id dayChipGroup
 id daysTextView
 id decelerate
 id decelerateAndComplete
@@ -3343,6 +3346,7 @@ id edit_query
 id edit_text_id
 id elastic
 id embed
+id emptyDailyTextView
 id end
 id endToStart
 id enterAlways
@@ -3372,6 +3376,9 @@ id flip
 id floating
 id forever
 id fragment_container_view_tag
+id frequencyContainer
+id frequencyInfoLabel
+id frequencyRadioGroup
 id frost
 id fullscreen_header
 id ghost_view
@@ -3447,6 +3454,9 @@ id menuButton
 id message
 id middle
 id mini
+id monthIntervalContainer
+id monthIntervalPicker
+id monthIntervalSuffix
 id month_grid
 id month_navigation_bar
 id month_navigation_fragment_toggle
@@ -3567,6 +3577,7 @@ id path
 id pathRelative
 id peekHeight
 id percent
+id personaColorBar
 id personaNameEditText
 id personaNameTextView
 id personaReportsRecyclerView
@@ -3588,6 +3599,10 @@ id pressed
 id progress_circular
 id progress_horizontal
 id radio
+id radioCustom
+id radioDaily
+id radioMonthly
+id radioWeekly
 id rankIndicatorImageView
 id ratio
 id rectangles
@@ -3920,6 +3935,7 @@ layout fingerprint_dialog_layout
 layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
 layout item_comment
+layout item_daily_task
 layout item_persona
 layout item_persona_report
 layout item_tag_management
@@ -4055,6 +4071,8 @@ string completed_tasks
 string confirm_device_credential_password
 string confirm_pin
 string create_tag
+string custom_days
+string daily
 string day_ago
 string days_ago
 string default_error_msg
@@ -4080,6 +4098,8 @@ string enter_current_pin
 string enter_pin
 string error_a11y_label
 string error_icon_content_description
+string every_month_on
+string every_week_on
 string export_data
 string export_error
 string export_success
@@ -4095,6 +4115,8 @@ string fingerprint_error_lockout
 string fingerprint_error_no_fingerprints
 string fingerprint_error_user_canceled
 string fingerprint_not_recognized
+string frequency
+string fri
 string generic_error_no_device_credential
 string generic_error_no_keyguard
 string generic_error_user_canceled
@@ -4147,6 +4169,8 @@ string material_timepicker_minute
 string material_timepicker_pm
 string material_timepicker_select_time
 string material_timepicker_text_input_mode_description
+string mon
+string monthly
 string mtrl_badge_numberless_content_description
 string mtrl_checkbox_button_icon_path_checked
 string mtrl_checkbox_button_icon_path_group_name
@@ -4211,6 +4235,7 @@ string mtrl_timepicker_cancel
 string mtrl_timepicker_confirm
 string no
 string no_comments
+string no_tasks_due_today
 string password_toggle_content_description
 string path_password_eye
 string path_password_eye_mask_strike_through
@@ -4228,11 +4253,13 @@ string rank_stable_description
 string rank_up_description
 string recurring_task
 string rename_tag
+string sat
 string search_menu_title
 string searchbar_scrolling_view_behavior
 string searchview_clear_text_content_description
 string searchview_navigation_content_description
 string security_settings
+string select_days
 string setup_pin
 string show_all
 string show_completed_tasks
@@ -4240,15 +4267,21 @@ string side_sheet_accessibility_pane_title
 string side_sheet_behavior
 string skip_for_now
 string status_bar_notification_info_overflow
+string sun
 string tag_color_hint
 string tag_in_use
 string tag_name_hint
 string tags
 string task_description_hint
 string task_title_hint
+string thu
+string today
+string tue
 string untagged
 string use_fingerprint
 string view_report
+string wed
+string weekly
 string yes
 style AlertDialog_AppCompat
 style AlertDialog_AppCompat_Light

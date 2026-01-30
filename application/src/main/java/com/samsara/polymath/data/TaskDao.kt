@@ -37,5 +37,8 @@ interface TaskDao {
 
     @Query("SELECT * FROM tasks WHERE personaId = :personaId ORDER BY `order` ASC, createdAt ASC")
     suspend fun getTasksByPersonaList(personaId: Long): List<Task>
+
+    @Query("SELECT * FROM tasks WHERE isRecurring = 1 AND isCompleted = 0 ORDER BY personaId ASC, `order` ASC")
+    fun getAllOpenRecurringTasks(): Flow<List<Task>>
 }
 

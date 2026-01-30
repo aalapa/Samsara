@@ -54,5 +54,118 @@
         android:textColor="#FFFFFF"
         app:buttonTint="#FFFFFF" />
 
+    <!-- Frequency picker (shown when recurring is checked) -->
+    <LinearLayout
+        android:id="@+id/frequencyContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="8dp"
+        android:paddingStart="8dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/frequency"
+            android:textColor="#AAAAAA"
+            android:textSize="12sp"
+            android:layout_marginBottom="4dp" />
+
+        <RadioGroup
+            android:id="@+id/frequencyRadioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RadioButton
+                android:id="@+id/radioDaily"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/daily"
+                android:textColor="#FFFFFF"
+                android:buttonTint="#FFFFFF" />
+
+            <RadioButton
+                android:id="@+id/radioWeekly"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/weekly"
+                android:textColor="#FFFFFF"
+                android:buttonTint="#FFFFFF" />
+
+            <RadioButton
+                android:id="@+id/radioMonthly"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/monthly"
+                android:textColor="#FFFFFF"
+                android:buttonTint="#FFFFFF" />
+
+            <RadioButton
+                android:id="@+id/radioCustom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/custom_days"
+                android:textColor="#FFFFFF"
+                android:buttonTint="#FFFFFF" />
+
+        </RadioGroup>
+
+        <!-- Month interval picker (shown for Monthly) -->
+        <LinearLayout
+            android:id="@+id/monthIntervalContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Every"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+
+            <NumberPicker
+                android:id="@+id/monthIntervalPicker"
+                android:layout_width="wrap_content"
+                android:layout_height="80dp"
+                android:layout_marginHorizontal="8dp"
+                android:theme="@style/Theme.MaterialComponents.DayNight" />
+
+            <TextView
+                android:id="@+id/monthIntervalSuffix"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="month(s)"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <!-- Info label for weekly/monthly -->
+        <TextView
+            android:id="@+id/frequencyInfoLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#AAAAAA"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp"
+            android:visibility="gone" />
+
+        <!-- Day-of-week chips for Custom frequency -->
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/dayChipGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:singleLine="false"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
 </LinearLayout>
 

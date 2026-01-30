@@ -18,6 +18,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
+import com.samsara.polymath.adapter.DailyTaskAdapter
+import com.samsara.polymath.adapter.DailyTaskItem
 import com.samsara.polymath.adapter.PersonaAdapter
 import com.samsara.polymath.data.AppDatabase
 import com.samsara.polymath.data.Comment
@@ -41,6 +43,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var taskViewModel: TaskViewModel
     private lateinit var tagViewModel: com.samsara.polymath.viewmodel.TagViewModel
     private lateinit var adapter: PersonaAdapter
+    private lateinit var dailyTaskAdapter: DailyTaskAdapter
+    private var isTodayMode = false
     private val gson = Gson()
     
     private val prefs by lazy { 
@@ -102,88 +106,158 @@ class MainActivity : AppCompatActivity() {
     private fun setupFilterChips() {
         tagViewModel.allTags.observe(this) { allTags ->
             binding.filterChipGroup.removeAllViews()
-            
-            if (allTags.isEmpty()) {
-                binding.filterChipsScrollView.visibility = View.GONE
-                return@observe
-            }
-            
+
+            // Always show chip bar (for Today chip at minimum)
             binding.filterChipsScrollView.visibility = View.VISIBLE
-            
+
+            // Add "Today" chip
+            val todayChip = com.google.android.material.chip.Chip(this).apply {
+                text = getString(R.string.today)
+                isCheckable = true
+                isChecked = isTodayMode
+                chipBackgroundColor = android.content.res.ColorStateList(
+                    arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+                    intArrayOf(android.graphics.Color.parseColor("#FF9500"), android.graphics.Color.parseColor("#E0E0E0"))
+                )
+            }
+            binding.filterChipGroup.addView(todayChip)
+
             // Add "Show All" chip
             val showAllChip = com.google.android.material.chip.Chip(this).apply {
                 text = getString(R.string.show_all)
                 isCheckable = true
-                isChecked = selectedFilterTagIds.isEmpty()
-                
-                setOnCheckedChangeListener { _, isChecked ->
-                    if (isChecked) {
-                        selectedFilterTagIds.clear()
-                        // Uncheck all other chips
-                        for (i in 0 until binding.filterChipGroup.childCount) {
-                            val chip = binding.filterChipGroup.getChildAt(i) as? com.google.android.material.chip.Chip
-                            if (chip != this) chip?.isChecked = false
-                        }
-                        observePersonas()
-                    }
-                }
+                isChecked = !isTodayMode && selectedFilterTagIds.isEmpty()
             }
             binding.filterChipGroup.addView(showAllChip)
-            
+
             // Add tag filter chips
             allTags.forEach { tag ->
                 val chip = com.google.android.material.chip.Chip(this).apply {
                     text = tag.name
                     isCheckable = true
-                    isChecked = tag.id in selectedFilterTagIds
-                    
+                    isChecked = !isTodayMode && tag.id in selectedFilterTagIds
+
                     val chipBgColor = try {
                         if (tag.color != null) android.graphics.Color.parseColor(tag.color)
                         else android.graphics.Color.parseColor("#666666")
                     } catch (e: Exception) {
                         android.graphics.Color.parseColor("#666666")
                     }
-                    
+
                     chipBackgroundColor = android.content.res.ColorStateList.valueOf(chipBgColor)
                     val textColor = if (isColorDark(chipBgColor)) android.graphics.Color.WHITE else android.graphics.Color.BLACK
                     setTextColor(textColor)
-                    
-                    setOnCheckedChangeListener { _, isChecked ->
-                        if (isChecked) {
-                            selectedFilterTagIds.add(tag.id)
-                            showAllChip.isChecked = false
-                        } else {
-                            selectedFilterTagIds.remove(tag.id)
-                            if (selectedFilterTagIds.isEmpty()) {
-                                showAllChip.isChecked = true
-                            }
-                        }
-                        observePersonas()
-                    }
                 }
                 binding.filterChipGroup.addView(chip)
             }
-            
+
             // Add "Untagged" chip
             val untaggedChip = com.google.android.material.chip.Chip(this).apply {
                 text = getString(R.string.untagged)
                 isCheckable = true
                 isChecked = false
-                
-                setOnCheckedChangeListener { _, isChecked ->
-                    if (isChecked) {
-                        selectedFilterTagIds.add(-1L) // Use -1 for untagged
-                        showAllChip.isChecked = false
-                    } else {
-                        selectedFilterTagIds.remove(-1L)
-                        if (selectedFilterTagIds.isEmpty()) {
-                            showAllChip.isChecked = true
-                        }
-                    }
+            }
+            binding.filterChipGroup.addView(untaggedChip)
+
+            // Helper to uncheck all chips except one
+            fun uncheckAllExcept(except: com.google.android.material.chip.Chip) {
+                for (i in 0 until binding.filterChipGroup.childCount) {
+                    val c = binding.filterChipGroup.getChildAt(i) as? com.google.android.material.chip.Chip
+                    if (c != except) c?.isChecked = false
+                }
+            }
+
+            // Wire Today chip
+            todayChip.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    isTodayMode = true
+                    selectedFilterTagIds.clear()
+                    uncheckAllExcept(todayChip)
+                    switchToTodayMode()
+                }
+            }
+
+            // Wire Show All chip
+            showAllChip.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    isTodayMode = false
+                    selectedFilterTagIds.clear()
+                    uncheckAllExcept(showAllChip)
+                    switchToPersonasMode()
                     observePersonas()
                 }
             }
-            binding.filterChipGroup.addView(untaggedChip)
+
+            // Wire tag chips
+            for (i in 2 until binding.filterChipGroup.childCount) {
+                val chip = binding.filterChipGroup.getChildAt(i) as? com.google.android.material.chip.Chip ?: continue
+                val tagIndex = i - 2
+                if (tagIndex < allTags.size) {
+                    val tag = allTags[tagIndex]
+                    chip.setOnCheckedChangeListener { _, isChecked ->
+                        if (isChecked) {
+                            isTodayMode = false
+                            todayChip.isChecked = false
+                            showAllChip.isChecked = false
+                            selectedFilterTagIds.add(tag.id)
+                            switchToPersonasMode()
+                        } else {
+                            selectedFilterTagIds.remove(tag.id)
+                            if (selectedFilterTagIds.isEmpty()) showAllChip.isChecked = true
+                        }
+                        observePersonas()
+                    }
+                } else {
+                    // Untagged chip
+                    chip.setOnCheckedChangeListener { _, isChecked ->
+                        if (isChecked) {
+                            isTodayMode = false
+                            todayChip.isChecked = false
+                            showAllChip.isChecked = false
+                            selectedFilterTagIds.add(-1L)
+                            switchToPersonasMode()
+                        } else {
+                            selectedFilterTagIds.remove(-1L)
+                            if (selectedFilterTagIds.isEmpty()) showAllChip.isChecked = true
+                        }
+                        observePersonas()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun switchToTodayMode() {
+        binding.personasRecyclerView.visibility = View.GONE
+        binding.dailyTasksRecyclerView.visibility = View.VISIBLE
+        binding.addPersonaFab.visibility = View.GONE
+        observeDueTodayTasks()
+    }
+
+    private fun switchToPersonasMode() {
+        binding.personasRecyclerView.visibility = View.VISIBLE
+        binding.dailyTasksRecyclerView.visibility = View.GONE
+        binding.emptyDailyTextView.visibility = View.GONE
+        binding.addPersonaFab.visibility = View.VISIBLE
+    }
+
+    private fun observeDueTodayTasks() {
+        // Build persona map for names/colors
+        viewModel.getAllPersonasWithTaskCount().observe(this) { personasWithCount ->
+            val personaMap = personasWithCount.associate {
+                it.persona.id to Pair(it.persona.name, it.persona.backgroundColor)
+            }
+
+            taskViewModel.getDueTodayTasks().observe(this) { dueTasks ->
+                if (!isTodayMode) return@observe
+                val dailyItems = dueTasks.map { task ->
+                    val (name, color) = personaMap[task.personaId] ?: ("Unknown" to "#007AFF")
+                    DailyTaskItem(task, name, color)
+                }
+                dailyTaskAdapter.submitList(dailyItems)
+                binding.emptyDailyTextView.visibility = if (dailyItems.isEmpty()) View.VISIBLE else View.GONE
+                binding.dailyTasksRecyclerView.visibility = if (dailyItems.isEmpty()) View.GONE else View.VISIBLE
+            }
         }
     }
     
@@ -249,6 +323,21 @@ class MainActivity : AppCompatActivity() {
 
         binding.personasRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.personasRecyclerView.adapter = adapter
+
+        dailyTaskAdapter = DailyTaskAdapter(
+            onTaskComplete = { task ->
+                com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
+                    .setTitle("Complete Task")
+                    .setMessage(getString(R.string.mark_complete_confirmation))
+                    .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                        taskViewModel.markTaskAsComplete(task)
+                    }
+                    .setNegativeButton(getString(R.string.no), null)
+                    .show()
+            }
+        )
+        binding.dailyTasksRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.dailyTasksRecyclerView.adapter = dailyTaskAdapter
     }
 
     private fun observePersonas() {
@@ -581,8 +670,10 @@ class MainActivity : AppCompatActivity() {
                                 isCompleted = oldTask.isCompleted,
                                 completedAt = oldTask.completedAt,
                                 backgroundColor = oldTask.backgroundColor,
-                                createdAt = oldTask.createdAt,  // Preserve the original creation timestamp
-                                isRecurring = oldTask.isRecurring  // Preserve the recurring flag
+                                createdAt = oldTask.createdAt,
+                                isRecurring = oldTask.isRecurring,
+                                recurringFrequency = oldTask.recurringFrequency,
+                                recurringDays = oldTask.recurringDays
                             )
                             taskIdMap[oldTask.id] = newTaskId
                         }

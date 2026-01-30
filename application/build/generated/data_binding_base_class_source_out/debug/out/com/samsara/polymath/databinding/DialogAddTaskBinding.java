@@ -5,11 +5,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.checkbox.MaterialCheckBox;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import com.samsara.polymath.R;
 import java.lang.NullPointerException;
@@ -21,6 +26,39 @@ public final class DialogAddTaskBinding implements ViewBinding {
   private final LinearLayout rootView;
 
   @NonNull
+  public final ChipGroup dayChipGroup;
+
+  @NonNull
+  public final LinearLayout frequencyContainer;
+
+  @NonNull
+  public final TextView frequencyInfoLabel;
+
+  @NonNull
+  public final RadioGroup frequencyRadioGroup;
+
+  @NonNull
+  public final LinearLayout monthIntervalContainer;
+
+  @NonNull
+  public final NumberPicker monthIntervalPicker;
+
+  @NonNull
+  public final TextView monthIntervalSuffix;
+
+  @NonNull
+  public final RadioButton radioCustom;
+
+  @NonNull
+  public final RadioButton radioDaily;
+
+  @NonNull
+  public final RadioButton radioMonthly;
+
+  @NonNull
+  public final RadioButton radioWeekly;
+
+  @NonNull
   public final MaterialCheckBox recurringCheckBox;
 
   @NonNull
@@ -29,11 +67,27 @@ public final class DialogAddTaskBinding implements ViewBinding {
   @NonNull
   public final TextInputEditText taskTitleEditText;
 
-  private DialogAddTaskBinding(@NonNull LinearLayout rootView,
+  private DialogAddTaskBinding(@NonNull LinearLayout rootView, @NonNull ChipGroup dayChipGroup,
+      @NonNull LinearLayout frequencyContainer, @NonNull TextView frequencyInfoLabel,
+      @NonNull RadioGroup frequencyRadioGroup, @NonNull LinearLayout monthIntervalContainer,
+      @NonNull NumberPicker monthIntervalPicker, @NonNull TextView monthIntervalSuffix,
+      @NonNull RadioButton radioCustom, @NonNull RadioButton radioDaily,
+      @NonNull RadioButton radioMonthly, @NonNull RadioButton radioWeekly,
       @NonNull MaterialCheckBox recurringCheckBox,
       @NonNull TextInputEditText taskDescriptionEditText,
       @NonNull TextInputEditText taskTitleEditText) {
     this.rootView = rootView;
+    this.dayChipGroup = dayChipGroup;
+    this.frequencyContainer = frequencyContainer;
+    this.frequencyInfoLabel = frequencyInfoLabel;
+    this.frequencyRadioGroup = frequencyRadioGroup;
+    this.monthIntervalContainer = monthIntervalContainer;
+    this.monthIntervalPicker = monthIntervalPicker;
+    this.monthIntervalSuffix = monthIntervalSuffix;
+    this.radioCustom = radioCustom;
+    this.radioDaily = radioDaily;
+    this.radioMonthly = radioMonthly;
+    this.radioWeekly = radioWeekly;
     this.recurringCheckBox = recurringCheckBox;
     this.taskDescriptionEditText = taskDescriptionEditText;
     this.taskTitleEditText = taskTitleEditText;
@@ -66,6 +120,72 @@ public final class DialogAddTaskBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.dayChipGroup;
+      ChipGroup dayChipGroup = ViewBindings.findChildViewById(rootView, id);
+      if (dayChipGroup == null) {
+        break missingId;
+      }
+
+      id = R.id.frequencyContainer;
+      LinearLayout frequencyContainer = ViewBindings.findChildViewById(rootView, id);
+      if (frequencyContainer == null) {
+        break missingId;
+      }
+
+      id = R.id.frequencyInfoLabel;
+      TextView frequencyInfoLabel = ViewBindings.findChildViewById(rootView, id);
+      if (frequencyInfoLabel == null) {
+        break missingId;
+      }
+
+      id = R.id.frequencyRadioGroup;
+      RadioGroup frequencyRadioGroup = ViewBindings.findChildViewById(rootView, id);
+      if (frequencyRadioGroup == null) {
+        break missingId;
+      }
+
+      id = R.id.monthIntervalContainer;
+      LinearLayout monthIntervalContainer = ViewBindings.findChildViewById(rootView, id);
+      if (monthIntervalContainer == null) {
+        break missingId;
+      }
+
+      id = R.id.monthIntervalPicker;
+      NumberPicker monthIntervalPicker = ViewBindings.findChildViewById(rootView, id);
+      if (monthIntervalPicker == null) {
+        break missingId;
+      }
+
+      id = R.id.monthIntervalSuffix;
+      TextView monthIntervalSuffix = ViewBindings.findChildViewById(rootView, id);
+      if (monthIntervalSuffix == null) {
+        break missingId;
+      }
+
+      id = R.id.radioCustom;
+      RadioButton radioCustom = ViewBindings.findChildViewById(rootView, id);
+      if (radioCustom == null) {
+        break missingId;
+      }
+
+      id = R.id.radioDaily;
+      RadioButton radioDaily = ViewBindings.findChildViewById(rootView, id);
+      if (radioDaily == null) {
+        break missingId;
+      }
+
+      id = R.id.radioMonthly;
+      RadioButton radioMonthly = ViewBindings.findChildViewById(rootView, id);
+      if (radioMonthly == null) {
+        break missingId;
+      }
+
+      id = R.id.radioWeekly;
+      RadioButton radioWeekly = ViewBindings.findChildViewById(rootView, id);
+      if (radioWeekly == null) {
+        break missingId;
+      }
+
       id = R.id.recurringCheckBox;
       MaterialCheckBox recurringCheckBox = ViewBindings.findChildViewById(rootView, id);
       if (recurringCheckBox == null) {
@@ -84,8 +204,10 @@ public final class DialogAddTaskBinding implements ViewBinding {
         break missingId;
       }
 
-      return new DialogAddTaskBinding((LinearLayout) rootView, recurringCheckBox,
-          taskDescriptionEditText, taskTitleEditText);
+      return new DialogAddTaskBinding((LinearLayout) rootView, dayChipGroup, frequencyContainer,
+          frequencyInfoLabel, frequencyRadioGroup, monthIntervalContainer, monthIntervalPicker,
+          monthIntervalSuffix, radioCustom, radioDaily, radioMonthly, radioWeekly,
+          recurringCheckBox, taskDescriptionEditText, taskTitleEditText);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -8,7 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.samsara.polymath.data.AppDatabase
 import com.samsara.polymath.data.Task
 import com.samsara.polymath.repository.TaskRepository
+import com.samsara.polymath.util.RecurringTaskUtil
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class TaskViewModel(application: Application) : AndroidViewModel(application) {
@@ -21,15 +23,15 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     
     fun getTasksByPersona(personaId: Long): LiveData<List<Task>> = repository.getTasksByPersona(personaId).asLiveData()
     
-    fun insertTask(personaId: Long, title: String, description: String = "", personaBackgroundColor: String = "#007AFF", isRecurring: Boolean = false) {
+    fun insertTask(personaId: Long, title: String, description: String = "", personaBackgroundColor: String = "#007AFF", isRecurring: Boolean = false, recurringFrequency: String? = null, recurringDays: String? = null) {
         viewModelScope.launch {
             val tasks = repository.getTasksByPersona(personaId)
             val taskList = tasks.first()
             val maxOrder = taskList.maxOfOrNull { it.order } ?: 0
-            
+
             // Calculate variant color based on task order (increment hex value slightly)
             val variantColor = calculateVariantColor(personaBackgroundColor, maxOrder + 1)
-            
+
             repository.insertTask(
                 Task(
                     personaId = personaId,
@@ -37,7 +39,9 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                     description = description,
                     order = maxOrder + 1,
                     backgroundColor = variantColor,
-                    isRecurring = isRecurring
+                    isRecurring = isRecurring,
+                    recurringFrequency = recurringFrequency,
+                    recurringDays = recurringDays
                 )
             )
         }
@@ -119,8 +123,10 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                         description = task.description,
                         order = maxOrder + 1,
                         backgroundColor = task.backgroundColor,
-                        isRecurring = true, // Keep it recurring
-                        createdAt = System.currentTimeMillis() // Today's date
+                        isRecurring = true,
+                        recurringFrequency = task.recurringFrequency,
+                        recurringDays = task.recurringDays,
+                        createdAt = System.currentTimeMillis()
                     )
                 )
             }
@@ -145,15 +151,17 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     }
     
     suspend fun insertTaskSync(
-        personaId: Long, 
-        title: String, 
-        description: String, 
-        order: Int = 0, 
-        isCompleted: Boolean = false, 
-        completedAt: Long? = null, 
+        personaId: Long,
+        title: String,
+        description: String,
+        order: Int = 0,
+        isCompleted: Boolean = false,
+        completedAt: Long? = null,
         backgroundColor: String = "#FFFFFF",
-        createdAt: Long = System.currentTimeMillis(),  // Add createdAt parameter with default
-        isRecurring: Boolean = false  // Add isRecurring parameter with default
+        createdAt: Long = System.currentTimeMillis(),
+        isRecurring: Boolean = false,
+        recurringFrequency: String? = null,
+        recurringDays: String? = null
     ): Long {
         return repository.insertTask(
             Task(
@@ -164,12 +172,20 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                 isCompleted = isCompleted,
                 completedAt = completedAt,
                 backgroundColor = backgroundColor,
-                createdAt = createdAt,  // Pass the createdAt timestamp
-                isRecurring = isRecurring  // Pass the isRecurring flag
+                createdAt = createdAt,
+                isRecurring = isRecurring,
+                recurringFrequency = recurringFrequency,
+                recurringDays = recurringDays
             )
         )
     }
     
+    fun getDueTodayTasks(): LiveData<List<Task>> {
+        return repository.getAllOpenRecurringTasks()
+            .map { tasks -> tasks.filter { RecurringTaskUtil.isDueToday(it) } }
+            .asLiveData()
+    }
+
     suspend fun deleteAllTasks() {
         // Will be handled per persona in MainActivity
     }

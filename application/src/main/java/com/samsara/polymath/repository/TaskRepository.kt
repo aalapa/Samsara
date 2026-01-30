@@ -32,5 +32,7 @@ class TaskRepository(private val taskDao: TaskDao) {
     suspend fun getTasksByPersonaSync(personaId: Long): List<Task> {
         return taskDao.getTasksByPersonaList(personaId)
     }
+
+    fun getAllOpenRecurringTasks(): Flow<List<Task>> = taskDao.getAllOpenRecurringTasks()
 }
 

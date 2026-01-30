@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -32,6 +33,12 @@ public final class ActivityMainBinding implements ViewBinding {
   public final AppBarLayout appBarLayout;
 
   @NonNull
+  public final RecyclerView dailyTasksRecyclerView;
+
+  @NonNull
+  public final TextView emptyDailyTextView;
+
+  @NonNull
   public final ChipGroup filterChipGroup;
 
   @NonNull
@@ -48,12 +55,15 @@ public final class ActivityMainBinding implements ViewBinding {
 
   private ActivityMainBinding(@NonNull ConstraintLayout rootView,
       @NonNull FloatingActionButton addPersonaFab, @NonNull AppBarLayout appBarLayout,
+      @NonNull RecyclerView dailyTasksRecyclerView, @NonNull TextView emptyDailyTextView,
       @NonNull ChipGroup filterChipGroup, @NonNull HorizontalScrollView filterChipsScrollView,
       @NonNull ImageView menuButton, @NonNull RecyclerView personasRecyclerView,
       @NonNull MaterialToolbar toolbar) {
     this.rootView = rootView;
     this.addPersonaFab = addPersonaFab;
     this.appBarLayout = appBarLayout;
+    this.dailyTasksRecyclerView = dailyTasksRecyclerView;
+    this.emptyDailyTextView = emptyDailyTextView;
     this.filterChipGroup = filterChipGroup;
     this.filterChipsScrollView = filterChipsScrollView;
     this.menuButton = menuButton;
@@ -100,6 +110,18 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.dailyTasksRecyclerView;
+      RecyclerView dailyTasksRecyclerView = ViewBindings.findChildViewById(rootView, id);
+      if (dailyTasksRecyclerView == null) {
+        break missingId;
+      }
+
+      id = R.id.emptyDailyTextView;
+      TextView emptyDailyTextView = ViewBindings.findChildViewById(rootView, id);
+      if (emptyDailyTextView == null) {
+        break missingId;
+      }
+
       id = R.id.filterChipGroup;
       ChipGroup filterChipGroup = ViewBindings.findChildViewById(rootView, id);
       if (filterChipGroup == null) {
@@ -131,7 +153,8 @@ public final class ActivityMainBinding implements ViewBinding {
       }
 
       return new ActivityMainBinding((ConstraintLayout) rootView, addPersonaFab, appBarLayout,
-          filterChipGroup, filterChipsScrollView, menuButton, personasRecyclerView, toolbar);
+          dailyTasksRecyclerView, emptyDailyTextView, filterChipGroup, filterChipsScrollView,
+          menuButton, personasRecyclerView, toolbar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));
