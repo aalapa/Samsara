@@ -19,14 +19,14 @@
     
     <style name="PopupMenuStyle" parent="Widget.AppCompat.PopupMenu">
         <item name="android:textColor">@color/text_primary</item>
-        <item name="android:background">@color/background_secondary</item>
+        <item name="android:popupBackground">@drawable/popup_menu_background</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
     </style>
-    
+
     <style name="PopupMenuTheme" parent="ThemeOverlay.Material3.Light">
         <item name="android:textColorPrimary">@color/text_primary</item>
-        <item name="android:background">@color/background_secondary</item>
+        <item name="android:popupBackground">@drawable/popup_menu_background</item>
         <item name="android:textColor">@color/text_primary</item>
         <item name="android:colorBackground">@color/background_secondary</item>
         <item name="colorSurface">@color/background_secondary</item>
