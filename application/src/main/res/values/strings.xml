@@ -75,6 +75,14 @@
     <string name="sat">Sat</string>
     <string name="sun">Sun</string>
     <string name="no_tasks_due_today">No tasks due today</string>
+    <string name="gtd">GTD</string>
+    <string name="end_date">End Date</string>
+    <string name="no_end_date">Not set</string>
+    <string name="clear_end_date">Clear end date</string>
+    <string name="overdue">Overdue</string>
+    <string name="due_today">Due Today</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="no_gtd_tasks">Nothing scheduled. You\'re all caught up!</string>
 
     <!-- Authentication -->
     <string name="enter_pin">Enter your PIN</string>

@@ -33,4 +33,36 @@ object RecurringTaskUtil {
             else -> true
         }
     }
+
+    fun isEndDateToday(task: Task): Boolean {
+        val endDate = task.endDate ?: return false
+        if (task.isCompleted) return false
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+        }
+        val endCal = Calendar.getInstance().apply { timeInMillis = endDate }
+        return today.get(Calendar.YEAR) == endCal.get(Calendar.YEAR) &&
+                today.get(Calendar.DAY_OF_YEAR) == endCal.get(Calendar.DAY_OF_YEAR)
+    }
+
+    fun isEndDateUpcoming(task: Task, withinDays: Int = 3): Boolean {
+        val endDate = task.endDate ?: return false
+        if (task.isCompleted) return false
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+        }
+        val todayMillis = today.timeInMillis
+        val endOfRange = today.apply { add(Calendar.DAY_OF_YEAR, withinDays) }.timeInMillis
+        // Upcoming = after today but within range
+        return endDate > todayMillis && endDate <= endOfRange
+    }
+
+    fun isOverdue(task: Task): Boolean {
+        val endDate = task.endDate ?: return false
+        if (task.isCompleted) return false
+        val today = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+        }
+        return endDate < today.timeInMillis
+    }
 }

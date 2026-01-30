@@ -34,5 +34,7 @@ class TaskRepository(private val taskDao: TaskDao) {
     }
 
     fun getAllOpenRecurringTasks(): Flow<List<Task>> = taskDao.getAllOpenRecurringTasks()
+
+    fun getAllTasksWithEndDate(): Flow<List<Task>> = taskDao.getAllTasksWithEndDate()
 }
 

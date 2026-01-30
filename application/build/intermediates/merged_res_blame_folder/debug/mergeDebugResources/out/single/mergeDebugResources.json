@@ -4,12 +4,12 @@
         "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-43:/mipmap-xxxhdpi/ic_launcher_foreground.webp"
     },
     {
-        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-debug-41:/layout_dialog_add_task.xml.flat",
-        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-43:/layout/dialog_add_task.xml"
-    },
-    {
         "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-debug-41:/layout_activity_lock.xml.flat",
         "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-43:/layout/activity_lock.xml"
+    },
+    {
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-debug-41:/layout_dialog_add_task.xml.flat",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-43:/layout/dialog_add_task.xml"
     },
     {
         "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-debug-41:/mipmap-anydpi-v26_ic_launcher.xml.flat",

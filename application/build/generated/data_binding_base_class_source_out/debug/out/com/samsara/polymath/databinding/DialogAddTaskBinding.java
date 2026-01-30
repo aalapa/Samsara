@@ -4,6 +4,7 @@ package com.samsara.polymath.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
@@ -26,7 +27,16 @@ public final class DialogAddTaskBinding implements ViewBinding {
   private final LinearLayout rootView;
 
   @NonNull
+  public final ImageView clearEndDateButton;
+
+  @NonNull
   public final ChipGroup dayChipGroup;
+
+  @NonNull
+  public final LinearLayout endDateContainer;
+
+  @NonNull
+  public final TextView endDateLabel;
 
   @NonNull
   public final LinearLayout frequencyContainer;
@@ -67,7 +77,9 @@ public final class DialogAddTaskBinding implements ViewBinding {
   @NonNull
   public final TextInputEditText taskTitleEditText;
 
-  private DialogAddTaskBinding(@NonNull LinearLayout rootView, @NonNull ChipGroup dayChipGroup,
+  private DialogAddTaskBinding(@NonNull LinearLayout rootView,
+      @NonNull ImageView clearEndDateButton, @NonNull ChipGroup dayChipGroup,
+      @NonNull LinearLayout endDateContainer, @NonNull TextView endDateLabel,
       @NonNull LinearLayout frequencyContainer, @NonNull TextView frequencyInfoLabel,
       @NonNull RadioGroup frequencyRadioGroup, @NonNull LinearLayout monthIntervalContainer,
       @NonNull NumberPicker monthIntervalPicker, @NonNull TextView monthIntervalSuffix,
@@ -77,7 +89,10 @@ public final class DialogAddTaskBinding implements ViewBinding {
       @NonNull TextInputEditText taskDescriptionEditText,
       @NonNull TextInputEditText taskTitleEditText) {
     this.rootView = rootView;
+    this.clearEndDateButton = clearEndDateButton;
     this.dayChipGroup = dayChipGroup;
+    this.endDateContainer = endDateContainer;
+    this.endDateLabel = endDateLabel;
     this.frequencyContainer = frequencyContainer;
     this.frequencyInfoLabel = frequencyInfoLabel;
     this.frequencyRadioGroup = frequencyRadioGroup;
@@ -120,9 +135,27 @@ public final class DialogAddTaskBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.clearEndDateButton;
+      ImageView clearEndDateButton = ViewBindings.findChildViewById(rootView, id);
+      if (clearEndDateButton == null) {
+        break missingId;
+      }
+
       id = R.id.dayChipGroup;
       ChipGroup dayChipGroup = ViewBindings.findChildViewById(rootView, id);
       if (dayChipGroup == null) {
+        break missingId;
+      }
+
+      id = R.id.endDateContainer;
+      LinearLayout endDateContainer = ViewBindings.findChildViewById(rootView, id);
+      if (endDateContainer == null) {
+        break missingId;
+      }
+
+      id = R.id.endDateLabel;
+      TextView endDateLabel = ViewBindings.findChildViewById(rootView, id);
+      if (endDateLabel == null) {
         break missingId;
       }
 
@@ -204,10 +237,11 @@ public final class DialogAddTaskBinding implements ViewBinding {
         break missingId;
       }
 
-      return new DialogAddTaskBinding((LinearLayout) rootView, dayChipGroup, frequencyContainer,
-          frequencyInfoLabel, frequencyRadioGroup, monthIntervalContainer, monthIntervalPicker,
-          monthIntervalSuffix, radioCustom, radioDaily, radioMonthly, radioWeekly,
-          recurringCheckBox, taskDescriptionEditText, taskTitleEditText);
+      return new DialogAddTaskBinding((LinearLayout) rootView, clearEndDateButton, dayChipGroup,
+          endDateContainer, endDateLabel, frequencyContainer, frequencyInfoLabel,
+          frequencyRadioGroup, monthIntervalContainer, monthIntervalPicker, monthIntervalSuffix,
+          radioCustom, radioDaily, radioMonthly, radioWeekly, recurringCheckBox,
+          taskDescriptionEditText, taskTitleEditText);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

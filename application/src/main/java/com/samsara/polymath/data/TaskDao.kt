@@ -40,5 +40,8 @@ interface TaskDao {
 
     @Query("SELECT * FROM tasks WHERE isRecurring = 1 AND isCompleted = 0 ORDER BY personaId ASC, `order` ASC")
     fun getAllOpenRecurringTasks(): Flow<List<Task>>
+
+    @Query("SELECT * FROM tasks WHERE endDate IS NOT NULL AND isCompleted = 0 ORDER BY endDate ASC")
+    fun getAllTasksWithEndDate(): Flow<List<Task>>
 }
 

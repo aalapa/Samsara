@@ -32,7 +32,8 @@ data class Task(
     val previousOrder: Int = 0, // Track previous position for rank changes
     val rankStatus: RankStatus = RankStatus.STABLE, // Track movement: STABLE, UP, DOWN
     val recurringFrequency: String? = null, // DAILY, WEEKLY, MONTHLY, CUSTOM
-    val recurringDays: String? = null // Comma-separated Calendar.DAY_OF_WEEK values for CUSTOM; single day for WEEKLY/MONTHLY
+    val recurringDays: String? = null, // Comma-separated Calendar.DAY_OF_WEEK values for CUSTOM; single day for WEEKLY/MONTHLY
+    val endDate: Long? = null // Optional deadline/end date (epoch millis, midnight of the date)
 )
 
 enum class RecurringFrequency {

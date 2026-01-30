@@ -337,9 +337,49 @@ class TasksActivity : AppCompatActivity() {
         }
     }
 
+    private var selectedEndDate: Long? = null
+
+    private fun setupEndDatePicker(dialogBinding: DialogAddTaskBinding, existingEndDate: Long? = null) {
+        selectedEndDate = existingEndDate
+        val dateFormat = java.text.SimpleDateFormat("MMM dd, yyyy", java.util.Locale.getDefault())
+
+        fun updateLabel() {
+            if (selectedEndDate != null) {
+                dialogBinding.endDateLabel.text = dateFormat.format(java.util.Date(selectedEndDate!!))
+                dialogBinding.endDateLabel.setTextColor(android.graphics.Color.WHITE)
+                dialogBinding.clearEndDateButton.visibility = View.VISIBLE
+            } else {
+                dialogBinding.endDateLabel.text = getString(R.string.no_end_date)
+                dialogBinding.endDateLabel.setTextColor(android.graphics.Color.parseColor("#AAAAAA"))
+                dialogBinding.clearEndDateButton.visibility = View.GONE
+            }
+        }
+
+        updateLabel()
+
+        dialogBinding.endDateLabel.setOnClickListener {
+            val cal = java.util.Calendar.getInstance()
+            if (selectedEndDate != null) cal.timeInMillis = selectedEndDate!!
+            android.app.DatePickerDialog(this, { _, year, month, day ->
+                val picked = java.util.Calendar.getInstance().apply {
+                    set(year, month, day, 0, 0, 0)
+                    set(java.util.Calendar.MILLISECOND, 0)
+                }
+                selectedEndDate = picked.timeInMillis
+                updateLabel()
+            }, cal.get(java.util.Calendar.YEAR), cal.get(java.util.Calendar.MONTH), cal.get(java.util.Calendar.DAY_OF_MONTH)).show()
+        }
+
+        dialogBinding.clearEndDateButton.setOnClickListener {
+            selectedEndDate = null
+            updateLabel()
+        }
+    }
+
     private fun showAddTaskDialog() {
         val dialogBinding = DialogAddTaskBinding.inflate(LayoutInflater.from(this))
         setupFrequencyPicker(dialogBinding)
+        setupEndDatePicker(dialogBinding)
 
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.add_task))
@@ -363,7 +403,7 @@ class TasksActivity : AppCompatActivity() {
                 val capitalizedTitle = title.replaceFirstChar {
                     if (it.isLowerCase()) it.uppercaseChar() else it
                 }
-                viewModel.insertTask(personaId, capitalizedTitle, description, personaBackgroundColor, isRecurring, frequency, days)
+                viewModel.insertTask(personaId, capitalizedTitle, description, personaBackgroundColor, isRecurring, frequency, days, selectedEndDate)
             } else {
                 Toast.makeText(this, "Please enter a task title", Toast.LENGTH_SHORT).show()
             }
@@ -380,6 +420,7 @@ class TasksActivity : AppCompatActivity() {
         dialogBinding.taskDescriptionEditText.setText(task.description)
         dialogBinding.recurringCheckBox.isChecked = task.isRecurring
         setupFrequencyPicker(dialogBinding, task.recurringFrequency, task.recurringDays)
+        setupEndDatePicker(dialogBinding, task.endDate)
 
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.edit_task))
@@ -408,7 +449,8 @@ class TasksActivity : AppCompatActivity() {
                     description = description,
                     isRecurring = isRecurring,
                     recurringFrequency = frequency,
-                    recurringDays = days
+                    recurringDays = days,
+                    endDate = selectedEndDate
                 )
                 viewModel.updateTask(updatedTask)
             } else {

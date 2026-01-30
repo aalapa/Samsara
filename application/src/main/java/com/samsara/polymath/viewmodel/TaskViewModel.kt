@@ -9,6 +9,7 @@ import com.samsara.polymath.data.AppDatabase
 import com.samsara.polymath.data.Task
 import com.samsara.polymath.repository.TaskRepository
 import com.samsara.polymath.util.RecurringTaskUtil
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -23,7 +24,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     
     fun getTasksByPersona(personaId: Long): LiveData<List<Task>> = repository.getTasksByPersona(personaId).asLiveData()
     
-    fun insertTask(personaId: Long, title: String, description: String = "", personaBackgroundColor: String = "#007AFF", isRecurring: Boolean = false, recurringFrequency: String? = null, recurringDays: String? = null) {
+    fun insertTask(personaId: Long, title: String, description: String = "", personaBackgroundColor: String = "#007AFF", isRecurring: Boolean = false, recurringFrequency: String? = null, recurringDays: String? = null, endDate: Long? = null) {
         viewModelScope.launch {
             val tasks = repository.getTasksByPersona(personaId)
             val taskList = tasks.first()
@@ -41,7 +42,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                     backgroundColor = variantColor,
                     isRecurring = isRecurring,
                     recurringFrequency = recurringFrequency,
-                    recurringDays = recurringDays
+                    recurringDays = recurringDays,
+                    endDate = endDate
                 )
             )
         }
@@ -161,7 +163,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         createdAt: Long = System.currentTimeMillis(),
         isRecurring: Boolean = false,
         recurringFrequency: String? = null,
-        recurringDays: String? = null
+        recurringDays: String? = null,
+        endDate: Long? = null
     ): Long {
         return repository.insertTask(
             Task(
@@ -175,14 +178,35 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                 createdAt = createdAt,
                 isRecurring = isRecurring,
                 recurringFrequency = recurringFrequency,
-                recurringDays = recurringDays
+                recurringDays = recurringDays,
+                endDate = endDate
             )
         )
     }
-    
+
     fun getDueTodayTasks(): LiveData<List<Task>> {
-        return repository.getAllOpenRecurringTasks()
+        val recurringDueToday = repository.getAllOpenRecurringTasks()
             .map { tasks -> tasks.filter { RecurringTaskUtil.isDueToday(it) } }
+        val endDateDueToday = repository.getAllTasksWithEndDate()
+            .map { tasks -> tasks.filter { RecurringTaskUtil.isEndDateToday(it) } }
+        return recurringDueToday.combine(endDateDueToday) { recurring, endDate ->
+            val ids = mutableSetOf<Long>()
+            val combined = mutableListOf<Task>()
+            for (t in recurring) { ids.add(t.id); combined.add(t) }
+            for (t in endDate) { if (t.id !in ids) combined.add(t) }
+            combined
+        }.asLiveData()
+    }
+
+    fun getUpcomingTasks(): LiveData<List<Task>> {
+        return repository.getAllTasksWithEndDate()
+            .map { tasks -> tasks.filter { RecurringTaskUtil.isEndDateUpcoming(it) } }
+            .asLiveData()
+    }
+
+    fun getOverdueTasks(): LiveData<List<Task>> {
+        return repository.getAllTasksWithEndDate()
+            .map { tasks -> tasks.filter { RecurringTaskUtil.isOverdue(it) } }
             .asLiveData()
     }
 

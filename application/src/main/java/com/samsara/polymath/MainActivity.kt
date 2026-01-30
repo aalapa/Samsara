@@ -20,6 +20,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.samsara.polymath.adapter.DailyTaskAdapter
 import com.samsara.polymath.adapter.DailyTaskItem
+import com.samsara.polymath.adapter.GtdListItem
 import com.samsara.polymath.adapter.PersonaAdapter
 import com.samsara.polymath.data.AppDatabase
 import com.samsara.polymath.data.Comment
@@ -110,9 +111,9 @@ class MainActivity : AppCompatActivity() {
             // Always show chip bar (for Today chip at minimum)
             binding.filterChipsScrollView.visibility = View.VISIBLE
 
-            // Add "Today" chip
+            // Add "GTD" chip
             val todayChip = com.google.android.material.chip.Chip(this).apply {
-                text = getString(R.string.today)
+                text = getString(R.string.gtd)
                 isCheckable = true
                 isChecked = isTodayMode
                 chipBackgroundColor = android.content.res.ColorStateList(
@@ -242,21 +243,57 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeDueTodayTasks() {
-        // Build persona map for names/colors
         viewModel.getAllPersonasWithTaskCount().observe(this) { personasWithCount ->
             val personaMap = personasWithCount.associate {
                 it.persona.id to Pair(it.persona.name, it.persona.backgroundColor)
             }
 
-            taskViewModel.getDueTodayTasks().observe(this) { dueTasks ->
+            taskViewModel.getOverdueTasks().observe(this) { overdueTasks ->
                 if (!isTodayMode) return@observe
-                val dailyItems = dueTasks.map { task ->
-                    val (name, color) = personaMap[task.personaId] ?: ("Unknown" to "#007AFF")
-                    DailyTaskItem(task, name, color)
+                taskViewModel.getDueTodayTasks().observe(this) { dueTasks ->
+                    if (!isTodayMode) return@observe
+                    taskViewModel.getUpcomingTasks().observe(this) innerObserve@{ upcomingTasks ->
+                        if (!isTodayMode) return@innerObserve
+                        val gtdItems = mutableListOf<GtdListItem>()
+                        val usedIds = mutableSetOf<Long>()
+
+                        // Overdue first
+                        if (overdueTasks.isNotEmpty()) {
+                            gtdItems.add(GtdListItem.Header(getString(R.string.overdue)))
+                            overdueTasks.forEach { task ->
+                                usedIds.add(task.id)
+                                val (name, color) = personaMap[task.personaId] ?: ("Unknown" to "#007AFF")
+                                gtdItems.add(GtdListItem.TaskItem(DailyTaskItem(task, name, color)))
+                            }
+                        }
+
+                        // Due Today
+                        val filteredToday = dueTasks.filter { it.id !in usedIds }
+                        if (filteredToday.isNotEmpty()) {
+                            gtdItems.add(GtdListItem.Header(getString(R.string.due_today)))
+                            filteredToday.forEach { task ->
+                                usedIds.add(task.id)
+                                val (name, color) = personaMap[task.personaId] ?: ("Unknown" to "#007AFF")
+                                gtdItems.add(GtdListItem.TaskItem(DailyTaskItem(task, name, color)))
+                            }
+                        }
+
+                        // Upcoming
+                        val filteredUpcoming = upcomingTasks.filter { it.id !in usedIds }
+                        if (filteredUpcoming.isNotEmpty()) {
+                            gtdItems.add(GtdListItem.Header(getString(R.string.upcoming)))
+                            filteredUpcoming.forEach { task ->
+                                val (name, color) = personaMap[task.personaId] ?: ("Unknown" to "#007AFF")
+                                gtdItems.add(GtdListItem.TaskItem(DailyTaskItem(task, name, color)))
+                            }
+                        }
+
+                        dailyTaskAdapter.submitList(gtdItems)
+                        binding.emptyDailyTextView.text = getString(R.string.no_gtd_tasks)
+                        binding.emptyDailyTextView.visibility = if (gtdItems.isEmpty()) View.VISIBLE else View.GONE
+                        binding.dailyTasksRecyclerView.visibility = if (gtdItems.isEmpty()) View.GONE else View.VISIBLE
+                    }
                 }
-                dailyTaskAdapter.submitList(dailyItems)
-                binding.emptyDailyTextView.visibility = if (dailyItems.isEmpty()) View.VISIBLE else View.GONE
-                binding.dailyTasksRecyclerView.visibility = if (dailyItems.isEmpty()) View.GONE else View.VISIBLE
             }
         }
     }
@@ -673,7 +710,8 @@ class MainActivity : AppCompatActivity() {
                                 createdAt = oldTask.createdAt,
                                 isRecurring = oldTask.isRecurring,
                                 recurringFrequency = oldTask.recurringFrequency,
-                                recurringDays = oldTask.recurringDays
+                                recurringDays = oldTask.recurringDays,
+                                endDate = oldTask.endDate
                             )
                             taskIdMap[oldTask.id] = newTaskId
                         }

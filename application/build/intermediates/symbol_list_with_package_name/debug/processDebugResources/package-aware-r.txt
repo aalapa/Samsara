@@ -3271,6 +3271,7 @@ id checkbox
 id checked
 id chronometer
 id circle_center
+id clearEndDateButton
 id clear_text
 id clip_horizontal
 id clip_vertical
@@ -3348,6 +3349,8 @@ id elastic
 id embed
 id emptyDailyTextView
 id end
+id endDateContainer
+id endDateLabel
 id endToStart
 id enterAlways
 id enterAlwaysCollapsed
@@ -4064,6 +4067,7 @@ string change_pin
 string character_counter_content_description
 string character_counter_overflowed_content_description
 string character_counter_pattern
+string clear_end_date
 string clear_text_end_icon_content_description
 string comment_hint
 string comments
@@ -4088,12 +4092,14 @@ string done_day_ago
 string done_days_ago
 string done_today
 string drag_handle
+string due_today
 string edit_persona
 string edit_task
 string enable_biometric
 string enable_fingerprint
 string enable_fingerprint_message
 string enable_pin
+string end_date
 string enter_current_pin
 string enter_pin
 string error_a11y_label
@@ -4120,6 +4126,7 @@ string fri
 string generic_error_no_device_credential
 string generic_error_no_keyguard
 string generic_error_user_canceled
+string gtd
 string hide_bottom_view_on_scroll_behavior
 string hide_completed_tasks
 string icon_content_description
@@ -4235,7 +4242,10 @@ string mtrl_timepicker_cancel
 string mtrl_timepicker_confirm
 string no
 string no_comments
+string no_end_date
+string no_gtd_tasks
 string no_tasks_due_today
+string overdue
 string password_toggle_content_description
 string path_password_eye
 string path_password_eye_mask_strike_through
@@ -4278,6 +4288,7 @@ string thu
 string today
 string tue
 string untagged
+string upcoming
 string use_fingerprint
 string view_report
 string wed
