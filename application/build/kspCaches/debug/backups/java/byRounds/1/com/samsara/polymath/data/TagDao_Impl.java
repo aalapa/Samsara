@@ -9,6 +9,7 @@ import androidx.room.EntityDeletionOrUpdateAdapter;
 import androidx.room.EntityInsertionAdapter;
 import androidx.room.RoomDatabase;
 import androidx.room.RoomSQLiteQuery;
+import androidx.room.SharedSQLiteStatement;
 import androidx.room.util.CursorUtil;
 import androidx.room.util.DBUtil;
 import androidx.sqlite.db.SupportSQLiteStatement;
@@ -39,6 +40,8 @@ public final class TagDao_Impl implements TagDao {
   private final EntityDeletionOrUpdateAdapter<Tag> __deletionAdapterOfTag;
 
   private final EntityDeletionOrUpdateAdapter<Tag> __updateAdapterOfTag;
+
+  private final SharedSQLiteStatement __preparedStmtOfUpdateTagOrder;
 
   public TagDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
@@ -98,6 +101,14 @@ public final class TagDao_Impl implements TagDao {
         statement.bindLong(6, entity.getId());
       }
     };
+    this.__preparedStmtOfUpdateTagOrder = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "UPDATE tags SET `order` = ? WHERE id = ?";
+        return _query;
+      }
+    };
   }
 
   @Override
@@ -149,6 +160,34 @@ public final class TagDao_Impl implements TagDao {
           return Unit.INSTANCE;
         } finally {
           __db.endTransaction();
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object updateTagOrder(final long tagId, final int order,
+      final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfUpdateTagOrder.acquire();
+        int _argIndex = 1;
+        _stmt.bindLong(_argIndex, order);
+        _argIndex = 2;
+        _stmt.bindLong(_argIndex, tagId);
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfUpdateTagOrder.release(_stmt);
         }
       }
     }, $completion);
@@ -343,7 +382,7 @@ public final class TagDao_Impl implements TagDao {
 
   @Override
   public Flow<List<Tag>> getTagsForPersona(final long personaId) {
-    final String _sql = "SELECT tags.* FROM tags INNER JOIN persona_tags ON tags.id = persona_tags.tagId WHERE persona_tags.personaId = ? ORDER BY tags.name ASC";
+    final String _sql = "SELECT tags.* FROM tags INNER JOIN persona_tags ON tags.id = persona_tags.tagId WHERE persona_tags.personaId = ? ORDER BY tags.`order` ASC, tags.name ASC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
     _statement.bindLong(_argIndex, personaId);
@@ -395,7 +434,7 @@ public final class TagDao_Impl implements TagDao {
   @Override
   public Object getTagsForPersonaSync(final long personaId,
       final Continuation<? super List<Tag>> $completion) {
-    final String _sql = "SELECT tags.* FROM tags INNER JOIN persona_tags ON tags.id = persona_tags.tagId WHERE persona_tags.personaId = ? ORDER BY tags.name ASC";
+    final String _sql = "SELECT tags.* FROM tags INNER JOIN persona_tags ON tags.id = persona_tags.tagId WHERE persona_tags.personaId = ? ORDER BY tags.`order` ASC, tags.name ASC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
     _statement.bindLong(_argIndex, personaId);
@@ -473,7 +512,7 @@ public final class TagDao_Impl implements TagDao {
 
   @Override
   public Flow<List<TagWithUsageCount>> getTagsWithUsageCount() {
-    final String _sql = "SELECT tags.*, COUNT(persona_tags.personaId) as usage_count FROM tags LEFT JOIN persona_tags ON tags.id = persona_tags.tagId GROUP BY tags.id ORDER BY usage_count DESC, tags.name ASC";
+    final String _sql = "SELECT tags.*, COUNT(persona_tags.personaId) as usage_count FROM tags LEFT JOIN persona_tags ON tags.id = persona_tags.tagId GROUP BY tags.id ORDER BY tags.`order` ASC, tags.name ASC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
     return CoroutinesRoom.createFlow(__db, false, new String[] {"tags",
         "persona_tags"}, new Callable<List<TagWithUsageCount>>() {

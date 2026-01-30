@@ -77,6 +77,12 @@ class TagViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
     
+    fun updateTagOrders(tagOrders: List<Pair<Long, Int>>) {
+        viewModelScope.launch {
+            repository.updateTagOrders(tagOrders)
+        }
+    }
+
     suspend fun getPersonaCountForTag(tagId: Long): Int {
         return repository.getPersonaCountForTag(tagId)
     }

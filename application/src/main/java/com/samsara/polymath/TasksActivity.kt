@@ -62,6 +62,8 @@ class TasksActivity : AppCompatActivity() {
             finish()
         }
         binding.toolbar.inflateMenu(R.menu.tasks_menu)
+        // Fix overflow icon visibility - ensure it contrasts with toolbar background
+        binding.toolbar.overflowIcon?.setTint(resources.getColor(R.color.text_primary, theme))
         binding.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.action_show_completed -> {

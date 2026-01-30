@@ -21,6 +21,9 @@ public final class ItemTagManagementBinding implements ViewBinding {
   private final MaterialCardView rootView;
 
   @NonNull
+  public final ImageView dragHandle;
+
+  @NonNull
   public final ImageView menuButton;
 
   @NonNull
@@ -33,9 +36,10 @@ public final class ItemTagManagementBinding implements ViewBinding {
   public final TextView tagUsageTextView;
 
   private ItemTagManagementBinding(@NonNull MaterialCardView rootView,
-      @NonNull ImageView menuButton, @NonNull View tagColorIndicator,
+      @NonNull ImageView dragHandle, @NonNull ImageView menuButton, @NonNull View tagColorIndicator,
       @NonNull TextView tagNameTextView, @NonNull TextView tagUsageTextView) {
     this.rootView = rootView;
+    this.dragHandle = dragHandle;
     this.menuButton = menuButton;
     this.tagColorIndicator = tagColorIndicator;
     this.tagNameTextView = tagNameTextView;
@@ -69,6 +73,12 @@ public final class ItemTagManagementBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.dragHandle;
+      ImageView dragHandle = ViewBindings.findChildViewById(rootView, id);
+      if (dragHandle == null) {
+        break missingId;
+      }
+
       id = R.id.menuButton;
       ImageView menuButton = ViewBindings.findChildViewById(rootView, id);
       if (menuButton == null) {
@@ -93,7 +103,7 @@ public final class ItemTagManagementBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ItemTagManagementBinding((MaterialCardView) rootView, menuButton,
+      return new ItemTagManagementBinding((MaterialCardView) rootView, dragHandle, menuButton,
           tagColorIndicator, tagNameTextView, tagUsageTextView);
     }
     String missingId = rootView.getResources().getResourceName(id);

@@ -74,6 +74,12 @@ class TagRepository(
         // Foreign key CASCADE will automatically delete persona_tags entries
     }
     
+    suspend fun updateTagOrders(tagOrders: List<Pair<Long, Int>>) {
+        tagOrders.forEach { (tagId, order) ->
+            tagDao.updateTagOrder(tagId, order)
+        }
+    }
+
     suspend fun getPersonaCountForTag(tagId: Long): Int {
         return tagDao.getPersonaCountForTag(tagId)
     }

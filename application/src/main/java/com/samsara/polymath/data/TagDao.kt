@@ -29,15 +29,18 @@ interface TagDao {
     @Query("SELECT tags.* FROM tags " +
            "INNER JOIN persona_tags ON tags.id = persona_tags.tagId " +
            "WHERE persona_tags.personaId = :personaId " +
-           "ORDER BY tags.name ASC")
+           "ORDER BY tags.`order` ASC, tags.name ASC")
     fun getTagsForPersona(personaId: Long): Flow<List<Tag>>
 
     @Query("SELECT tags.* FROM tags " +
            "INNER JOIN persona_tags ON tags.id = persona_tags.tagId " +
            "WHERE persona_tags.personaId = :personaId " +
-           "ORDER BY tags.name ASC")
+           "ORDER BY tags.`order` ASC, tags.name ASC")
     suspend fun getTagsForPersonaSync(personaId: Long): List<Tag>
     
+    @Query("UPDATE tags SET `order` = :order WHERE id = :tagId")
+    suspend fun updateTagOrder(tagId: Long, order: Int)
+
     @Query("SELECT COUNT(*) FROM persona_tags WHERE tagId = :tagId")
     suspend fun getPersonaCountForTag(tagId: Long): Int
     
@@ -45,7 +48,7 @@ interface TagDao {
            "FROM tags " +
            "LEFT JOIN persona_tags ON tags.id = persona_tags.tagId " +
            "GROUP BY tags.id " +
-           "ORDER BY usage_count DESC, tags.name ASC")
+           "ORDER BY tags.`order` ASC, tags.name ASC")
     fun getTagsWithUsageCount(): Flow<List<TagWithUsageCount>>
 }
 

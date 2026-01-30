@@ -6,7 +6,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.samsara.polymath.adapter.TagManagementAdapter
 import com.samsara.polymath.data.TagWithUsageCount
@@ -20,6 +22,7 @@ class TagManagementActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTagManagementBinding
     private lateinit var viewModel: TagViewModel
     private lateinit var adapter: TagManagementAdapter
+    private lateinit var itemTouchHelper: ItemTouchHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,11 +50,52 @@ class TagManagementActivity : AppCompatActivity() {
             },
             onDeleteTag = { tagWithUsage ->
                 showDeleteTagConfirmation(tagWithUsage)
+            },
+            onStartDrag = { viewHolder ->
+                itemTouchHelper.startDrag(viewHolder)
             }
         )
 
         binding.tagsRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.tagsRecyclerView.adapter = adapter
+
+        val callback = object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0
+        ) {
+            override fun isLongPressDragEnabled(): Boolean = false
+
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                val fromPosition = viewHolder.bindingAdapterPosition
+                val toPosition = target.bindingAdapterPosition
+                if (fromPosition == RecyclerView.NO_POSITION || toPosition == RecyclerView.NO_POSITION) {
+                    return false
+                }
+
+                val currentList = adapter.currentList.toMutableList()
+                val item = currentList.removeAt(fromPosition)
+                currentList.add(toPosition, item)
+                adapter.submitList(currentList)
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
+
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+                // Save new order to database
+                val tagOrders = adapter.currentList.mapIndexed { index, tagWithUsage ->
+                    tagWithUsage.tag.id to index
+                }
+                viewModel.updateTagOrders(tagOrders)
+            }
+        }
+
+        itemTouchHelper = ItemTouchHelper(callback)
+        itemTouchHelper.attachToRecyclerView(binding.tagsRecyclerView)
     }
 
     private fun observeTags() {
@@ -151,4 +195,3 @@ class TagManagementActivity : AppCompatActivity() {
             .show()
     }
 }
-

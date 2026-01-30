@@ -3023,6 +3023,7 @@ drawable ic_call_decline
 drawable ic_call_decline_low
 drawable ic_clear_black_24
 drawable ic_clock_black_24dp
+drawable ic_drag_handle
 drawable ic_expand_more
 drawable ic_keyboard_black_24dp
 drawable ic_launcher_background
@@ -3031,6 +3032,7 @@ drawable ic_launcher_simple
 drawable ic_m3_chip_check
 drawable ic_m3_chip_checked_circle
 drawable ic_m3_chip_close
+drawable ic_more_vert
 drawable ic_mtrl_checked_circle
 drawable ic_mtrl_chip_checked_black
 drawable ic_mtrl_chip_checked_circle
@@ -3324,6 +3326,7 @@ id dragAnticlockwise
 id dragClockwise
 id dragDown
 id dragEnd
+id dragHandle
 id dragHandleImageView
 id dragLeft
 id dragRight

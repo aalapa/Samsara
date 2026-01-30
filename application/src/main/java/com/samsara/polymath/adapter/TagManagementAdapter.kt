@@ -1,7 +1,9 @@
 package com.samsara.polymath.adapter
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
@@ -13,7 +15,8 @@ import com.samsara.polymath.databinding.ItemTagManagementBinding
 
 class TagManagementAdapter(
     private val onRenameTag: (TagWithUsageCount) -> Unit,
-    private val onDeleteTag: (TagWithUsageCount) -> Unit
+    private val onDeleteTag: (TagWithUsageCount) -> Unit,
+    private val onStartDrag: (RecyclerView.ViewHolder) -> Unit = {}
 ) : ListAdapter<TagWithUsageCount, TagManagementAdapter.TagViewHolder>(TagDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TagViewHolder {
@@ -29,6 +32,7 @@ class TagManagementAdapter(
         holder.bind(getItem(position))
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     inner class TagViewHolder(
         private val binding: ItemTagManagementBinding
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -39,7 +43,6 @@ class TagManagementAdapter(
 
             binding.tagNameTextView.text = tag.name
 
-            // Display usage count
             val usageText = if (usageCount == 1) {
                 "$usageCount persona"
             } else {
@@ -47,7 +50,6 @@ class TagManagementAdapter(
             }
             binding.tagUsageTextView.text = usageText
 
-            // Set color indicator
             try {
                 val color = if (tag.color != null) {
                     Color.parseColor(tag.color)
@@ -57,6 +59,14 @@ class TagManagementAdapter(
                 binding.tagColorIndicator.setBackgroundColor(color)
             } catch (e: Exception) {
                 binding.tagColorIndicator.setBackgroundColor(Color.parseColor("#666666"))
+            }
+
+            // Drag handle
+            binding.dragHandle.setOnTouchListener { _, event ->
+                if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+                    onStartDrag(this)
+                }
+                false
             }
 
             // Setup menu
@@ -95,5 +105,3 @@ class TagManagementAdapter(
         }
     }
 }
-
-
