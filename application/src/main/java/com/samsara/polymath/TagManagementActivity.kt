@@ -23,6 +23,7 @@ class TagManagementActivity : AppCompatActivity() {
     private lateinit var viewModel: TagViewModel
     private lateinit var adapter: TagManagementAdapter
     private lateinit var itemTouchHelper: ItemTouchHelper
+    private var isDragging = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +70,7 @@ class TagManagementActivity : AppCompatActivity() {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
+                isDragging = true
                 val fromPosition = viewHolder.bindingAdapterPosition
                 val toPosition = target.bindingAdapterPosition
                 if (fromPosition == RecyclerView.NO_POSITION || toPosition == RecyclerView.NO_POSITION) {
@@ -91,6 +93,7 @@ class TagManagementActivity : AppCompatActivity() {
                     tagWithUsage.tag.id to index
                 }
                 viewModel.updateTagOrders(tagOrders)
+                isDragging = false
             }
         }
 
@@ -100,7 +103,9 @@ class TagManagementActivity : AppCompatActivity() {
 
     private fun observeTags() {
         viewModel.tagsWithUsage.observe(this) { tagsWithUsage ->
-            adapter.submitList(tagsWithUsage)
+            if (!isDragging) {
+                adapter.submitList(tagsWithUsage)
+            }
         }
     }
 

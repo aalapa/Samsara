@@ -360,7 +360,7 @@ class TasksActivity : AppCompatActivity() {
         dialogBinding.endDateLabel.setOnClickListener {
             val cal = java.util.Calendar.getInstance()
             if (selectedEndDate != null) cal.timeInMillis = selectedEndDate!!
-            android.app.DatePickerDialog(this, { _, year, month, day ->
+            android.app.DatePickerDialog(this, android.R.style.Theme_Holo_Light_Dialog_MinWidth, { _, year, month, day ->
                 val picked = java.util.Calendar.getInstance().apply {
                     set(year, month, day, 0, 0, 0)
                     set(java.util.Calendar.MILLISECOND, 0)

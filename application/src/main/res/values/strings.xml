@@ -108,5 +108,7 @@
     <string name="pin_changed">PIN changed successfully</string>
     <string name="biometric_enabled">Fingerprint enabled</string>
     <string name="biometric_disabled">Fingerprint disabled</string>
+    <string name="karmah_title">My Karmah</string>
+    <string name="my_avatars_title">My Avatars</string>
 </resources>
 

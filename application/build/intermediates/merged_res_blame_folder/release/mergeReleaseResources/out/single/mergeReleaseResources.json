@@ -1,0 +1,234 @@
+[
+    {
+        "merged": "com.samsara.polymath.application-release-41:/layout_item_task.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/layout/item_task.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/layout_item_persona.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/layout/item_persona.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/layout_item_comment.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/layout/item_comment.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.samsara.polymath.application-main-42:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/layout_item_daily_task.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/layout/item_daily_task.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.samsara.polymath.application-main-42:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/layout_activity_pin_setup.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/layout/activity_pin_setup.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/menu_main_menu.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/menu/main_menu.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.samsara.polymath.application-main-42:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_circle_background.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/circle_background.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.samsara.polymath.application-main-42:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_tag_circle.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/tag_circle.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/layout_dialog_add_task.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/layout/dialog_add_task.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_ic_rank_stable.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/ic_rank_stable.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/layout_dialog_create_tag.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/layout/dialog_create_tag.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_ic_launcher_simple.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/ic_launcher_simple.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_comment_background.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/comment_background.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/mipmap-xxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.samsara.polymath.application-main-42:/mipmap-xxhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/layout_item_persona_report.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/layout/item_persona_report.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.samsara.polymath.application-main-42:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_ic_persona_rank_stable.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/ic_persona_rank_stable.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_ic_arrow_back.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/ic_arrow_back.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/layout_dialog_add_persona.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/layout/dialog_add_persona.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_ic_drag_handle.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/ic_drag_handle.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/mipmap-hdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.samsara.polymath.application-main-42:/mipmap-hdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_ic_rank_down.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/ic_rank_down.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_ic_rank_up.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/ic_rank_up.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.samsara.polymath.application-main-42:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/layout_activity_tasks.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/layout/activity_tasks.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_circle_background_completed.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/circle_background_completed.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/layout_activity_tag_management.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/layout/activity_tag_management.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/mipmap-xhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.samsara.polymath.application-main-42:/mipmap-xhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/layout_activity_main.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_ic_expand_more.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/ic_expand_more.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_ic_persona_rank_down.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/ic_persona_rank_down.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/menu_persona_menu.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/menu/persona_menu.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/layout_activity_settings.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/layout/activity_settings.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.samsara.polymath.application-main-42:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_popup_menu_background.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/popup_menu_background.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.samsara.polymath.application-main-42:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.samsara.polymath.application-main-42:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/layout_dialog_task_comments.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/layout/dialog_task_comments.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/layout_item_tag_management.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/layout/item_tag_management.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_pin_dot_filled.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/pin_dot_filled.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/mipmap-xxxhdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.samsara.polymath.application-main-42:/mipmap-xxxhdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_pin_dot_empty.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/pin_dot_empty.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/menu_tag_menu.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/menu/tag_menu.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/layout_activity_persona_report.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/layout/activity_persona_report.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/menu_tasks_menu.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/menu/tasks_menu.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/mipmap-mdpi_ic_launcher_foreground.webp.flat",
+        "source": "com.samsara.polymath.application-main-42:/mipmap-mdpi/ic_launcher_foreground.webp"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.samsara.polymath.application-main-42:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/layout_activity_lock.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/layout/activity_lock.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_ic_more_vert.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/ic_more_vert.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/drawable_ic_persona_rank_up.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/drawable/ic_persona_rank_up.xml"
+    },
+    {
+        "merged": "com.samsara.polymath.application-release-41:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.samsara.polymath.application-main-42:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    }
+]
