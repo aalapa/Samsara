@@ -210,6 +210,16 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
             .asLiveData()
     }
 
+    suspend fun getCompletionIntervals(personaId: Long, title: String): List<Int> {
+        val instances = repository.getCompletedRecurringInstances(personaId, title)
+        if (instances.size < 2) return emptyList()
+        return instances.zipWithNext { a, b ->
+            val aTime = a.completedAt ?: a.createdAt
+            val bTime = b.completedAt ?: b.createdAt
+            ((bTime - aTime) / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(0)
+        }
+    }
+
     suspend fun deleteAllTasks() {
         // Will be handled per persona in MainActivity
     }

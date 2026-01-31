@@ -3283,6 +3283,7 @@ id commentEditText
 id commentTextTextView
 id commentsRecyclerView
 id completeButton
+id completionBarChart
 id completionInfoTextView
 id completionRateChangeTextView
 id completionRateTextView

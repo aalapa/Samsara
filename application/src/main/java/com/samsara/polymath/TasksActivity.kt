@@ -21,6 +21,8 @@ import com.samsara.polymath.databinding.DialogAddTaskBinding
 import com.samsara.polymath.databinding.DialogTaskCommentsBinding
 import com.samsara.polymath.viewmodel.CommentViewModel
 import com.samsara.polymath.viewmodel.TaskViewModel
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class TasksActivity : AppCompatActivity() {
 
@@ -520,10 +522,26 @@ class TasksActivity : AppCompatActivity() {
 
     private fun showTaskCommentsDialog(task: com.samsara.polymath.data.Task) {
         val dialogBinding = DialogTaskCommentsBinding.inflate(LayoutInflater.from(this))
-        
+
         // Set task title
         dialogBinding.taskTitleTextView.text = task.title
-        
+
+        // Show completion interval chart for recurring tasks without fixed frequency
+        if (task.isRecurring && task.recurringFrequency == null) {
+            lifecycleScope.launch {
+                val intervals = viewModel.getCompletionIntervals(task.personaId, task.title)
+                if (intervals.isNotEmpty()) {
+                    dialogBinding.completionBarChart.visibility = View.VISIBLE
+                    val color = try {
+                        android.graphics.Color.parseColor(task.backgroundColor)
+                    } catch (e: Exception) {
+                        android.graphics.Color.parseColor("#007AFF")
+                    }
+                    dialogBinding.completionBarChart.setIntervals(intervals, color)
+                }
+            }
+        }
+
         // Setup comments RecyclerView
         val commentAdapter = CommentAdapter()
         dialogBinding.commentsRecyclerView.layoutManager = LinearLayoutManager(this)

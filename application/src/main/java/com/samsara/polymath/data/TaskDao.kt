@@ -43,5 +43,8 @@ interface TaskDao {
 
     @Query("SELECT * FROM tasks WHERE endDate IS NOT NULL AND isCompleted = 0 ORDER BY endDate ASC")
     fun getAllTasksWithEndDate(): Flow<List<Task>>
+
+    @Query("SELECT * FROM tasks WHERE personaId = :personaId AND title = :title AND isRecurring = 1 AND isCompleted = 1 ORDER BY completedAt ASC")
+    suspend fun getCompletedRecurringInstances(personaId: Long, title: String): List<Task>
 }
 
