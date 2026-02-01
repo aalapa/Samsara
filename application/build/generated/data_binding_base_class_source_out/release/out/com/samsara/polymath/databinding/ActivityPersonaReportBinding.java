@@ -224,6 +224,15 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
   public final TextView tagNeedAttentionLabel;
 
   @NonNull
+  public final ImageView timeSpentArrow;
+
+  @NonNull
+  public final LinearLayout timeSpentContent;
+
+  @NonNull
+  public final LinearLayout timeSpentHeader;
+
+  @NonNull
   public final MaterialToolbar toolbar;
 
   @NonNull
@@ -264,7 +273,9 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
       @NonNull TextView tagNeedAttention2Name, @NonNull TextView tagNeedAttention2Stats,
       @NonNull MaterialCardView tagNeedAttentionCard1,
       @NonNull MaterialCardView tagNeedAttentionCard2, @NonNull TextView tagNeedAttentionLabel,
-      @NonNull MaterialToolbar toolbar, @NonNull MaterialButton weeklyButton) {
+      @NonNull ImageView timeSpentArrow, @NonNull LinearLayout timeSpentContent,
+      @NonNull LinearLayout timeSpentHeader, @NonNull MaterialToolbar toolbar,
+      @NonNull MaterialButton weeklyButton) {
     this.rootView = rootView;
     this.allPersonasArrow = allPersonasArrow;
     this.allPersonasHeader = allPersonasHeader;
@@ -332,6 +343,9 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
     this.tagNeedAttentionCard1 = tagNeedAttentionCard1;
     this.tagNeedAttentionCard2 = tagNeedAttentionCard2;
     this.tagNeedAttentionLabel = tagNeedAttentionLabel;
+    this.timeSpentArrow = timeSpentArrow;
+    this.timeSpentContent = timeSpentContent;
+    this.timeSpentHeader = timeSpentHeader;
     this.toolbar = toolbar;
     this.weeklyButton = weeklyButton;
   }
@@ -759,6 +773,24 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.timeSpentArrow;
+      ImageView timeSpentArrow = ViewBindings.findChildViewById(rootView, id);
+      if (timeSpentArrow == null) {
+        break missingId;
+      }
+
+      id = R.id.timeSpentContent;
+      LinearLayout timeSpentContent = ViewBindings.findChildViewById(rootView, id);
+      if (timeSpentContent == null) {
+        break missingId;
+      }
+
+      id = R.id.timeSpentHeader;
+      LinearLayout timeSpentHeader = ViewBindings.findChildViewById(rootView, id);
+      if (timeSpentHeader == null) {
+        break missingId;
+      }
+
       id = R.id.toolbar;
       MaterialToolbar toolbar = ViewBindings.findChildViewById(rootView, id);
       if (toolbar == null) {
@@ -789,7 +821,8 @@ public final class ActivityPersonaReportBinding implements ViewBinding {
           tagMostImproved2Stats, tagMostImprovedCard1, tagMostImprovedCard2, tagMostImprovedLabel,
           tagNeedAttention1Name, tagNeedAttention1Stats, tagNeedAttention2Name,
           tagNeedAttention2Stats, tagNeedAttentionCard1, tagNeedAttentionCard2,
-          tagNeedAttentionLabel, toolbar, weeklyButton);
+          tagNeedAttentionLabel, timeSpentArrow, timeSpentContent, timeSpentHeader, toolbar,
+          weeklyButton);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

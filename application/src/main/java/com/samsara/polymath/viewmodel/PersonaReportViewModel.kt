@@ -7,6 +7,7 @@ import com.samsara.polymath.data.*
 import com.samsara.polymath.repository.PersonaRepository
 import com.samsara.polymath.repository.PersonaStatisticsRepository
 import com.samsara.polymath.repository.TaskRepository
+import com.samsara.polymath.repository.TimeEntryRepository
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
@@ -17,6 +18,7 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
     private val taskRepository: TaskRepository
     private val statisticsRepository: PersonaStatisticsRepository
     private val tagDao: TagDao
+    private val timeEntryRepository: TimeEntryRepository
 
     init {
         val database = AppDatabase.getDatabase(application)
@@ -24,6 +26,7 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
         taskRepository = TaskRepository(database.taskDao())
         statisticsRepository = PersonaStatisticsRepository(database.personaStatisticsDao())
         tagDao = database.tagDao()
+        timeEntryRepository = TimeEntryRepository(database.timeEntryDao())
     }
 
     suspend fun generateReport(reportType: ReportType): ReportSummary {
@@ -38,9 +41,14 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
         // Get all personas
         val personas = personaRepository.getAllPersonasSync()
 
+        // Get time tracking data per persona
+        val timeByPersona = timeEntryRepository.getTotalTimeByAllPersonas()
+            .associate { it.personaId to it.totalTime }
+
         // Get current and previous statistics for each persona
         val personaReports = personas.map { persona ->
             generatePersonaReport(persona, startTime, previousPeriodStart, now)
+                .copy(totalTimeSpent = timeByPersona[persona.id] ?: 0)
         }.sortedByDescending { it.improvementScore }
 
         // Find highlights - top 2 each
@@ -75,6 +83,10 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
             .sortedBy { it.avgOpenCount }
             .take(2)
 
+        val mostTimeSpent = personaReports
+            .filter { it.totalTimeSpent > 0 }
+            .sortedByDescending { it.totalTimeSpent }
+
         return ReportSummary(
             reportType = reportType,
             startDate = startTime,
@@ -85,7 +97,8 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
             mostActive = mostActive,
             tagsMostActive = tagsMostActive,
             tagsMostImproved = tagsMostImproved,
-            tagsNeedAttention = tagsNeedAttention
+            tagsNeedAttention = tagsNeedAttention,
+            mostTimeSpent = mostTimeSpent
         )
     }
 

@@ -21,6 +21,7 @@ import com.samsara.polymath.databinding.DialogAddTaskBinding
 import com.samsara.polymath.databinding.DialogTaskCommentsBinding
 import com.samsara.polymath.viewmodel.CommentViewModel
 import com.samsara.polymath.viewmodel.TaskViewModel
+import com.samsara.polymath.viewmodel.TimeEntryViewModel
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
@@ -29,6 +30,7 @@ class TasksActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTasksBinding
     private lateinit var viewModel: TaskViewModel
     private lateinit var commentViewModel: CommentViewModel
+    private lateinit var timeEntryViewModel: TimeEntryViewModel
     private lateinit var adapter: TaskAdapter
     private var personaId: Long = -1
     private var personaName: String = ""
@@ -53,10 +55,12 @@ class TasksActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[TaskViewModel::class.java]
         commentViewModel = ViewModelProvider(this)[CommentViewModel::class.java]
+        timeEntryViewModel = ViewModelProvider(this)[TimeEntryViewModel::class.java]
 
         setupToolbar()
         setupRecyclerView()
         observeTasks()
+        observeTimer()
         setupFab()
     }
 
@@ -103,6 +107,12 @@ class TasksActivity : AppCompatActivity() {
             },
             onStartDrag = { viewHolder ->
                 itemTouchHelper.startDrag(viewHolder)
+            },
+            onCircleClick = { task ->
+                showTaskCommentsDialog(task)
+            },
+            onTimerToggle = { task ->
+                timeEntryViewModel.toggleTimer(task.id)
             }
         )
 
@@ -203,6 +213,12 @@ class TasksActivity : AppCompatActivity() {
                 tasks.filter { !it.isCompleted }
             }
             adapter.submitList(filteredTasks)
+        }
+    }
+
+    private fun observeTimer() {
+        timeEntryViewModel.runningTaskId.observe(this) { taskId ->
+            adapter.activeTimerTaskId = taskId
         }
     }
 

@@ -39,10 +39,12 @@ public final class AppDatabase_Impl extends AppDatabase {
 
   private volatile PersonaTagDao _personaTagDao;
 
+  private volatile TimeEntryDao _timeEntryDao;
+
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(14) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(15) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `personas` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `order` INTEGER NOT NULL, `openCount` INTEGER NOT NULL, `backgroundColor` TEXT NOT NULL, `textColor` TEXT NOT NULL, `previousOpenCount` INTEGER NOT NULL, `rankStatus` TEXT NOT NULL, `lastOpenedAt` INTEGER NOT NULL)");
@@ -55,8 +57,10 @@ public final class AppDatabase_Impl extends AppDatabase {
         db.execSQL("CREATE TABLE IF NOT EXISTS `persona_tags` (`personaId` INTEGER NOT NULL, `tagId` INTEGER NOT NULL, `assigned_at` INTEGER NOT NULL, PRIMARY KEY(`personaId`, `tagId`), FOREIGN KEY(`personaId`) REFERENCES `personas`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`tagId`) REFERENCES `tags`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_persona_tags_personaId` ON `persona_tags` (`personaId`)");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_persona_tags_tagId` ON `persona_tags` (`tagId`)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `time_entries` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `startTime` INTEGER NOT NULL, `endTime` INTEGER, FOREIGN KEY(`taskId`) REFERENCES `tasks`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_time_entries_taskId` ON `time_entries` (`taskId`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '41b2897eac0a9e4676bcc7ead97f2fc2')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '90d97b9e9b00efb0bbfe6f281d0fab8a')");
       }
 
       @Override
@@ -67,6 +71,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         db.execSQL("DROP TABLE IF EXISTS `persona_statistics`");
         db.execSQL("DROP TABLE IF EXISTS `tags`");
         db.execSQL("DROP TABLE IF EXISTS `persona_tags`");
+        db.execSQL("DROP TABLE IF EXISTS `time_entries`");
         final List<? extends RoomDatabase.Callback> _callbacks = mCallbacks;
         if (_callbacks != null) {
           for (RoomDatabase.Callback _callback : _callbacks) {
@@ -223,9 +228,25 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoPersonaTags + "\n"
                   + " Found:\n" + _existingPersonaTags);
         }
+        final HashMap<String, TableInfo.Column> _columnsTimeEntries = new HashMap<String, TableInfo.Column>(4);
+        _columnsTimeEntries.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsTimeEntries.put("taskId", new TableInfo.Column("taskId", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsTimeEntries.put("startTime", new TableInfo.Column("startTime", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsTimeEntries.put("endTime", new TableInfo.Column("endTime", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysTimeEntries = new HashSet<TableInfo.ForeignKey>(1);
+        _foreignKeysTimeEntries.add(new TableInfo.ForeignKey("tasks", "CASCADE", "NO ACTION", Arrays.asList("taskId"), Arrays.asList("id")));
+        final HashSet<TableInfo.Index> _indicesTimeEntries = new HashSet<TableInfo.Index>(1);
+        _indicesTimeEntries.add(new TableInfo.Index("index_time_entries_taskId", false, Arrays.asList("taskId"), Arrays.asList("ASC")));
+        final TableInfo _infoTimeEntries = new TableInfo("time_entries", _columnsTimeEntries, _foreignKeysTimeEntries, _indicesTimeEntries);
+        final TableInfo _existingTimeEntries = TableInfo.read(db, "time_entries");
+        if (!_infoTimeEntries.equals(_existingTimeEntries)) {
+          return new RoomOpenHelper.ValidationResult(false, "time_entries(com.samsara.polymath.data.TimeEntry).\n"
+                  + " Expected:\n" + _infoTimeEntries + "\n"
+                  + " Found:\n" + _existingTimeEntries);
+        }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "41b2897eac0a9e4676bcc7ead97f2fc2", "e8be30d064596aee3c973a79490f6e50");
+    }, "90d97b9e9b00efb0bbfe6f281d0fab8a", "1202ce00ca8b3a5264a1f9cd70bb6d08");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
@@ -236,7 +257,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected InvalidationTracker createInvalidationTracker() {
     final HashMap<String, String> _shadowTablesMap = new HashMap<String, String>(0);
     final HashMap<String, Set<String>> _viewTables = new HashMap<String, Set<String>>(0);
-    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "personas","tasks","comments","persona_statistics","tags","persona_tags");
+    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "personas","tasks","comments","persona_statistics","tags","persona_tags","time_entries");
   }
 
   @Override
@@ -258,6 +279,7 @@ public final class AppDatabase_Impl extends AppDatabase {
       _db.execSQL("DELETE FROM `persona_statistics`");
       _db.execSQL("DELETE FROM `tags`");
       _db.execSQL("DELETE FROM `persona_tags`");
+      _db.execSQL("DELETE FROM `time_entries`");
       super.setTransactionSuccessful();
     } finally {
       super.endTransaction();
@@ -281,6 +303,7 @@ public final class AppDatabase_Impl extends AppDatabase {
     _typeConvertersMap.put(PersonaStatisticsDao.class, PersonaStatisticsDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(TagDao.class, TagDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(PersonaTagDao.class, PersonaTagDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(TimeEntryDao.class, TimeEntryDao_Impl.getRequiredConverters());
     return _typeConvertersMap;
   }
 
@@ -379,6 +402,20 @@ public final class AppDatabase_Impl extends AppDatabase {
           _personaTagDao = new PersonaTagDao_Impl(this);
         }
         return _personaTagDao;
+      }
+    }
+  }
+
+  @Override
+  public TimeEntryDao timeEntryDao() {
+    if (_timeEntryDao != null) {
+      return _timeEntryDao;
+    } else {
+      synchronized(this) {
+        if(_timeEntryDao == null) {
+          _timeEntryDao = new TimeEntryDao_Impl(this);
+        }
+        return _timeEntryDao;
       }
     }
   }

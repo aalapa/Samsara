@@ -45,6 +45,7 @@ class PersonaReportActivity : AppCompatActivity() {
         setupAccordion(binding.mostImprovedHeader, binding.mostImprovedContent, binding.mostImprovedArrow)
         setupAccordion(binding.needsAttentionHeader, binding.needsAttentionContent, binding.needsAttentionArrow)
         setupAccordion(binding.tagInsightsHeader, binding.tagInsightsContent, binding.tagInsightsArrow)
+        setupAccordion(binding.timeSpentHeader, binding.timeSpentContent, binding.timeSpentArrow)
         setupAccordion(binding.allPersonasHeader, binding.personaReportsRecyclerView, binding.allPersonasArrow)
 
         binding.weeklyButton.setOnClickListener {
@@ -148,6 +149,9 @@ class PersonaReportActivity : AppCompatActivity() {
                 }
                 binding.tagNeedAttentionLabel.visibility = if (report.tagsNeedAttention.isEmpty()) View.GONE else View.VISIBLE
 
+                // Time Spent section
+                populateTimeSpent(report.mostTimeSpent)
+
                 adapter.submitList(report.personaReports)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -159,6 +163,8 @@ class PersonaReportActivity : AppCompatActivity() {
                 binding.needsAttentionContent.visibility = View.GONE
                 binding.tagInsightsHeader.visibility = View.GONE
                 binding.tagInsightsContent.visibility = View.GONE
+                binding.timeSpentHeader.visibility = View.GONE
+                binding.timeSpentContent.visibility = View.GONE
                 adapter.submitList(emptyList())
             }
         }
@@ -196,6 +202,83 @@ class PersonaReportActivity : AppCompatActivity() {
         card.visibility = View.VISIBLE
         nameView.text = tagReport.tag.name
         statsView.text = statsFormatter(tagReport)
+    }
+
+    private fun populateTimeSpent(reports: List<PersonaReport>) {
+        binding.timeSpentContent.removeAllViews()
+        if (reports.isEmpty()) {
+            binding.timeSpentHeader.visibility = View.GONE
+            return
+        }
+        binding.timeSpentHeader.visibility = View.VISIBLE
+
+        val density = resources.displayMetrics.density
+        for (report in reports) {
+            val card = com.google.android.material.card.MaterialCardView(this).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    bottomMargin = (8 * density).toInt()
+                }
+                setCardBackgroundColor(android.graphics.Color.parseColor("#FFF3E0"))
+                cardElevation = 2 * density
+            }
+
+            val inner = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                setPadding((16 * density).toInt(), (16 * density).toInt(), (16 * density).toInt(), (16 * density).toInt())
+                gravity = android.view.Gravity.CENTER_VERTICAL
+            }
+
+            val textLayout = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            }
+
+            val nameView = android.widget.TextView(this).apply {
+                text = report.persona.name
+                setTextColor(android.graphics.Color.parseColor("#E65100"))
+                textSize = 16f
+                setTypeface(typeface, android.graphics.Typeface.BOLD)
+            }
+
+            val statsView = android.widget.TextView(this).apply {
+                text = formatDuration(report.totalTimeSpent)
+                setTextColor(android.graphics.Color.parseColor("#F57C00"))
+                textSize = 14f
+            }
+
+            textLayout.addView(nameView)
+            textLayout.addView(statsView)
+            inner.addView(textLayout)
+
+            val tagsContainer = LinearLayout(this).apply {
+                orientation = LinearLayout.VERTICAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    marginStart = (8 * density).toInt()
+                }
+                gravity = android.view.Gravity.CENTER
+            }
+            PersonaReportAdapter.populateTagCircles(tagsContainer, report.tags)
+            inner.addView(tagsContainer)
+
+            card.addView(inner)
+            binding.timeSpentContent.addView(card)
+        }
+    }
+
+    private fun formatDuration(millis: Long): String {
+        val totalMinutes = millis / 60000
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+        return when {
+            hours > 0 -> "${hours}h ${minutes}m"
+            else -> "${minutes}m"
+        }
     }
 
     private fun getNeedsAttentionMessage(report: PersonaReport): String {

@@ -13,6 +13,7 @@ import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.textfield.TextInputEditText;
 import com.samsara.polymath.R;
+import com.samsara.polymath.view.CompletionBarChartView;
 import java.lang.NullPointerException;
 import java.lang.Override;
 import java.lang.String;
@@ -28,14 +29,18 @@ public final class DialogTaskCommentsBinding implements ViewBinding {
   public final RecyclerView commentsRecyclerView;
 
   @NonNull
+  public final CompletionBarChartView completionBarChart;
+
+  @NonNull
   public final TextView taskTitleTextView;
 
   private DialogTaskCommentsBinding(@NonNull LinearLayout rootView,
       @NonNull TextInputEditText commentEditText, @NonNull RecyclerView commentsRecyclerView,
-      @NonNull TextView taskTitleTextView) {
+      @NonNull CompletionBarChartView completionBarChart, @NonNull TextView taskTitleTextView) {
     this.rootView = rootView;
     this.commentEditText = commentEditText;
     this.commentsRecyclerView = commentsRecyclerView;
+    this.completionBarChart = completionBarChart;
     this.taskTitleTextView = taskTitleTextView;
   }
 
@@ -78,6 +83,12 @@ public final class DialogTaskCommentsBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.completionBarChart;
+      CompletionBarChartView completionBarChart = ViewBindings.findChildViewById(rootView, id);
+      if (completionBarChart == null) {
+        break missingId;
+      }
+
       id = R.id.taskTitleTextView;
       TextView taskTitleTextView = ViewBindings.findChildViewById(rootView, id);
       if (taskTitleTextView == null) {
@@ -85,7 +96,7 @@ public final class DialogTaskCommentsBinding implements ViewBinding {
       }
 
       return new DialogTaskCommentsBinding((LinearLayout) rootView, commentEditText,
-          commentsRecyclerView, taskTitleTextView);
+          commentsRecyclerView, completionBarChart, taskTitleTextView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

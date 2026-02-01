@@ -3040,10 +3040,12 @@ drawable ic_mtrl_chip_close_circle
 drawable ic_persona_rank_down
 drawable ic_persona_rank_stable
 drawable ic_persona_rank_up
+drawable ic_play
 drawable ic_rank_down
 drawable ic_rank_stable
 drawable ic_rank_up
 drawable ic_search_black_24
+drawable ic_stop
 drawable m3_avd_hide_password
 drawable m3_avd_show_password
 drawable m3_bottom_sheet_drag_handle
@@ -3283,6 +3285,7 @@ id commentEditText
 id commentTextTextView
 id commentsRecyclerView
 id completeButton
+id completionBarChart
 id completionInfoTextView
 id completionRateChangeTextView
 id completionRateTextView
@@ -3751,6 +3754,10 @@ id textinput_placeholder
 id textinput_prefix_text
 id textinput_suffix_text
 id time
+id timeSpentArrow
+id timeSpentContent
+id timeSpentHeader
+id timerToggleImageView
 id title
 id titleDividerNoCustom
 id titleTextView

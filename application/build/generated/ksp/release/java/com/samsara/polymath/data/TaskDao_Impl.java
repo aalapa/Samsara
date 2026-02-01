@@ -940,6 +940,104 @@ public final class TaskDao_Impl implements TaskDao {
     });
   }
 
+  @Override
+  public Object getCompletedRecurringInstances(final long personaId, final String title,
+      final Continuation<? super List<Task>> $completion) {
+    final String _sql = "SELECT * FROM tasks WHERE personaId = ? AND title = ? AND isRecurring = 1 AND isCompleted = 1 ORDER BY completedAt ASC";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 2);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, personaId);
+    _argIndex = 2;
+    _statement.bindString(_argIndex, title);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<Task>>() {
+      @Override
+      @NonNull
+      public List<Task> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
+          final int _cursorIndexOfPersonaId = CursorUtil.getColumnIndexOrThrow(_cursor, "personaId");
+          final int _cursorIndexOfTitle = CursorUtil.getColumnIndexOrThrow(_cursor, "title");
+          final int _cursorIndexOfDescription = CursorUtil.getColumnIndexOrThrow(_cursor, "description");
+          final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "createdAt");
+          final int _cursorIndexOfCompletedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "completedAt");
+          final int _cursorIndexOfIsCompleted = CursorUtil.getColumnIndexOrThrow(_cursor, "isCompleted");
+          final int _cursorIndexOfIsRecurring = CursorUtil.getColumnIndexOrThrow(_cursor, "isRecurring");
+          final int _cursorIndexOfOrder = CursorUtil.getColumnIndexOrThrow(_cursor, "order");
+          final int _cursorIndexOfBackgroundColor = CursorUtil.getColumnIndexOrThrow(_cursor, "backgroundColor");
+          final int _cursorIndexOfPreviousOrder = CursorUtil.getColumnIndexOrThrow(_cursor, "previousOrder");
+          final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
+          final int _cursorIndexOfRecurringFrequency = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringFrequency");
+          final int _cursorIndexOfRecurringDays = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringDays");
+          final int _cursorIndexOfEndDate = CursorUtil.getColumnIndexOrThrow(_cursor, "endDate");
+          final List<Task> _result = new ArrayList<Task>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final Task _item;
+            final long _tmpId;
+            _tmpId = _cursor.getLong(_cursorIndexOfId);
+            final long _tmpPersonaId;
+            _tmpPersonaId = _cursor.getLong(_cursorIndexOfPersonaId);
+            final String _tmpTitle;
+            _tmpTitle = _cursor.getString(_cursorIndexOfTitle);
+            final String _tmpDescription;
+            _tmpDescription = _cursor.getString(_cursorIndexOfDescription);
+            final long _tmpCreatedAt;
+            _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
+            final Long _tmpCompletedAt;
+            if (_cursor.isNull(_cursorIndexOfCompletedAt)) {
+              _tmpCompletedAt = null;
+            } else {
+              _tmpCompletedAt = _cursor.getLong(_cursorIndexOfCompletedAt);
+            }
+            final boolean _tmpIsCompleted;
+            final int _tmp;
+            _tmp = _cursor.getInt(_cursorIndexOfIsCompleted);
+            _tmpIsCompleted = _tmp != 0;
+            final boolean _tmpIsRecurring;
+            final int _tmp_1;
+            _tmp_1 = _cursor.getInt(_cursorIndexOfIsRecurring);
+            _tmpIsRecurring = _tmp_1 != 0;
+            final int _tmpOrder;
+            _tmpOrder = _cursor.getInt(_cursorIndexOfOrder);
+            final String _tmpBackgroundColor;
+            _tmpBackgroundColor = _cursor.getString(_cursorIndexOfBackgroundColor);
+            final int _tmpPreviousOrder;
+            _tmpPreviousOrder = _cursor.getInt(_cursorIndexOfPreviousOrder);
+            final RankStatus _tmpRankStatus;
+            final String _tmp_2;
+            _tmp_2 = _cursor.getString(_cursorIndexOfRankStatus);
+            _tmpRankStatus = __converters.toRankStatus(_tmp_2);
+            final String _tmpRecurringFrequency;
+            if (_cursor.isNull(_cursorIndexOfRecurringFrequency)) {
+              _tmpRecurringFrequency = null;
+            } else {
+              _tmpRecurringFrequency = _cursor.getString(_cursorIndexOfRecurringFrequency);
+            }
+            final String _tmpRecurringDays;
+            if (_cursor.isNull(_cursorIndexOfRecurringDays)) {
+              _tmpRecurringDays = null;
+            } else {
+              _tmpRecurringDays = _cursor.getString(_cursorIndexOfRecurringDays);
+            }
+            final Long _tmpEndDate;
+            if (_cursor.isNull(_cursorIndexOfEndDate)) {
+              _tmpEndDate = null;
+            } else {
+              _tmpEndDate = _cursor.getLong(_cursorIndexOfEndDate);
+            }
+            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
+  }
+
   @NonNull
   public static List<Class<?>> getRequiredConverters() {
     return Collections.emptyList();

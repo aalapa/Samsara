@@ -41,11 +41,14 @@ public final class ItemTaskBinding implements ViewBinding {
   @NonNull
   public final TextView taskTitleTextView;
 
+  @NonNull
+  public final ImageView timerToggleImageView;
+
   private ItemTaskBinding(@NonNull MaterialCardView rootView,
       @NonNull TextView completionInfoTextView, @NonNull TextView daysTextView,
       @NonNull ImageView dragHandleImageView, @NonNull ImageView rankIndicatorImageView,
       @NonNull MaterialCardView taskCard, @NonNull TextView taskDescriptionTextView,
-      @NonNull TextView taskTitleTextView) {
+      @NonNull TextView taskTitleTextView, @NonNull ImageView timerToggleImageView) {
     this.rootView = rootView;
     this.completionInfoTextView = completionInfoTextView;
     this.daysTextView = daysTextView;
@@ -54,6 +57,7 @@ public final class ItemTaskBinding implements ViewBinding {
     this.taskCard = taskCard;
     this.taskDescriptionTextView = taskDescriptionTextView;
     this.taskTitleTextView = taskTitleTextView;
+    this.timerToggleImageView = timerToggleImageView;
   }
 
   @Override
@@ -121,9 +125,15 @@ public final class ItemTaskBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.timerToggleImageView;
+      ImageView timerToggleImageView = ViewBindings.findChildViewById(rootView, id);
+      if (timerToggleImageView == null) {
+        break missingId;
+      }
+
       return new ItemTaskBinding((MaterialCardView) rootView, completionInfoTextView, daysTextView,
           dragHandleImageView, rankIndicatorImageView, taskCard, taskDescriptionTextView,
-          taskTitleTextView);
+          taskTitleTextView, timerToggleImageView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

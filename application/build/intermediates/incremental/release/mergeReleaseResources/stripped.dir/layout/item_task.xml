@@ -72,6 +72,14 @@
             android:contentDescription="@string/rank_indicator" />
 
         <ImageView
+            android:id="@+id/timerToggleImageView"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/ic_play"
+            android:contentDescription="Toggle timer" />
+
+        <ImageView
             android:id="@+id/dragHandleImageView"
             android:layout_width="24dp"
             android:layout_height="24dp"

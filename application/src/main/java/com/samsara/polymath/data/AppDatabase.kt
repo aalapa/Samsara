@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [Persona::class, Task::class, Comment::class, PersonaStatistics::class, Tag::class, PersonaTag::class], version = 14, exportSchema = false)
+@Database(entities = [Persona::class, Task::class, Comment::class, PersonaStatistics::class, Tag::class, PersonaTag::class, TimeEntry::class], version = 15, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun personaDao(): PersonaDao
@@ -15,6 +15,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun personaStatisticsDao(): PersonaStatisticsDao
     abstract fun tagDao(): TagDao
     abstract fun personaTagDao(): PersonaTagDao
+    abstract fun timeEntryDao(): TimeEntryDao
     
     companion object {
         @Volatile
@@ -27,7 +28,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "polymath_database"
                 )
-                .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14)
+                .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15)
                 .fallbackToDestructiveMigration() // For development - remove in production
                 .build()
                 INSTANCE = instance
@@ -126,6 +127,21 @@ abstract class AppDatabase : RoomDatabase() {
             override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE tasks ADD COLUMN recurringFrequency TEXT DEFAULT NULL")
                 database.execSQL("ALTER TABLE tasks ADD COLUMN recurringDays TEXT DEFAULT NULL")
+            }
+        }
+
+        private val MIGRATION_14_15 = object : androidx.room.migration.Migration(14, 15) {
+            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS time_entries (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        taskId INTEGER NOT NULL,
+                        startTime INTEGER NOT NULL,
+                        endTime INTEGER,
+                        FOREIGN KEY(taskId) REFERENCES tasks(id) ON DELETE CASCADE
+                    )
+                """.trimIndent())
+                database.execSQL("CREATE INDEX IF NOT EXISTS index_time_entries_taskId ON time_entries(taskId)")
             }
         }
 

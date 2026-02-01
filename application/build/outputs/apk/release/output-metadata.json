@@ -11,9 +11,9 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 87,
-      "versionName": "2.0.86",
-      "outputFile": "samsara-release-2.0.86.apk"
+      "versionCode": 107,
+      "versionName": "2.1.3",
+      "outputFile": "samsara-release-2.1.3.apk"
     }
   ],
   "elementType": "File",
@@ -22,14 +22,14 @@
       "minApi": 28,
       "maxApi": 30,
       "baselineProfiles": [
-        "baselineProfiles/1/samsara-release-2.0.86.dm"
+        "baselineProfiles/1/samsara-release-2.1.3.dm"
       ]
     },
     {
       "minApi": 31,
       "maxApi": 2147483647,
       "baselineProfiles": [
-        "baselineProfiles/0/samsara-release-2.0.86.dm"
+        "baselineProfiles/0/samsara-release-2.1.3.dm"
       ]
     }
   ],
