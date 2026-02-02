@@ -118,6 +118,9 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                 val taskList = tasks.first()
                 val maxOrder = taskList.maxOfOrNull { it.order } ?: 0
                 
+                val nextDue = RecurringTaskUtil.calculateNextDueDate(
+                    task.recurringFrequency, task.recurringDays, task.createdAt
+                )
                 repository.insertTask(
                     Task(
                         personaId = task.personaId,
@@ -128,7 +131,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                         isRecurring = true,
                         recurringFrequency = task.recurringFrequency,
                         recurringDays = task.recurringDays,
-                        createdAt = System.currentTimeMillis()
+                        createdAt = System.currentTimeMillis(),
+                        nextDueDate = nextDue
                     )
                 )
             }

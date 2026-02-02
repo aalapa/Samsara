@@ -55,7 +55,7 @@ public final class TaskDao_Impl implements TaskDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR ABORT INTO `tasks` (`id`,`personaId`,`title`,`description`,`createdAt`,`completedAt`,`isCompleted`,`isRecurring`,`order`,`backgroundColor`,`previousOrder`,`rankStatus`,`recurringFrequency`,`recurringDays`,`endDate`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        return "INSERT OR ABORT INTO `tasks` (`id`,`personaId`,`title`,`description`,`createdAt`,`completedAt`,`isCompleted`,`isRecurring`,`order`,`backgroundColor`,`previousOrder`,`rankStatus`,`recurringFrequency`,`recurringDays`,`endDate`,`nextDueDate`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -94,6 +94,11 @@ public final class TaskDao_Impl implements TaskDao {
           statement.bindNull(15);
         } else {
           statement.bindLong(15, entity.getEndDate());
+        }
+        if (entity.getNextDueDate() == null) {
+          statement.bindNull(16);
+        } else {
+          statement.bindLong(16, entity.getNextDueDate());
         }
       }
     };
@@ -114,7 +119,7 @@ public final class TaskDao_Impl implements TaskDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `tasks` SET `id` = ?,`personaId` = ?,`title` = ?,`description` = ?,`createdAt` = ?,`completedAt` = ?,`isCompleted` = ?,`isRecurring` = ?,`order` = ?,`backgroundColor` = ?,`previousOrder` = ?,`rankStatus` = ?,`recurringFrequency` = ?,`recurringDays` = ?,`endDate` = ? WHERE `id` = ?";
+        return "UPDATE OR ABORT `tasks` SET `id` = ?,`personaId` = ?,`title` = ?,`description` = ?,`createdAt` = ?,`completedAt` = ?,`isCompleted` = ?,`isRecurring` = ?,`order` = ?,`backgroundColor` = ?,`previousOrder` = ?,`rankStatus` = ?,`recurringFrequency` = ?,`recurringDays` = ?,`endDate` = ?,`nextDueDate` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -154,7 +159,12 @@ public final class TaskDao_Impl implements TaskDao {
         } else {
           statement.bindLong(15, entity.getEndDate());
         }
-        statement.bindLong(16, entity.getId());
+        if (entity.getNextDueDate() == null) {
+          statement.bindNull(16);
+        } else {
+          statement.bindLong(16, entity.getNextDueDate());
+        }
+        statement.bindLong(17, entity.getId());
       }
     };
     this.__preparedStmtOfUpdateTaskOrder = new SharedSQLiteStatement(__db) {
@@ -359,6 +369,7 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfRecurringFrequency = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringFrequency");
           final int _cursorIndexOfRecurringDays = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringDays");
           final int _cursorIndexOfEndDate = CursorUtil.getColumnIndexOrThrow(_cursor, "endDate");
+          final int _cursorIndexOfNextDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "nextDueDate");
           final List<Task> _result = new ArrayList<Task>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Task _item;
@@ -414,7 +425,13 @@ public final class TaskDao_Impl implements TaskDao {
             } else {
               _tmpEndDate = _cursor.getLong(_cursorIndexOfEndDate);
             }
-            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate);
+            final Long _tmpNextDueDate;
+            if (_cursor.isNull(_cursorIndexOfNextDueDate)) {
+              _tmpNextDueDate = null;
+            } else {
+              _tmpNextDueDate = _cursor.getLong(_cursorIndexOfNextDueDate);
+            }
+            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate,_tmpNextDueDate);
             _result.add(_item);
           }
           return _result;
@@ -455,6 +472,7 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfRecurringFrequency = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringFrequency");
           final int _cursorIndexOfRecurringDays = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringDays");
           final int _cursorIndexOfEndDate = CursorUtil.getColumnIndexOrThrow(_cursor, "endDate");
+          final int _cursorIndexOfNextDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "nextDueDate");
           final List<Task> _result = new ArrayList<Task>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Task _item;
@@ -510,7 +528,13 @@ public final class TaskDao_Impl implements TaskDao {
             } else {
               _tmpEndDate = _cursor.getLong(_cursorIndexOfEndDate);
             }
-            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate);
+            final Long _tmpNextDueDate;
+            if (_cursor.isNull(_cursorIndexOfNextDueDate)) {
+              _tmpNextDueDate = null;
+            } else {
+              _tmpNextDueDate = _cursor.getLong(_cursorIndexOfNextDueDate);
+            }
+            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate,_tmpNextDueDate);
             _result.add(_item);
           }
           return _result;
@@ -554,6 +578,7 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfRecurringFrequency = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringFrequency");
           final int _cursorIndexOfRecurringDays = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringDays");
           final int _cursorIndexOfEndDate = CursorUtil.getColumnIndexOrThrow(_cursor, "endDate");
+          final int _cursorIndexOfNextDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "nextDueDate");
           final Task _result;
           if (_cursor.moveToFirst()) {
             final long _tmpId;
@@ -608,7 +633,13 @@ public final class TaskDao_Impl implements TaskDao {
             } else {
               _tmpEndDate = _cursor.getLong(_cursorIndexOfEndDate);
             }
-            _result = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate);
+            final Long _tmpNextDueDate;
+            if (_cursor.isNull(_cursorIndexOfNextDueDate)) {
+              _tmpNextDueDate = null;
+            } else {
+              _tmpNextDueDate = _cursor.getLong(_cursorIndexOfNextDueDate);
+            }
+            _result = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate,_tmpNextDueDate);
           } else {
             _result = null;
           }
@@ -681,6 +712,7 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfRecurringFrequency = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringFrequency");
           final int _cursorIndexOfRecurringDays = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringDays");
           final int _cursorIndexOfEndDate = CursorUtil.getColumnIndexOrThrow(_cursor, "endDate");
+          final int _cursorIndexOfNextDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "nextDueDate");
           final List<Task> _result = new ArrayList<Task>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Task _item;
@@ -736,7 +768,13 @@ public final class TaskDao_Impl implements TaskDao {
             } else {
               _tmpEndDate = _cursor.getLong(_cursorIndexOfEndDate);
             }
-            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate);
+            final Long _tmpNextDueDate;
+            if (_cursor.isNull(_cursorIndexOfNextDueDate)) {
+              _tmpNextDueDate = null;
+            } else {
+              _tmpNextDueDate = _cursor.getLong(_cursorIndexOfNextDueDate);
+            }
+            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate,_tmpNextDueDate);
             _result.add(_item);
           }
           return _result;
@@ -773,6 +811,7 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfRecurringFrequency = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringFrequency");
           final int _cursorIndexOfRecurringDays = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringDays");
           final int _cursorIndexOfEndDate = CursorUtil.getColumnIndexOrThrow(_cursor, "endDate");
+          final int _cursorIndexOfNextDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "nextDueDate");
           final List<Task> _result = new ArrayList<Task>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Task _item;
@@ -828,7 +867,13 @@ public final class TaskDao_Impl implements TaskDao {
             } else {
               _tmpEndDate = _cursor.getLong(_cursorIndexOfEndDate);
             }
-            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate);
+            final Long _tmpNextDueDate;
+            if (_cursor.isNull(_cursorIndexOfNextDueDate)) {
+              _tmpNextDueDate = null;
+            } else {
+              _tmpNextDueDate = _cursor.getLong(_cursorIndexOfNextDueDate);
+            }
+            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate,_tmpNextDueDate);
             _result.add(_item);
           }
           return _result;
@@ -869,6 +914,7 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfRecurringFrequency = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringFrequency");
           final int _cursorIndexOfRecurringDays = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringDays");
           final int _cursorIndexOfEndDate = CursorUtil.getColumnIndexOrThrow(_cursor, "endDate");
+          final int _cursorIndexOfNextDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "nextDueDate");
           final List<Task> _result = new ArrayList<Task>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Task _item;
@@ -924,7 +970,13 @@ public final class TaskDao_Impl implements TaskDao {
             } else {
               _tmpEndDate = _cursor.getLong(_cursorIndexOfEndDate);
             }
-            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate);
+            final Long _tmpNextDueDate;
+            if (_cursor.isNull(_cursorIndexOfNextDueDate)) {
+              _tmpNextDueDate = null;
+            } else {
+              _tmpNextDueDate = _cursor.getLong(_cursorIndexOfNextDueDate);
+            }
+            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate,_tmpNextDueDate);
             _result.add(_item);
           }
           return _result;
@@ -971,6 +1023,7 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfRecurringFrequency = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringFrequency");
           final int _cursorIndexOfRecurringDays = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringDays");
           final int _cursorIndexOfEndDate = CursorUtil.getColumnIndexOrThrow(_cursor, "endDate");
+          final int _cursorIndexOfNextDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "nextDueDate");
           final List<Task> _result = new ArrayList<Task>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Task _item;
@@ -1026,7 +1079,13 @@ public final class TaskDao_Impl implements TaskDao {
             } else {
               _tmpEndDate = _cursor.getLong(_cursorIndexOfEndDate);
             }
-            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate);
+            final Long _tmpNextDueDate;
+            if (_cursor.isNull(_cursorIndexOfNextDueDate)) {
+              _tmpNextDueDate = null;
+            } else {
+              _tmpNextDueDate = _cursor.getLong(_cursorIndexOfNextDueDate);
+            }
+            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate,_tmpNextDueDate);
             _result.add(_item);
           }
           return _result;

@@ -207,10 +207,11 @@ class TasksActivity : AppCompatActivity() {
     private fun observeTasks() {
         viewModel.getTasksByPersona(personaId).observe(this) { tasks ->
             // Filter tasks based on showCompletedTasks flag
+            val now = System.currentTimeMillis()
             val filteredTasks = if (showCompletedTasks) {
                 tasks.filter { it.isCompleted }
             } else {
-                tasks.filter { !it.isCompleted }
+                tasks.filter { !it.isCompleted && (it.nextDueDate == null || it.nextDueDate <= now) }
             }
             adapter.submitList(filteredTasks)
         }

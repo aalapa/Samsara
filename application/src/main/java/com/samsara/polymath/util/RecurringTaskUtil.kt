@@ -6,6 +6,14 @@ import java.util.Calendar
 object RecurringTaskUtil {
     fun isDueToday(task: Task): Boolean {
         if (!task.isRecurring || task.isCompleted) return false
+        // If nextDueDate is set, check if today is on or after the due date
+        if (task.nextDueDate != null) {
+            val today = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0); set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
+            }
+            val tomorrow = (today.clone() as Calendar).apply { add(Calendar.DAY_OF_YEAR, 1) }
+            return task.nextDueDate >= today.timeInMillis && task.nextDueDate < tomorrow.timeInMillis
+        }
         val freq = task.recurringFrequency ?: return false // no frequency = do whenever, not scheduled for today
         val cal = Calendar.getInstance()
         return when (freq) {
@@ -31,6 +39,48 @@ object RecurringTaskUtil {
                 cal.get(Calendar.DAY_OF_WEEK) in days
             }
             else -> true
+        }
+    }
+
+    fun calculateNextDueDate(frequency: String?, days: String?, createdAt: Long): Long? {
+        val cal = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        return when (frequency) {
+            "DAILY" -> {
+                cal.add(Calendar.DAY_OF_YEAR, 1)
+                cal.timeInMillis
+            }
+            "WEEKLY" -> {
+                val targetDay = days?.toIntOrNull() ?: cal.get(Calendar.DAY_OF_WEEK)
+                cal.add(Calendar.DAY_OF_YEAR, 1) // at least tomorrow
+                while (cal.get(Calendar.DAY_OF_WEEK) != targetDay) {
+                    cal.add(Calendar.DAY_OF_YEAR, 1)
+                }
+                cal.timeInMillis
+            }
+            "MONTHLY" -> {
+                val parts = days?.split(",") ?: emptyList()
+                val targetDay = parts.getOrNull(0)?.trim()?.toIntOrNull() ?: cal.get(Calendar.DAY_OF_MONTH)
+                val interval = parts.getOrNull(1)?.trim()?.toIntOrNull() ?: 1
+                cal.add(Calendar.MONTH, interval)
+                cal.set(Calendar.DAY_OF_MONTH, targetDay.coerceAtMost(cal.getActualMaximum(Calendar.DAY_OF_MONTH)))
+                cal.timeInMillis
+            }
+            "CUSTOM" -> {
+                val targetDays = days?.split(",")?.mapNotNull { it.trim().toIntOrNull() } ?: emptyList()
+                if (targetDays.isEmpty()) return null
+                cal.add(Calendar.DAY_OF_YEAR, 1) // at least tomorrow
+                repeat(7) {
+                    if (cal.get(Calendar.DAY_OF_WEEK) in targetDays) return cal.timeInMillis
+                    cal.add(Calendar.DAY_OF_YEAR, 1)
+                }
+                null
+            }
+            else -> null
         }
     }
 
