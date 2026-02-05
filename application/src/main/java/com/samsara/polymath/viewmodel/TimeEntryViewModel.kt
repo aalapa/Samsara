@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.samsara.polymath.data.AppDatabase
 import com.samsara.polymath.data.TimeEntry
 import com.samsara.polymath.repository.TimeEntryRepository
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class TimeEntryViewModel(application: Application) : AndroidViewModel(application) {
@@ -19,6 +20,12 @@ class TimeEntryViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     val runningTaskId: LiveData<Long?> = repository.getRunningTaskIdFlow().asLiveData()
+
+    fun getTaskTimeMap(personaId: Long): LiveData<Map<Long, Long>> {
+        return repository.getTotalTimesByPersonaFlow(personaId)
+            .map { list -> list.associate { it.taskId to it.totalTime } }
+            .asLiveData()
+    }
 
     fun toggleTimer(taskId: Long) {
         viewModelScope.launch {

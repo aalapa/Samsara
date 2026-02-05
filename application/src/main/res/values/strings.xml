@@ -110,5 +110,6 @@
     <string name="biometric_disabled">Fingerprint disabled</string>
     <string name="karmah_title">My Karmah</string>
     <string name="my_avatars_title">My Avatars</string>
+    <string name="timer_toggle">Toggle timer</string>
 </resources>
 

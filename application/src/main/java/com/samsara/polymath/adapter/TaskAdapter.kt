@@ -38,6 +38,14 @@ class TaskAdapter(
             }
         }
 
+    var taskTimeMap: Map<Long, Long> = emptyMap()
+        set(value) {
+            if (field != value) {
+                field = value
+                notifyDataSetChanged()
+            }
+        }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val binding = ItemTaskBinding.inflate(
             LayoutInflater.from(parent.context),
@@ -108,17 +116,22 @@ class TaskAdapter(
                 binding.rankIndicatorImageView.layoutParams = rankLayoutParams
             }
 
-            // Adjust timer toggle size
-            val timerSizeDp = if (isCompact) 28 else 36
-            val timerSizePx = (timerSizeDp * density).toInt()
-            val timerLayoutParams = binding.timerToggleImageView.layoutParams as? ViewGroup.MarginLayoutParams
-            if (timerLayoutParams != null) {
-                timerLayoutParams.width = timerSizePx
-                timerLayoutParams.height = timerSizePx
-                val timerMarginDp = if (isCompact) 6 else 8
-                timerLayoutParams.marginStart = (timerMarginDp * density).toInt()
-                binding.timerToggleImageView.layoutParams = timerLayoutParams
+            // Adjust timer layout size
+            val timerMarginDp = if (isCompact) 6 else 8
+            val timerWrapperParams = binding.timerLayout.layoutParams as? ViewGroup.MarginLayoutParams
+            if (timerWrapperParams != null) {
+                timerWrapperParams.marginStart = (timerMarginDp * density).toInt()
+                binding.timerLayout.layoutParams = timerWrapperParams
             }
+            val timerSizeDp = if (isCompact) 22 else 28
+            val timerSizePx = (timerSizeDp * density).toInt()
+            val timerIconParams = binding.timerToggleImageView.layoutParams
+            if (timerIconParams != null) {
+                timerIconParams.width = timerSizePx
+                timerIconParams.height = timerSizePx
+                binding.timerToggleImageView.layoutParams = timerIconParams
+            }
+            binding.timeSpentTextView.textSize = if (isCompact) 8f else 9f
 
             val dragHandleSizeDp = if (isCompact) 18 else 24
             val dragHandleSizePx = (dragHandleSizeDp * density).toInt()
@@ -186,7 +199,7 @@ class TaskAdapter(
                 daysTextView.setBackgroundResource(R.drawable.circle_background_completed)
 
                 // Hide timer for completed tasks
-                binding.timerToggleImageView.visibility = View.GONE
+                binding.timerLayout.visibility = View.GONE
             } else {
                 val daysSinceCreation = calculateDaysDifference(task.createdAt, currentTime)
                 daysTextView.text = daysSinceCreation.toString()
@@ -195,7 +208,7 @@ class TaskAdapter(
                 daysTextView.setBackgroundResource(R.drawable.circle_background)
 
                 // Show timer toggle for open tasks
-                binding.timerToggleImageView.visibility = View.VISIBLE
+                binding.timerLayout.visibility = View.VISIBLE
             }
 
             val rankIcon = when (task.rankStatus) {
@@ -210,6 +223,18 @@ class TaskAdapter(
             binding.timerToggleImageView.setImageResource(
                 if (isTimerActive) R.drawable.ic_stop else R.drawable.ic_play
             )
+
+            // Show cumulative time spent on this task
+            val totalMs = taskTimeMap[task.id] ?: 0L
+            binding.timeSpentTextView.text = formatDuration(totalMs)
+            // Tint timer icon and text to match card text color
+            try {
+                val bgColor = Color.parseColor(task.backgroundColor)
+                val isDark = isColorDark(bgColor)
+                val tintColor = if (isDark) Color.WHITE else Color.BLACK
+                binding.timerToggleImageView.setColorFilter(tintColor)
+                binding.timeSpentTextView.setTextColor(tintColor)
+            } catch (_: Exception) { }
 
             // Circle click - show comments
             binding.daysTextView.setOnClickListener {
@@ -241,6 +266,13 @@ class TaskAdapter(
         private fun calculateDaysDifference(startTime: Long, endTime: Long): Long {
             val diff = endTime - startTime
             return TimeUnit.MILLISECONDS.toDays(diff)
+        }
+
+        private fun formatDuration(millis: Long): String {
+            val totalMinutes = TimeUnit.MILLISECONDS.toMinutes(millis)
+            val hours = totalMinutes / 60
+            val minutes = totalMinutes % 60
+            return String.format("%02d:%02d", hours, minutes)
         }
 
         private fun isColorDark(color: Int): Boolean {

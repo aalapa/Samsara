@@ -206,6 +206,11 @@ class TasksActivity : AppCompatActivity() {
 
     private fun observeTasks() {
         viewModel.getTasksByPersona(personaId).observe(this) { tasks ->
+            // Update subtitle with task stats
+            val openCount = tasks.count { !it.isCompleted }
+            val completedCount = tasks.count { it.isCompleted }
+            binding.toolbar.subtitle = "$openCount open · $completedCount done"
+
             // Filter tasks based on showCompletedTasks flag
             val now = System.currentTimeMillis()
             val filteredTasks = if (showCompletedTasks) {
@@ -220,6 +225,9 @@ class TasksActivity : AppCompatActivity() {
     private fun observeTimer() {
         timeEntryViewModel.runningTaskId.observe(this) { taskId ->
             adapter.activeTimerTaskId = taskId
+        }
+        timeEntryViewModel.getTaskTimeMap(personaId).observe(this) { timeMap ->
+            adapter.taskTimeMap = timeMap
         }
     }
 

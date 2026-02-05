@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,13 +43,20 @@ public final class ItemTaskBinding implements ViewBinding {
   public final TextView taskTitleTextView;
 
   @NonNull
+  public final TextView timeSpentTextView;
+
+  @NonNull
+  public final LinearLayout timerLayout;
+
+  @NonNull
   public final ImageView timerToggleImageView;
 
   private ItemTaskBinding(@NonNull MaterialCardView rootView,
       @NonNull TextView completionInfoTextView, @NonNull TextView daysTextView,
       @NonNull ImageView dragHandleImageView, @NonNull ImageView rankIndicatorImageView,
       @NonNull MaterialCardView taskCard, @NonNull TextView taskDescriptionTextView,
-      @NonNull TextView taskTitleTextView, @NonNull ImageView timerToggleImageView) {
+      @NonNull TextView taskTitleTextView, @NonNull TextView timeSpentTextView,
+      @NonNull LinearLayout timerLayout, @NonNull ImageView timerToggleImageView) {
     this.rootView = rootView;
     this.completionInfoTextView = completionInfoTextView;
     this.daysTextView = daysTextView;
@@ -57,6 +65,8 @@ public final class ItemTaskBinding implements ViewBinding {
     this.taskCard = taskCard;
     this.taskDescriptionTextView = taskDescriptionTextView;
     this.taskTitleTextView = taskTitleTextView;
+    this.timeSpentTextView = timeSpentTextView;
+    this.timerLayout = timerLayout;
     this.timerToggleImageView = timerToggleImageView;
   }
 
@@ -125,6 +135,18 @@ public final class ItemTaskBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.timeSpentTextView;
+      TextView timeSpentTextView = ViewBindings.findChildViewById(rootView, id);
+      if (timeSpentTextView == null) {
+        break missingId;
+      }
+
+      id = R.id.timerLayout;
+      LinearLayout timerLayout = ViewBindings.findChildViewById(rootView, id);
+      if (timerLayout == null) {
+        break missingId;
+      }
+
       id = R.id.timerToggleImageView;
       ImageView timerToggleImageView = ViewBindings.findChildViewById(rootView, id);
       if (timerToggleImageView == null) {
@@ -133,7 +155,7 @@ public final class ItemTaskBinding implements ViewBinding {
 
       return new ItemTaskBinding((MaterialCardView) rootView, completionInfoTextView, daysTextView,
           dragHandleImageView, rankIndicatorImageView, taskCard, taskDescriptionTextView,
-          taskTitleTextView, timerToggleImageView);
+          taskTitleTextView, timeSpentTextView, timerLayout, timerToggleImageView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

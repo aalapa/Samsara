@@ -14,6 +14,11 @@ data class PersonaTimeSum(
     val totalTime: Long
 )
 
+data class TaskIdTime(
+    val taskId: Long,
+    val totalTime: Long
+)
+
 @Dao
 interface TimeEntryDao {
     @Insert
@@ -57,4 +62,13 @@ interface TimeEntryDao {
 
     @Query("SELECT taskId FROM time_entries WHERE endTime IS NULL LIMIT 1")
     fun getRunningTaskIdFlow(): Flow<Long?>
+
+    @Query("""
+        SELECT te.taskId AS taskId, COALESCE(SUM(te.endTime - te.startTime), 0) AS totalTime
+        FROM time_entries te
+        INNER JOIN tasks t ON te.taskId = t.id
+        WHERE t.personaId = :personaId AND te.endTime IS NOT NULL
+        GROUP BY te.taskId
+    """)
+    fun getTotalTimesByPersonaFlow(personaId: Long): Flow<List<TaskIdTime>>
 }

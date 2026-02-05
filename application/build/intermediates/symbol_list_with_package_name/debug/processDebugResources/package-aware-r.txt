@@ -3757,6 +3757,8 @@ id time
 id timeSpentArrow
 id timeSpentContent
 id timeSpentHeader
+id timeSpentTextView
+id timerLayout
 id timerToggleImageView
 id title
 id titleDividerNoCustom
@@ -4294,6 +4296,7 @@ string tags
 string task_description_hint
 string task_title_hint
 string thu
+string timer_toggle
 string today
 string tue
 string untagged

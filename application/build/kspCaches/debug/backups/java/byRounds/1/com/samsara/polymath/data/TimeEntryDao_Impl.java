@@ -402,6 +402,50 @@ public final class TimeEntryDao_Impl implements TimeEntryDao {
     });
   }
 
+  @Override
+  public Flow<List<TaskIdTime>> getTotalTimesByPersonaFlow(final long personaId) {
+    final String _sql = "\n"
+            + "        SELECT te.taskId AS taskId, COALESCE(SUM(te.endTime - te.startTime), 0) AS totalTime\n"
+            + "        FROM time_entries te\n"
+            + "        INNER JOIN tasks t ON te.taskId = t.id\n"
+            + "        WHERE t.personaId = ? AND te.endTime IS NOT NULL\n"
+            + "        GROUP BY te.taskId\n"
+            + "    ";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, personaId);
+    return CoroutinesRoom.createFlow(__db, false, new String[] {"time_entries",
+        "tasks"}, new Callable<List<TaskIdTime>>() {
+      @Override
+      @NonNull
+      public List<TaskIdTime> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfTaskId = 0;
+          final int _cursorIndexOfTotalTime = 1;
+          final List<TaskIdTime> _result = new ArrayList<TaskIdTime>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final TaskIdTime _item;
+            final long _tmpTaskId;
+            _tmpTaskId = _cursor.getLong(_cursorIndexOfTaskId);
+            final long _tmpTotalTime;
+            _tmpTotalTime = _cursor.getLong(_cursorIndexOfTotalTime);
+            _item = new TaskIdTime(_tmpTaskId,_tmpTotalTime);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+        }
+      }
+
+      @Override
+      protected void finalize() {
+        _statement.release();
+      }
+    });
+  }
+
   @NonNull
   public static List<Class<?>> getRequiredConverters() {
     return Collections.emptyList();
