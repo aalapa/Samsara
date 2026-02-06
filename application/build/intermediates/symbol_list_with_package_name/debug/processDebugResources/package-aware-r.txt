@@ -3310,6 +3310,9 @@ id dailyTasksRecyclerView
 id dateRangeTextView
 id date_picker_actions
 id dayChipGroup
+id dayDetailCard
+id dayDetailContent
+id dayDetailTitle
 id daysTextView
 id decelerate
 id decelerateAndComplete
@@ -3396,6 +3399,7 @@ id group_divider
 id grouping
 id groups
 id header_title
+id heatmapView
 id hide_ime_id
 id hideable
 id home
@@ -3481,7 +3485,6 @@ id mostActiveCard1
 id mostActiveCard2
 id mostActiveContent
 id mostActiveHeader
-id mostActiveLabel
 id mostImproved1PersonaName
 id mostImproved1PersonaStats
 id mostImproved1Tags
@@ -3493,7 +3496,6 @@ id mostImprovedCard1
 id mostImprovedCard2
 id mostImprovedContent
 id mostImprovedHeader
-id mostImprovedLabel
 id motion_base
 id mtrl_anchor_parent
 id mtrl_calendar_day_selector_frame
@@ -3537,7 +3539,6 @@ id needsAttentionCard1
 id needsAttentionCard2
 id needsAttentionContent
 id needsAttentionHeader
-id needsAttentionLabel
 id never
 id neverCompleteToEnd
 id neverCompleteToStart
@@ -3683,13 +3684,13 @@ id stretch
 id submenuarrow
 id submit_area
 id supportScrollUp
+id tabLayout
 id tabMode
 id tagColorEditText
 id tagColorIndicator
 id tagInsightsArrow
 id tagInsightsContent
 id tagInsightsHeader
-id tagInsightsLabel
 id tagMostActive1Name
 id tagMostActive1Stats
 id tagMostActive2Name
@@ -3784,6 +3785,7 @@ id unlabeled
 id up
 id useLogo
 id vertical_only
+id viewPager
 id view_offset_helper
 id view_transition
 id view_tree_lifecycle_owner
@@ -3944,6 +3946,9 @@ layout dialog_add_task
 layout dialog_create_tag
 layout dialog_task_comments
 layout fingerprint_dialog_layout
+layout fragment_report_overview
+layout fragment_report_time
+layout fragment_report_trends
 layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
 layout item_comment
@@ -4274,6 +4279,20 @@ string rank_stable_description
 string rank_up_description
 string recurring_task
 string rename_tag
+string report_activity_heatmap
+string report_all_personas
+string report_most_active
+string report_most_active_tags
+string report_most_improved
+string report_most_improved_tags
+string report_needs_attention
+string report_tab_overview
+string report_tab_time
+string report_tab_trends
+string report_tag_insights
+string report_tags_need_attention
+string report_time_spent
+string report_title
 string sat
 string search_menu_title
 string searchbar_scrolling_view_behavior

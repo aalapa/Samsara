@@ -111,5 +111,21 @@
     <string name="karmah_title">My Karmah</string>
     <string name="my_avatars_title">My Avatars</string>
     <string name="timer_toggle">Toggle timer</string>
+
+    <!-- Report tabs -->
+    <string name="report_title">Persona Report</string>
+    <string name="report_tab_overview">Overview</string>
+    <string name="report_tab_time">Time</string>
+    <string name="report_tab_trends">Trends</string>
+    <string name="report_most_active">Most Active</string>
+    <string name="report_most_improved">Most Improved</string>
+    <string name="report_needs_attention">Needs Attention</string>
+    <string name="report_tag_insights">Tag Insights</string>
+    <string name="report_most_active_tags">Most Active Tags</string>
+    <string name="report_most_improved_tags">Most Improved Tags</string>
+    <string name="report_tags_need_attention">Tags Need Attention</string>
+    <string name="report_all_personas">All Personas</string>
+    <string name="report_time_spent">Time Spent</string>
+    <string name="report_activity_heatmap">Activity Heatmap</string>
 </resources>
 

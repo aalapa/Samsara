@@ -488,6 +488,96 @@ public final class TimeEntryDao_Impl implements TimeEntryDao {
     });
   }
 
+  @Override
+  public Object getDailyTimeSums(final long sinceMillis,
+      final Continuation<? super List<DailyTimeSum>> $completion) {
+    final String _sql = "\n"
+            + "        SELECT (te.startTime / 86400000) * 86400000 AS dayMillis,\n"
+            + "               COALESCE(SUM(te.endTime - te.startTime), 0) AS totalTime\n"
+            + "        FROM time_entries te\n"
+            + "        WHERE te.endTime IS NOT NULL AND te.startTime >= ?\n"
+            + "        GROUP BY te.startTime / 86400000\n"
+            + "        ORDER BY dayMillis ASC\n"
+            + "    ";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, sinceMillis);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<DailyTimeSum>>() {
+      @Override
+      @NonNull
+      public List<DailyTimeSum> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfDayMillis = 0;
+          final int _cursorIndexOfTotalTime = 1;
+          final List<DailyTimeSum> _result = new ArrayList<DailyTimeSum>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final DailyTimeSum _item;
+            final long _tmpDayMillis;
+            _tmpDayMillis = _cursor.getLong(_cursorIndexOfDayMillis);
+            final long _tmpTotalTime;
+            _tmpTotalTime = _cursor.getLong(_cursorIndexOfTotalTime);
+            _item = new DailyTimeSum(_tmpDayMillis,_tmpTotalTime);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object getTimeBreakdownForDay(final long dayMillis,
+      final Continuation<? super List<DailyPersonaTimeSum>> $completion) {
+    final String _sql = "\n"
+            + "        SELECT t.personaId AS personaId, p.name AS personaName,\n"
+            + "               COALESCE(SUM(te.endTime - te.startTime), 0) AS totalTime\n"
+            + "        FROM time_entries te\n"
+            + "        INNER JOIN tasks t ON te.taskId = t.id\n"
+            + "        INNER JOIN personas p ON t.personaId = p.id\n"
+            + "        WHERE te.endTime IS NOT NULL\n"
+            + "          AND (te.startTime / 86400000) = ? / 86400000\n"
+            + "        GROUP BY t.personaId\n"
+            + "        ORDER BY totalTime DESC\n"
+            + "    ";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, dayMillis);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<DailyPersonaTimeSum>>() {
+      @Override
+      @NonNull
+      public List<DailyPersonaTimeSum> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfPersonaId = 0;
+          final int _cursorIndexOfPersonaName = 1;
+          final int _cursorIndexOfTotalTime = 2;
+          final List<DailyPersonaTimeSum> _result = new ArrayList<DailyPersonaTimeSum>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final DailyPersonaTimeSum _item;
+            final long _tmpPersonaId;
+            _tmpPersonaId = _cursor.getLong(_cursorIndexOfPersonaId);
+            final String _tmpPersonaName;
+            _tmpPersonaName = _cursor.getString(_cursorIndexOfPersonaName);
+            final long _tmpTotalTime;
+            _tmpTotalTime = _cursor.getLong(_cursorIndexOfTotalTime);
+            _item = new DailyPersonaTimeSum(_tmpPersonaId,_tmpPersonaName,_tmpTotalTime);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
+  }
+
   @NonNull
   public static List<Class<?>> getRequiredConverters() {
     return Collections.emptyList();

@@ -19,6 +19,17 @@ data class TaskIdTime(
     val totalTime: Long
 )
 
+data class DailyTimeSum(
+    val dayMillis: Long,
+    val totalTime: Long
+)
+
+data class DailyPersonaTimeSum(
+    val personaId: Long,
+    val personaName: String,
+    val totalTime: Long
+)
+
 @Dao
 interface TimeEntryDao {
     @Insert
@@ -74,4 +85,27 @@ interface TimeEntryDao {
         GROUP BY te.taskId
     """)
     fun getTotalTimesByPersonaFlow(personaId: Long): Flow<List<TaskIdTime>>
+
+    @Query("""
+        SELECT (te.startTime / 86400000) * 86400000 AS dayMillis,
+               COALESCE(SUM(te.endTime - te.startTime), 0) AS totalTime
+        FROM time_entries te
+        WHERE te.endTime IS NOT NULL AND te.startTime >= :sinceMillis
+        GROUP BY te.startTime / 86400000
+        ORDER BY dayMillis ASC
+    """)
+    suspend fun getDailyTimeSums(sinceMillis: Long): List<DailyTimeSum>
+
+    @Query("""
+        SELECT t.personaId AS personaId, p.name AS personaName,
+               COALESCE(SUM(te.endTime - te.startTime), 0) AS totalTime
+        FROM time_entries te
+        INNER JOIN tasks t ON te.taskId = t.id
+        INNER JOIN personas p ON t.personaId = p.id
+        WHERE te.endTime IS NOT NULL
+          AND (te.startTime / 86400000) = :dayMillis / 86400000
+        GROUP BY t.personaId
+        ORDER BY totalTime DESC
+    """)
+    suspend fun getTimeBreakdownForDay(dayMillis: Long): List<DailyPersonaTimeSum>
 }

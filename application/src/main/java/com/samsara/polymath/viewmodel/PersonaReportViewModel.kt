@@ -2,6 +2,8 @@ package com.samsara.polymath.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.samsara.polymath.data.*
 import com.samsara.polymath.repository.PersonaRepository
@@ -20,6 +22,21 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
     private val tagDao: TagDao
     private val timeEntryRepository: TimeEntryRepository
 
+    // --- LiveData for tabbed report ---
+    private val _reportSummary = MutableLiveData<ReportSummary>()
+    val reportSummary: LiveData<ReportSummary> = _reportSummary
+
+    private val _heatmapData = MutableLiveData<Map<Long, Long>>()
+    val heatmapData: LiveData<Map<Long, Long>> = _heatmapData
+
+    private val _selectedDayBreakdown = MutableLiveData<List<DailyPersonaTimeSum>>()
+    val selectedDayBreakdown: LiveData<List<DailyPersonaTimeSum>> = _selectedDayBreakdown
+
+    private val _selectedDay = MutableLiveData<Long?>()
+    val selectedDay: LiveData<Long?> = _selectedDay
+
+    private var _currentReportType = ReportType.WEEKLY
+
     init {
         val database = AppDatabase.getDatabase(application)
         personaRepository = PersonaRepository(database.personaDao())
@@ -27,6 +44,60 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
         statisticsRepository = PersonaStatisticsRepository(database.personaStatisticsDao())
         tagDao = database.tagDao()
         timeEntryRepository = TimeEntryRepository(database.timeEntryDao())
+    }
+
+    /**
+     * Set report type and reload data. Called from the Activity when the user
+     * toggles Weekly/Monthly.
+     */
+    fun setReportType(type: ReportType) {
+        _currentReportType = type
+        loadReport()
+    }
+
+    fun getCurrentReportType(): ReportType = _currentReportType
+
+    /**
+     * Load report and heatmap data, post results to LiveData for fragments.
+     */
+    fun loadReport() {
+        viewModelScope.launch {
+            try {
+                val report = generateReport(_currentReportType)
+                _reportSummary.postValue(report)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        loadHeatmapData()
+    }
+
+    /**
+     * Load daily time sums for the last 91 days (13 weeks) for the heatmap.
+     */
+    fun loadHeatmapData() {
+        viewModelScope.launch {
+            val sinceMillis = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(91)
+            val dailySums = timeEntryRepository.getDailyTimeSums(sinceMillis)
+            val map = dailySums.associate { it.dayMillis to it.totalTime }
+            _heatmapData.postValue(map)
+        }
+    }
+
+    /**
+     * Called when the user taps a day on the heatmap.
+     */
+    fun selectDay(dayMillis: Long) {
+        _selectedDay.postValue(dayMillis)
+        viewModelScope.launch {
+            val breakdown = timeEntryRepository.getTimeBreakdownForDay(dayMillis)
+            _selectedDayBreakdown.postValue(breakdown)
+        }
+    }
+
+    fun clearSelectedDay() {
+        _selectedDay.postValue(null)
+        _selectedDayBreakdown.postValue(emptyList())
     }
 
     suspend fun generateReport(reportType: ReportType): ReportSummary {

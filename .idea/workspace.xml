@@ -10,8 +10,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8839fe3f-3fd4-404e-92da-8ab4ba616565" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/application/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/build/generated/ksp/debug/java/com/samsara/polymath/data/TimeEntryDao_Impl.java" beforeDir="false" afterPath="$PROJECT_DIR$/application/build/generated/ksp/debug/java/com/samsara/polymath/data/TimeEntryDao_Impl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/build/intermediates/compile_and_runtime_not_namespaced_r_class_jar/debug/processDebugResources/R.jar" beforeDir="false" afterPath="$PROJECT_DIR$/application/build/intermediates/compile_and_runtime_not_namespaced_r_class_jar/debug/processDebugResources/R.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/PersonaReportActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/PersonaReportActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/data/TimeEntryDao.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/data/TimeEntryDao.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/repository/TimeEntryRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/repository/TimeEntryRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/viewmodel/PersonaReportViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/viewmodel/PersonaReportViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/src/main/res/layout/activity_persona_report.xml" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/res/layout/activity_persona_report.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/application/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/res/values/strings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/version.properties" beforeDir="false" afterPath="$PROJECT_DIR$/version.properties" afterDir="false" />
     </list>

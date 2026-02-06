@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.samsara.polymath.application-mergeDebugResources-39:/values-zh-rTW/values-zh-rTW.xml",
+            "outputFile": "com.samsara.polymath.application-mergeDebugResources-43:/values-zh-rTW/values-zh-rTW.xml",
             "map": [
                 {
                     "source": "/Users/ragnor/.gradle/caches/8.11.1/transforms/d4ce32ac96533711cc10a4843fa72bcd/transformed/biometric-1.1.0/res/values-zh-rTW/values-zh-rTW.xml",
