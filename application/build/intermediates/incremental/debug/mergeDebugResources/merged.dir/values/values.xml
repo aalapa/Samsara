@@ -2263,7 +2263,7 @@
     <string name="security_settings">Security Settings</string>
     <string name="select_days">Select days</string>
     <string name="setup_pin">Setup Your PIN</string>
-    <string name="show_all">Show All</string>
+    <string name="show_all">All</string>
     <string name="show_completed_tasks">Show Completed Tasks</string>
     <string description="Title of the side sheet&apos;s accessibility pane that is spoken by TalkBack when the side sheet appears on screen. [CHAR_LIMIT=NONE]" name="side_sheet_accessibility_pane_title">Side Sheet</string>
     <string name="side_sheet_behavior" translatable="false">com.google.android.material.sidesheet.SideSheetBehavior</string>

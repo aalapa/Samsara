@@ -103,7 +103,38 @@ class MainActivity : AppCompatActivity() {
     }
     
     private var selectedFilterTagIds = mutableSetOf<Long>()
-    
+    private var expandedTagId: Long? = null // Track which tag chip is expanded
+
+    private fun abbreviateTag(name: String): String {
+        return if (name.length <= 3) name
+        else name.take(3).replaceFirstChar { it.uppercaseChar() }
+    }
+
+    /** Update a tag chip's text: show full name when expanded or checked, abbreviation otherwise */
+    private fun updateTagChipText(chip: com.google.android.material.chip.Chip, tagId: Long, fullName: String) {
+        val isExpanded = expandedTagId == tagId || chip.isChecked
+        chip.text = if (isExpanded) fullName else abbreviateTag(fullName)
+    }
+
+    /** Refresh all tag chip labels based on current expanded/checked state */
+    private fun collapseOtherTagChips(allTags: List<com.samsara.polymath.data.Tag>) {
+        // Tag chips start at index 2 (after GTD, Show All) and end before the last (Untagged)
+        val tagChipStartIndex = 2
+        for (i in 0 until allTags.size) {
+            val chipIndex = tagChipStartIndex + i
+            val chip = binding.filterChipGroup.getChildAt(chipIndex) as? com.google.android.material.chip.Chip ?: continue
+            val tag = allTags[i]
+            updateTagChipText(chip, tag.id, tag.name)
+        }
+        // Also handle Untagged chip (last chip)
+        val untaggedIndex = tagChipStartIndex + allTags.size
+        val untaggedChip = binding.filterChipGroup.getChildAt(untaggedIndex) as? com.google.android.material.chip.Chip
+        if (untaggedChip != null) {
+            val isExpanded = expandedTagId == -1L || untaggedChip.isChecked
+            untaggedChip.text = if (isExpanded) getString(R.string.untagged) else abbreviateTag(getString(R.string.untagged))
+        }
+    }
+
     private fun setupFilterChips() {
         tagViewModel.allTags.observe(this) { allTags ->
             binding.filterChipGroup.removeAllViews()
@@ -111,7 +142,7 @@ class MainActivity : AppCompatActivity() {
             // Always show chip bar (for Today chip at minimum)
             binding.filterChipsScrollView.visibility = View.VISIBLE
 
-            // Add "GTD" chip
+            // Add "GTD" chip (system chip — always full text)
             val todayChip = com.google.android.material.chip.Chip(this).apply {
                 text = getString(R.string.gtd)
                 isCheckable = true
@@ -123,7 +154,7 @@ class MainActivity : AppCompatActivity() {
             }
             binding.filterChipGroup.addView(todayChip)
 
-            // Add "Show All" chip
+            // Add "Show All" chip (system chip — always full text)
             val showAllChip = com.google.android.material.chip.Chip(this).apply {
                 text = getString(R.string.show_all)
                 isCheckable = true
@@ -131,12 +162,13 @@ class MainActivity : AppCompatActivity() {
             }
             binding.filterChipGroup.addView(showAllChip)
 
-            // Add tag filter chips
+            // Add tag filter chips — compact by default (3-letter abbreviation)
             allTags.forEach { tag ->
+                val isSelected = !isTodayMode && tag.id in selectedFilterTagIds
                 val chip = com.google.android.material.chip.Chip(this).apply {
-                    text = tag.name
+                    text = if (isSelected || expandedTagId == tag.id) tag.name else abbreviateTag(tag.name)
                     isCheckable = true
-                    isChecked = !isTodayMode && tag.id in selectedFilterTagIds
+                    isChecked = isSelected
 
                     val chipBgColor = try {
                         if (tag.color != null) android.graphics.Color.parseColor(tag.color)
@@ -152,11 +184,12 @@ class MainActivity : AppCompatActivity() {
                 binding.filterChipGroup.addView(chip)
             }
 
-            // Add "Untagged" chip
+            // Add "Untagged" chip — also compact
+            val isUntaggedSelected = !isTodayMode && -1L in selectedFilterTagIds
             val untaggedChip = com.google.android.material.chip.Chip(this).apply {
-                text = getString(R.string.untagged)
+                text = if (isUntaggedSelected || expandedTagId == -1L) getString(R.string.untagged) else abbreviateTag(getString(R.string.untagged))
                 isCheckable = true
-                isChecked = false
+                isChecked = isUntaggedSelected
             }
             binding.filterChipGroup.addView(untaggedChip)
 
@@ -173,7 +206,9 @@ class MainActivity : AppCompatActivity() {
                 if (isChecked) {
                     isTodayMode = true
                     selectedFilterTagIds.clear()
+                    expandedTagId = null
                     uncheckAllExcept(todayChip)
+                    collapseOtherTagChips(allTags)
                     switchToTodayMode()
                 }
             }
@@ -183,30 +218,51 @@ class MainActivity : AppCompatActivity() {
                 if (isChecked) {
                     isTodayMode = false
                     selectedFilterTagIds.clear()
+                    expandedTagId = null
                     uncheckAllExcept(showAllChip)
+                    collapseOtherTagChips(allTags)
                     switchToPersonasMode()
                     observePersonas()
                 }
             }
 
-            // Wire tag chips
+            // Wire tag chips — tap toggles expand/collapse, check toggles filter
             for (i in 2 until binding.filterChipGroup.childCount) {
                 val chip = binding.filterChipGroup.getChildAt(i) as? com.google.android.material.chip.Chip ?: continue
                 val tagIndex = i - 2
                 if (tagIndex < allTags.size) {
                     val tag = allTags[tagIndex]
+
                     chip.setOnCheckedChangeListener { _, isChecked ->
                         if (isChecked) {
                             isTodayMode = false
                             todayChip.isChecked = false
                             showAllChip.isChecked = false
                             selectedFilterTagIds.add(tag.id)
+                            expandedTagId = tag.id
+                            chip.text = tag.name // Expand on select
                             switchToPersonasMode()
                         } else {
                             selectedFilterTagIds.remove(tag.id)
+                            // Collapse when unchecked unless still expanded via tap
+                            if (expandedTagId == tag.id) expandedTagId = null
+                            chip.text = abbreviateTag(tag.name)
                             if (selectedFilterTagIds.isEmpty()) showAllChip.isChecked = true
                         }
                         observePersonas()
+                    }
+
+                    // Long-press to peek at full name without toggling filter
+                    chip.setOnLongClickListener {
+                        if (!chip.isChecked) {
+                            if (expandedTagId == tag.id) {
+                                expandedTagId = null
+                            } else {
+                                expandedTagId = tag.id
+                            }
+                            collapseOtherTagChips(allTags)
+                        }
+                        true
                     }
                 } else {
                     // Untagged chip
@@ -216,12 +272,28 @@ class MainActivity : AppCompatActivity() {
                             todayChip.isChecked = false
                             showAllChip.isChecked = false
                             selectedFilterTagIds.add(-1L)
+                            expandedTagId = -1L
+                            chip.text = getString(R.string.untagged)
                             switchToPersonasMode()
                         } else {
                             selectedFilterTagIds.remove(-1L)
+                            if (expandedTagId == -1L) expandedTagId = null
+                            chip.text = abbreviateTag(getString(R.string.untagged))
                             if (selectedFilterTagIds.isEmpty()) showAllChip.isChecked = true
                         }
                         observePersonas()
+                    }
+
+                    chip.setOnLongClickListener {
+                        if (!chip.isChecked) {
+                            if (expandedTagId == -1L) {
+                                expandedTagId = null
+                            } else {
+                                expandedTagId = -1L
+                            }
+                            collapseOtherTagChips(allTags)
+                        }
+                        true
                     }
                 }
             }

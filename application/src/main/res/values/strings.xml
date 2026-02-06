@@ -50,7 +50,7 @@
     <string name="create_tag">Create Tag</string>
     <string name="manage_tags">Manage Tags</string>
     <string name="filter_by_tags">Filter by Tags</string>
-    <string name="show_all">Show All</string>
+    <string name="show_all">All</string>
     <string name="untagged">Untagged</string>
     <string name="rename_tag">Rename Tag</string>
     <string name="delete_tag">Delete Tag</string>

@@ -10,6 +10,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8839fe3f-3fd4-404e-92da-8ab4ba616565" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/java/com/samsara/polymath/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/application/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/application/src/main/res/values/strings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/version.properties" beforeDir="false" afterPath="$PROJECT_DIR$/version.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
