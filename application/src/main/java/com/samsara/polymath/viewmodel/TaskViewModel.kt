@@ -168,7 +168,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
         isRecurring: Boolean = false,
         recurringFrequency: String? = null,
         recurringDays: String? = null,
-        endDate: Long? = null
+        endDate: Long? = null,
+        nextDueDate: Long? = null
     ): Long {
         return repository.insertTask(
             Task(
@@ -183,7 +184,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                 isRecurring = isRecurring,
                 recurringFrequency = recurringFrequency,
                 recurringDays = recurringDays,
-                endDate = endDate
+                endDate = endDate,
+                nextDueDate = nextDueDate
             )
         )
     }

@@ -7,8 +7,9 @@ data class ExportData(
     val statistics: List<PersonaStatistics> = emptyList(), // Added in version 3
     val tags: List<Tag> = emptyList(), // Added in version 4
     val personaTags: List<PersonaTagExport> = emptyList(), // Added in version 4
+    val timeEntries: List<TimeEntry> = emptyList(), // Added in version 7
     val exportDate: Long = System.currentTimeMillis(),
-    val version: Int = 6 // Bumped to version 6 for end date
+    val version: Int = 7 // Bumped to version 7 for time entries & nextDueDate
 )
 
 data class PersonaTagExport(

@@ -370,6 +370,48 @@ public final class TimeEntryDao_Impl implements TimeEntryDao {
   }
 
   @Override
+  public Object getAllCompletedEntries(final Continuation<? super List<TimeEntry>> $completion) {
+    final String _sql = "SELECT * FROM time_entries WHERE endTime IS NOT NULL ORDER BY startTime ASC";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<TimeEntry>>() {
+      @Override
+      @NonNull
+      public List<TimeEntry> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
+          final int _cursorIndexOfTaskId = CursorUtil.getColumnIndexOrThrow(_cursor, "taskId");
+          final int _cursorIndexOfStartTime = CursorUtil.getColumnIndexOrThrow(_cursor, "startTime");
+          final int _cursorIndexOfEndTime = CursorUtil.getColumnIndexOrThrow(_cursor, "endTime");
+          final List<TimeEntry> _result = new ArrayList<TimeEntry>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final TimeEntry _item;
+            final long _tmpId;
+            _tmpId = _cursor.getLong(_cursorIndexOfId);
+            final long _tmpTaskId;
+            _tmpTaskId = _cursor.getLong(_cursorIndexOfTaskId);
+            final long _tmpStartTime;
+            _tmpStartTime = _cursor.getLong(_cursorIndexOfStartTime);
+            final Long _tmpEndTime;
+            if (_cursor.isNull(_cursorIndexOfEndTime)) {
+              _tmpEndTime = null;
+            } else {
+              _tmpEndTime = _cursor.getLong(_cursorIndexOfEndTime);
+            }
+            _item = new TimeEntry(_tmpId,_tmpTaskId,_tmpStartTime,_tmpEndTime);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
   public Flow<Long> getRunningTaskIdFlow() {
     final String _sql = "SELECT taskId FROM time_entries WHERE endTime IS NULL LIMIT 1";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);

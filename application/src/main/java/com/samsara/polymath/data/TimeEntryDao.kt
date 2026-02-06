@@ -60,6 +60,9 @@ interface TimeEntryDao {
     """)
     suspend fun getTotalTimeByAllPersonas(): List<PersonaTimeSum>
 
+    @Query("SELECT * FROM time_entries WHERE endTime IS NOT NULL ORDER BY startTime ASC")
+    suspend fun getAllCompletedEntries(): List<TimeEntry>
+
     @Query("SELECT taskId FROM time_entries WHERE endTime IS NULL LIMIT 1")
     fun getRunningTaskIdFlow(): Flow<Long?>
 

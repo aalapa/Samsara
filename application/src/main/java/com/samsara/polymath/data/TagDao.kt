@@ -41,6 +41,9 @@ interface TagDao {
     @Query("UPDATE tags SET `order` = :order WHERE id = :tagId")
     suspend fun updateTagOrder(tagId: Long, order: Int)
 
+    @Query("DELETE FROM tags")
+    suspend fun deleteAllTags()
+
     @Query("SELECT COUNT(*) FROM persona_tags WHERE tagId = :tagId")
     suspend fun getPersonaCountForTag(tagId: Long): Int
     

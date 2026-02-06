@@ -621,13 +621,19 @@ class MainActivity : AppCompatActivity() {
                         .getAllSync()
                         .map { com.samsara.polymath.data.PersonaTagExport(it.personaId, it.tagId, it.assignedAt) }
 
+                    // Get all completed time entries
+                    val allTimeEntries = AppDatabase.getDatabase(applicationContext)
+                        .timeEntryDao()
+                        .getAllCompletedEntries()
+
                     val exportData = ExportData(
                         personas = personas,
                         tasks = allTasks,
                         comments = allComments,
                         statistics = allStatistics,
                         tags = allTags,
-                        personaTags = allPersonaTags
+                        personaTags = allPersonaTags,
+                        timeEntries = allTimeEntries
                     )
 
                     val json = gson.toJson(exportData)
@@ -674,11 +680,12 @@ class MainActivity : AppCompatActivity() {
                     val exportData = gson.fromJson(json, ExportData::class.java)
 
                     // Delete all existing data
+                    val tagDao = AppDatabase.getDatabase(applicationContext).tagDao()
                     viewModel.deleteAllPersonas()
-                    
+                    tagDao.deleteAllTags() // Clear tags to avoid duplicates on re-import
+
                     // Import tags first and create ID mapping
                     val tagIdMap = mutableMapOf<Long, Long>() // oldId -> newId
-                    val tagDao = AppDatabase.getDatabase(applicationContext).tagDao()
                     exportData.tags.forEach { oldTag ->
                         val newTagId = tagDao.insertTag(
                             oldTag.copy(id = 0) // Reset ID to auto-generate
@@ -688,9 +695,11 @@ class MainActivity : AppCompatActivity() {
                     
                     // Import personas and create ID mapping
                     val personaIdMap = mutableMapOf<Long, Long>()
+                    val importTime = System.currentTimeMillis()
                     exportData.personas.sortedBy { it.order }.forEach { oldPersona ->
+                        // Preserve openCount; refresh lastOpenedAt so decay doesn't penalise restored data
                         val newId = viewModel.insertPersonaSync(
-                            oldPersona.copy(id = 0) // Reset ID to auto-generate
+                            oldPersona.copy(id = 0, lastOpenedAt = importTime)
                         )
                         personaIdMap[oldPersona.id] = newId
                     }
@@ -713,7 +722,8 @@ class MainActivity : AppCompatActivity() {
                                 isRecurring = oldTask.isRecurring,
                                 recurringFrequency = oldTask.recurringFrequency,
                                 recurringDays = oldTask.recurringDays,
-                                endDate = oldTask.endDate
+                                endDate = oldTask.endDate,
+                                nextDueDate = oldTask.nextDueDate
                             )
                             taskIdMap[oldTask.id] = newTaskId
                         }
@@ -758,13 +768,28 @@ class MainActivity : AppCompatActivity() {
                     exportData.personaTags.forEach { personaTag ->
                         val newPersonaId = personaIdMap[personaTag.personaId]
                         val newTagId = tagIdMap[personaTag.tagId]
-                        
+
                         if (newPersonaId != null && newTagId != null) {
                             personaTagDao.insertPersonaTag(
                                 com.samsara.polymath.data.PersonaTag(
                                     personaId = newPersonaId,
                                     tagId = newTagId,
                                     assignedAt = personaTag.assignedAt
+                                )
+                            )
+                        }
+                    }
+
+                    // Import time entries with new task IDs
+                    val timeEntryDao = AppDatabase.getDatabase(applicationContext).timeEntryDao()
+                    exportData.timeEntries.forEach { oldEntry ->
+                        val newTaskId = taskIdMap[oldEntry.taskId]
+                        if (newTaskId != null) {
+                            timeEntryDao.insert(
+                                com.samsara.polymath.data.TimeEntry(
+                                    taskId = newTaskId,
+                                    startTime = oldEntry.startTime,
+                                    endTime = oldEntry.endTime
                                 )
                             )
                         }
