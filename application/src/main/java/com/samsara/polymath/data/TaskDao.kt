@@ -3,6 +3,11 @@ package com.samsara.polymath.data
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
+data class DailyCompletionCount(
+    val dayMillis: Long,
+    val completionCount: Long
+)
+
 @Dao
 interface TaskDao {
     @Query("SELECT * FROM tasks WHERE personaId = :personaId ORDER BY `order` ASC, createdAt ASC")
@@ -46,5 +51,25 @@ interface TaskDao {
 
     @Query("SELECT * FROM tasks WHERE personaId = :personaId AND title = :title AND isRecurring = 1 AND isCompleted = 1 ORDER BY completedAt ASC")
     suspend fun getCompletedRecurringInstances(personaId: Long, title: String): List<Task>
+
+    @Query("""
+        SELECT (completedAt / 86400000) * 86400000 AS dayMillis,
+               COUNT(*) AS completionCount
+        FROM tasks
+        WHERE personaId = :personaId AND isCompleted = 1 AND completedAt IS NOT NULL AND completedAt >= :sinceMillis
+        GROUP BY completedAt / 86400000
+        ORDER BY dayMillis ASC
+    """)
+    suspend fun getDailyCompletionsByPersona(personaId: Long, sinceMillis: Long): List<DailyCompletionCount>
+
+    @Query("""
+        SELECT (completedAt / 86400000) * 86400000 AS dayMillis,
+               COUNT(*) AS completionCount
+        FROM tasks
+        WHERE isCompleted = 1 AND completedAt IS NOT NULL AND completedAt >= :sinceMillis
+        GROUP BY completedAt / 86400000
+        ORDER BY dayMillis ASC
+    """)
+    suspend fun getDailyCompletionsGlobal(sinceMillis: Long): List<DailyCompletionCount>
 }
 

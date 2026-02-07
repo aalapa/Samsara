@@ -127,5 +127,7 @@
     <string name="report_all_personas">All Personas</string>
     <string name="report_time_spent">Time Spent</string>
     <string name="report_activity_heatmap">Activity Heatmap</string>
+    <string name="heatmap_activity">Activity</string>
+    <string name="report_per_persona_activity">Per-Persona Activity</string>
 </resources>
 

@@ -3399,6 +3399,11 @@ id group_divider
 id grouping
 id groups
 id header_title
+id heatmapArrow
+id heatmapCard
+id heatmapContent
+id heatmapHeader
+id heatmapTitle
 id heatmapView
 id hide_ime_id
 id hideable
@@ -3583,8 +3588,12 @@ id password_toggle
 id path
 id pathRelative
 id peekHeight
+id perPersonaArrow
+id perPersonaContent
+id perPersonaHeader
 id percent
 id personaColorBar
+id personaHeatmapView
 id personaNameEditText
 id personaNameTextView
 id personaReportsRecyclerView
@@ -4141,6 +4150,7 @@ string generic_error_no_device_credential
 string generic_error_no_keyguard
 string generic_error_user_canceled
 string gtd
+string heatmap_activity
 string hide_bottom_view_on_scroll_behavior
 string hide_completed_tasks
 string icon_content_description
@@ -4286,6 +4296,7 @@ string report_most_active_tags
 string report_most_improved
 string report_most_improved_tags
 string report_needs_attention
+string report_per_persona_activity
 string report_tab_overview
 string report_tab_time
 string report_tab_trends

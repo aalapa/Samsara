@@ -21,6 +21,7 @@ import com.samsara.polymath.databinding.DialogAddTaskBinding
 import com.samsara.polymath.databinding.DialogTaskCommentsBinding
 import com.samsara.polymath.viewmodel.CommentViewModel
 import com.samsara.polymath.viewmodel.TaskViewModel
+import com.samsara.polymath.util.ReportUtils
 import com.samsara.polymath.viewmodel.TimeEntryViewModel
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
@@ -59,8 +60,10 @@ class TasksActivity : AppCompatActivity() {
 
         setupToolbar()
         setupRecyclerView()
+        setupHeatmap()
         observeTasks()
         observeTimer()
+        observeHeatmap()
         setupFab()
     }
 
@@ -228,6 +231,28 @@ class TasksActivity : AppCompatActivity() {
         }
         timeEntryViewModel.getTaskTimeMap(personaId).observe(this) { timeMap ->
             adapter.taskTimeMap = timeMap
+        }
+    }
+
+    private fun setupHeatmap() {
+        // Wire the accordion collapse/expand
+        ReportUtils.setupAccordion(
+            binding.heatmapHeader,
+            binding.heatmapContent,
+            binding.heatmapArrow
+        )
+        // Load heatmap data for this persona
+        timeEntryViewModel.loadPersonaHeatmap(personaId)
+    }
+
+    private fun observeHeatmap() {
+        timeEntryViewModel.personaHeatmapData.observe(this) { data ->
+            if (data.isNotEmpty()) {
+                binding.heatmapCard.visibility = View.VISIBLE
+                binding.personaHeatmapView.setData(data)
+            } else {
+                binding.heatmapCard.visibility = View.GONE
+            }
         }
     }
 

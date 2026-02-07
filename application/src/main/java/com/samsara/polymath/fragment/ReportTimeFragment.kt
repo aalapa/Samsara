@@ -13,9 +13,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.card.MaterialCardView
 import com.samsara.polymath.adapter.PersonaReportAdapter
+import com.samsara.polymath.data.PersonaHeatmapEntry
 import com.samsara.polymath.data.PersonaReport
 import com.samsara.polymath.databinding.FragmentReportTimeBinding
 import com.samsara.polymath.util.ReportUtils
+import com.samsara.polymath.view.HeatmapView
 import com.samsara.polymath.viewmodel.PersonaReportViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -36,8 +38,9 @@ class ReportTimeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Setup accordion
+        // Setup accordions
         ReportUtils.setupAccordion(binding.timeSpentHeader, binding.timeSpentContent, binding.timeSpentArrow)
+        ReportUtils.setupAccordion(binding.perPersonaHeader, binding.perPersonaContent, binding.perPersonaArrow)
 
         // Heatmap day-click listener
         binding.heatmapView.onDayClickListener = { dayMillis ->
@@ -99,6 +102,11 @@ class ReportTimeFragment : Fragment() {
         // Observe report for time-spent section
         viewModel.reportSummary.observe(viewLifecycleOwner) { report ->
             populateTimeSpent(report.mostTimeSpent)
+        }
+
+        // Observe per-persona heatmaps
+        viewModel.perPersonaHeatmaps.observe(viewLifecycleOwner) { entries ->
+            populatePerPersonaHeatmaps(entries)
         }
     }
 
@@ -166,6 +174,87 @@ class ReportTimeFragment : Fragment() {
 
             card.addView(inner)
             binding.timeSpentContent.addView(card)
+        }
+    }
+
+    private fun populatePerPersonaHeatmaps(entries: List<PersonaHeatmapEntry>) {
+        binding.perPersonaContent.removeAllViews()
+        if (entries.isEmpty()) {
+            binding.perPersonaHeader.visibility = View.GONE
+            return
+        }
+        binding.perPersonaHeader.visibility = View.VISIBLE
+
+        val density = resources.displayMetrics.density
+        for (entry in entries) {
+            val card = MaterialCardView(requireContext()).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    bottomMargin = (10 * density).toInt()
+                }
+                setCardBackgroundColor(Color.parseColor("#FAFAFA"))
+                cardElevation = 2 * density
+                radius = 12 * density
+            }
+
+            val inner = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.VERTICAL
+                setPadding(
+                    (12 * density).toInt(), (10 * density).toInt(),
+                    (12 * density).toInt(), (8 * density).toInt()
+                )
+            }
+
+            // Persona name label with colored dot
+            val headerRow = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(0, 0, 0, (6 * density).toInt())
+            }
+
+            // Color dot
+            val dot = View(requireContext()).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    (10 * density).toInt(), (10 * density).toInt()
+                ).apply {
+                    marginEnd = (8 * density).toInt()
+                }
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    shape = android.graphics.drawable.GradientDrawable.OVAL
+                    setColor(try {
+                        Color.parseColor(entry.backgroundColor)
+                    } catch (e: Exception) {
+                        Color.parseColor("#007AFF")
+                    })
+                }
+            }
+
+            val nameView = TextView(requireContext()).apply {
+                text = entry.personaName
+                textSize = 14f
+                setTypeface(typeface, Typeface.BOLD)
+                setTextColor(Color.parseColor("#333333"))
+            }
+
+            headerRow.addView(dot)
+            headerRow.addView(nameView)
+            inner.addView(headerRow)
+
+            // Mini heatmap
+            val heatmap = HeatmapView(requireContext()).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                setPadding((4 * density).toInt(), 0, (4 * density).toInt(), 0)
+            }
+            heatmap.setData(entry.data)
+            inner.addView(heatmap)
+
+            card.addView(inner)
+            binding.perPersonaContent.addView(card)
         }
     }
 

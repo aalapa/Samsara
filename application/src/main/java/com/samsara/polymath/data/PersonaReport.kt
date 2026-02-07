@@ -46,3 +46,10 @@ data class TagReport(
 enum class ReportType {
     WEEKLY, MONTHLY
 }
+
+data class PersonaHeatmapEntry(
+    val personaId: Long,
+    val personaName: String,
+    val backgroundColor: String,
+    val data: Map<Long, Long>   // dayMillis → intensity (0-100)
+)

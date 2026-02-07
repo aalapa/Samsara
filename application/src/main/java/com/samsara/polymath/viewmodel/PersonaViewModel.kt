@@ -10,6 +10,8 @@ import com.samsara.polymath.data.DecayLevel
 import com.samsara.polymath.data.Persona
 import com.samsara.polymath.data.PersonaWithTaskCount
 import com.samsara.polymath.data.RankStatus
+import com.samsara.polymath.data.PersonaOpenEvent
+import com.samsara.polymath.repository.PersonaOpenEventRepository
 import com.samsara.polymath.repository.PersonaRepository
 import com.samsara.polymath.repository.TaskRepository
 import java.util.concurrent.TimeUnit
@@ -23,13 +25,15 @@ import kotlinx.coroutines.launch
 class PersonaViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PersonaRepository
     private val taskRepository: TaskRepository
+    private val personaOpenEventRepository: PersonaOpenEventRepository
     private val tagDao: com.samsara.polymath.data.TagDao
     private val personaTagDao: com.samsara.polymath.data.PersonaTagDao
-    
+
     init {
         val database = AppDatabase.getDatabase(application)
         repository = PersonaRepository(database.personaDao())
         taskRepository = TaskRepository(database.taskDao())
+        personaOpenEventRepository = PersonaOpenEventRepository(database.personaOpenEventDao())
         tagDao = database.tagDao()
         personaTagDao = database.personaTagDao()
     }
@@ -341,6 +345,9 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
 
             // Increment the open count (this also updates lastOpenedAt)
             repository.incrementOpenCount(personaId)
+
+            // Log the open event for heatmap tracking
+            personaOpenEventRepository.insert(PersonaOpenEvent(personaId = personaId))
 
             // Get personas after increment and recalculate positions
             val personasAfter = repository.getAllPersonas().first()

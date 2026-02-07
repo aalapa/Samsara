@@ -1097,6 +1097,92 @@ public final class TaskDao_Impl implements TaskDao {
     }, $completion);
   }
 
+  @Override
+  public Object getDailyCompletionsByPersona(final long personaId, final long sinceMillis,
+      final Continuation<? super List<DailyCompletionCount>> $completion) {
+    final String _sql = "\n"
+            + "        SELECT (completedAt / 86400000) * 86400000 AS dayMillis,\n"
+            + "               COUNT(*) AS completionCount\n"
+            + "        FROM tasks\n"
+            + "        WHERE personaId = ? AND isCompleted = 1 AND completedAt IS NOT NULL AND completedAt >= ?\n"
+            + "        GROUP BY completedAt / 86400000\n"
+            + "        ORDER BY dayMillis ASC\n"
+            + "    ";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 2);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, personaId);
+    _argIndex = 2;
+    _statement.bindLong(_argIndex, sinceMillis);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<DailyCompletionCount>>() {
+      @Override
+      @NonNull
+      public List<DailyCompletionCount> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfDayMillis = 0;
+          final int _cursorIndexOfCompletionCount = 1;
+          final List<DailyCompletionCount> _result = new ArrayList<DailyCompletionCount>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final DailyCompletionCount _item;
+            final long _tmpDayMillis;
+            _tmpDayMillis = _cursor.getLong(_cursorIndexOfDayMillis);
+            final long _tmpCompletionCount;
+            _tmpCompletionCount = _cursor.getLong(_cursorIndexOfCompletionCount);
+            _item = new DailyCompletionCount(_tmpDayMillis,_tmpCompletionCount);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object getDailyCompletionsGlobal(final long sinceMillis,
+      final Continuation<? super List<DailyCompletionCount>> $completion) {
+    final String _sql = "\n"
+            + "        SELECT (completedAt / 86400000) * 86400000 AS dayMillis,\n"
+            + "               COUNT(*) AS completionCount\n"
+            + "        FROM tasks\n"
+            + "        WHERE isCompleted = 1 AND completedAt IS NOT NULL AND completedAt >= ?\n"
+            + "        GROUP BY completedAt / 86400000\n"
+            + "        ORDER BY dayMillis ASC\n"
+            + "    ";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, sinceMillis);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<DailyCompletionCount>>() {
+      @Override
+      @NonNull
+      public List<DailyCompletionCount> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfDayMillis = 0;
+          final int _cursorIndexOfCompletionCount = 1;
+          final List<DailyCompletionCount> _result = new ArrayList<DailyCompletionCount>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final DailyCompletionCount _item;
+            final long _tmpDayMillis;
+            _tmpDayMillis = _cursor.getLong(_cursorIndexOfDayMillis);
+            final long _tmpCompletionCount;
+            _tmpCompletionCount = _cursor.getLong(_cursorIndexOfCompletionCount);
+            _item = new DailyCompletionCount(_tmpDayMillis,_tmpCompletionCount);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
+  }
+
   @NonNull
   public static List<Class<?>> getRequiredConverters() {
     return Collections.emptyList();

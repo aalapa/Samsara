@@ -108,4 +108,15 @@ interface TimeEntryDao {
         ORDER BY totalTime DESC
     """)
     suspend fun getTimeBreakdownForDay(dayMillis: Long): List<DailyPersonaTimeSum>
+
+    @Query("""
+        SELECT (te.startTime / 86400000) * 86400000 AS dayMillis,
+               COALESCE(SUM(te.endTime - te.startTime), 0) AS totalTime
+        FROM time_entries te
+        INNER JOIN tasks t ON te.taskId = t.id
+        WHERE t.personaId = :personaId AND te.endTime IS NOT NULL AND te.startTime >= :sinceMillis
+        GROUP BY te.startTime / 86400000
+        ORDER BY dayMillis ASC
+    """)
+    suspend fun getDailyTimeSumsByPersona(personaId: Long, sinceMillis: Long): List<DailyTimeSum>
 }

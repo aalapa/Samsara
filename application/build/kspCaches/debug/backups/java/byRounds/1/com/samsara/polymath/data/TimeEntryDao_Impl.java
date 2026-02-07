@@ -578,6 +578,51 @@ public final class TimeEntryDao_Impl implements TimeEntryDao {
     }, $completion);
   }
 
+  @Override
+  public Object getDailyTimeSumsByPersona(final long personaId, final long sinceMillis,
+      final Continuation<? super List<DailyTimeSum>> $completion) {
+    final String _sql = "\n"
+            + "        SELECT (te.startTime / 86400000) * 86400000 AS dayMillis,\n"
+            + "               COALESCE(SUM(te.endTime - te.startTime), 0) AS totalTime\n"
+            + "        FROM time_entries te\n"
+            + "        INNER JOIN tasks t ON te.taskId = t.id\n"
+            + "        WHERE t.personaId = ? AND te.endTime IS NOT NULL AND te.startTime >= ?\n"
+            + "        GROUP BY te.startTime / 86400000\n"
+            + "        ORDER BY dayMillis ASC\n"
+            + "    ";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 2);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, personaId);
+    _argIndex = 2;
+    _statement.bindLong(_argIndex, sinceMillis);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<DailyTimeSum>>() {
+      @Override
+      @NonNull
+      public List<DailyTimeSum> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfDayMillis = 0;
+          final int _cursorIndexOfTotalTime = 1;
+          final List<DailyTimeSum> _result = new ArrayList<DailyTimeSum>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final DailyTimeSum _item;
+            final long _tmpDayMillis;
+            _tmpDayMillis = _cursor.getLong(_cursorIndexOfDayMillis);
+            final long _tmpTotalTime;
+            _tmpTotalTime = _cursor.getLong(_cursorIndexOfTotalTime);
+            _item = new DailyTimeSum(_tmpDayMillis,_tmpTotalTime);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
+  }
+
   @NonNull
   public static List<Class<?>> getRequiredConverters() {
     return Collections.emptyList();

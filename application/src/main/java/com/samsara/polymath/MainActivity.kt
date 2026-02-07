@@ -698,6 +698,12 @@ class MainActivity : AppCompatActivity() {
                         .timeEntryDao()
                         .getAllCompletedEntries()
 
+                    // Get all persona open events (last 91 days)
+                    val sinceMillis = System.currentTimeMillis() - 91L * 86400000L
+                    val allOpenEvents = AppDatabase.getDatabase(applicationContext)
+                        .personaOpenEventDao()
+                        .getAllEventsSince(sinceMillis)
+
                     val exportData = ExportData(
                         personas = personas,
                         tasks = allTasks,
@@ -705,7 +711,8 @@ class MainActivity : AppCompatActivity() {
                         statistics = allStatistics,
                         tags = allTags,
                         personaTags = allPersonaTags,
-                        timeEntries = allTimeEntries
+                        timeEntries = allTimeEntries,
+                        personaOpenEvents = allOpenEvents
                     )
 
                     val json = gson.toJson(exportData)
@@ -862,6 +869,20 @@ class MainActivity : AppCompatActivity() {
                                     taskId = newTaskId,
                                     startTime = oldEntry.startTime,
                                     endTime = oldEntry.endTime
+                                )
+                            )
+                        }
+                    }
+
+                    // Import persona open events with new persona IDs
+                    val personaOpenEventDao = AppDatabase.getDatabase(applicationContext).personaOpenEventDao()
+                    exportData.personaOpenEvents.forEach { oldEvent ->
+                        val newPersonaId = personaIdMap[oldEvent.personaId]
+                        if (newPersonaId != null) {
+                            personaOpenEventDao.insert(
+                                com.samsara.polymath.data.PersonaOpenEvent(
+                                    personaId = newPersonaId,
+                                    timestamp = oldEvent.timestamp
                                 )
                             )
                         }

@@ -36,6 +36,15 @@ public final class FragmentReportTimeBinding implements ViewBinding {
   public final HeatmapView heatmapView;
 
   @NonNull
+  public final ImageView perPersonaArrow;
+
+  @NonNull
+  public final LinearLayout perPersonaContent;
+
+  @NonNull
+  public final LinearLayout perPersonaHeader;
+
+  @NonNull
   public final ImageView timeSpentArrow;
 
   @NonNull
@@ -47,13 +56,17 @@ public final class FragmentReportTimeBinding implements ViewBinding {
   private FragmentReportTimeBinding(@NonNull NestedScrollView rootView,
       @NonNull MaterialCardView dayDetailCard, @NonNull LinearLayout dayDetailContent,
       @NonNull TextView dayDetailTitle, @NonNull HeatmapView heatmapView,
-      @NonNull ImageView timeSpentArrow, @NonNull LinearLayout timeSpentContent,
-      @NonNull LinearLayout timeSpentHeader) {
+      @NonNull ImageView perPersonaArrow, @NonNull LinearLayout perPersonaContent,
+      @NonNull LinearLayout perPersonaHeader, @NonNull ImageView timeSpentArrow,
+      @NonNull LinearLayout timeSpentContent, @NonNull LinearLayout timeSpentHeader) {
     this.rootView = rootView;
     this.dayDetailCard = dayDetailCard;
     this.dayDetailContent = dayDetailContent;
     this.dayDetailTitle = dayDetailTitle;
     this.heatmapView = heatmapView;
+    this.perPersonaArrow = perPersonaArrow;
+    this.perPersonaContent = perPersonaContent;
+    this.perPersonaHeader = perPersonaHeader;
     this.timeSpentArrow = timeSpentArrow;
     this.timeSpentContent = timeSpentContent;
     this.timeSpentHeader = timeSpentHeader;
@@ -110,6 +123,24 @@ public final class FragmentReportTimeBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.perPersonaArrow;
+      ImageView perPersonaArrow = ViewBindings.findChildViewById(rootView, id);
+      if (perPersonaArrow == null) {
+        break missingId;
+      }
+
+      id = R.id.perPersonaContent;
+      LinearLayout perPersonaContent = ViewBindings.findChildViewById(rootView, id);
+      if (perPersonaContent == null) {
+        break missingId;
+      }
+
+      id = R.id.perPersonaHeader;
+      LinearLayout perPersonaHeader = ViewBindings.findChildViewById(rootView, id);
+      if (perPersonaHeader == null) {
+        break missingId;
+      }
+
       id = R.id.timeSpentArrow;
       ImageView timeSpentArrow = ViewBindings.findChildViewById(rootView, id);
       if (timeSpentArrow == null) {
@@ -129,8 +160,8 @@ public final class FragmentReportTimeBinding implements ViewBinding {
       }
 
       return new FragmentReportTimeBinding((NestedScrollView) rootView, dayDetailCard,
-          dayDetailContent, dayDetailTitle, heatmapView, timeSpentArrow, timeSpentContent,
-          timeSpentHeader);
+          dayDetailContent, dayDetailTitle, heatmapView, perPersonaArrow, perPersonaContent,
+          perPersonaHeader, timeSpentArrow, timeSpentContent, timeSpentHeader);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

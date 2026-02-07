@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
-@Database(entities = [Persona::class, Task::class, Comment::class, PersonaStatistics::class, Tag::class, PersonaTag::class, TimeEntry::class], version = 16, exportSchema = false)
+@Database(entities = [Persona::class, Task::class, Comment::class, PersonaStatistics::class, Tag::class, PersonaTag::class, TimeEntry::class, PersonaOpenEvent::class], version = 17, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun personaDao(): PersonaDao
@@ -16,6 +16,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun tagDao(): TagDao
     abstract fun personaTagDao(): PersonaTagDao
     abstract fun timeEntryDao(): TimeEntryDao
+    abstract fun personaOpenEventDao(): PersonaOpenEventDao
     
     companion object {
         @Volatile
@@ -28,7 +29,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "polymath_database"
                 )
-                .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16)
+                .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14, MIGRATION_14_15, MIGRATION_15_16, MIGRATION_16_17)
                 .fallbackToDestructiveMigration() // For development - remove in production
                 .build()
                 INSTANCE = instance
@@ -148,6 +149,21 @@ abstract class AppDatabase : RoomDatabase() {
         private val MIGRATION_15_16 = object : androidx.room.migration.Migration(15, 16) {
             override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE tasks ADD COLUMN nextDueDate INTEGER DEFAULT NULL")
+            }
+        }
+
+        private val MIGRATION_16_17 = object : androidx.room.migration.Migration(16, 17) {
+            override fun migrate(database: androidx.sqlite.db.SupportSQLiteDatabase) {
+                database.execSQL("""
+                    CREATE TABLE IF NOT EXISTS persona_open_events (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        personaId INTEGER NOT NULL,
+                        timestamp INTEGER NOT NULL,
+                        FOREIGN KEY(personaId) REFERENCES personas(id) ON DELETE CASCADE
+                    )
+                """.trimIndent())
+                database.execSQL("CREATE INDEX IF NOT EXISTS index_persona_open_events_personaId ON persona_open_events(personaId)")
+                database.execSQL("CREATE INDEX IF NOT EXISTS index_persona_open_events_timestamp ON persona_open_events(timestamp)")
             }
         }
 

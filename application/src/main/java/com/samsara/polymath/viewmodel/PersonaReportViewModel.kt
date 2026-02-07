@@ -6,10 +6,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.samsara.polymath.data.*
+import com.samsara.polymath.repository.PersonaOpenEventRepository
 import com.samsara.polymath.repository.PersonaRepository
 import com.samsara.polymath.repository.PersonaStatisticsRepository
 import com.samsara.polymath.repository.TaskRepository
 import com.samsara.polymath.repository.TimeEntryRepository
+import com.samsara.polymath.util.HeatmapUtils
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
@@ -21,6 +23,7 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
     private val statisticsRepository: PersonaStatisticsRepository
     private val tagDao: TagDao
     private val timeEntryRepository: TimeEntryRepository
+    private val personaOpenEventRepository: PersonaOpenEventRepository
 
     // --- LiveData for tabbed report ---
     private val _reportSummary = MutableLiveData<ReportSummary>()
@@ -35,6 +38,10 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
     private val _selectedDay = MutableLiveData<Long?>()
     val selectedDay: LiveData<Long?> = _selectedDay
 
+    // Per-persona heatmap data for the Report Time tab
+    private val _perPersonaHeatmaps = MutableLiveData<List<PersonaHeatmapEntry>>()
+    val perPersonaHeatmaps: LiveData<List<PersonaHeatmapEntry>> = _perPersonaHeatmaps
+
     private var _currentReportType = ReportType.WEEKLY
 
     init {
@@ -44,6 +51,7 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
         statisticsRepository = PersonaStatisticsRepository(database.personaStatisticsDao())
         tagDao = database.tagDao()
         timeEntryRepository = TimeEntryRepository(database.timeEntryDao())
+        personaOpenEventRepository = PersonaOpenEventRepository(database.personaOpenEventDao())
     }
 
     /**
@@ -73,14 +81,51 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
     }
 
     /**
-     * Load daily time sums for the last 91 days (13 weeks) for the heatmap.
+     * Load combined heatmap data (time + completions + opens) for the global
+     * heatmap, and per-persona heatmaps, over the last 91 days.
      */
     fun loadHeatmapData() {
         viewModelScope.launch {
             val sinceMillis = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(91)
-            val dailySums = timeEntryRepository.getDailyTimeSums(sinceMillis)
-            val map = dailySums.associate { it.dayMillis to it.totalTime }
-            _heatmapData.postValue(map)
+
+            // Global combined heatmap
+            val timeSums = timeEntryRepository.getDailyTimeSums(sinceMillis)
+            val completions = taskRepository.getDailyCompletionsGlobal(sinceMillis)
+            val opens = personaOpenEventRepository.getDailyOpenCountsGlobal(sinceMillis)
+            val combined = HeatmapUtils.combineHeatmapData(timeSums, completions, opens)
+
+            // Fallback: if no open/completion data yet, show raw timer data so heatmap isn't empty
+            if (combined.isEmpty()) {
+                val rawMap = timeSums.associate { it.dayMillis to it.totalTime }
+                _heatmapData.postValue(rawMap)
+            } else {
+                _heatmapData.postValue(combined)
+            }
+
+            // Per-persona heatmaps
+            val personas = personaRepository.getAllPersonasSync()
+            val entries = personas.mapNotNull { persona ->
+                val pTime = timeEntryRepository.getDailyTimeSumsByPersona(persona.id, sinceMillis)
+                val pComp = taskRepository.getDailyCompletionsByPersona(persona.id, sinceMillis)
+                val pOpen = personaOpenEventRepository.getDailyOpenCountsByPersona(persona.id, sinceMillis)
+                val pCombined = HeatmapUtils.combineHeatmapData(pTime, pComp, pOpen)
+
+                // Fallback to raw time if no combined data
+                val data = if (pCombined.isEmpty()) {
+                    pTime.associate { it.dayMillis to it.totalTime }
+                } else {
+                    pCombined
+                }
+
+                if (data.isEmpty()) null
+                else PersonaHeatmapEntry(
+                    personaId = persona.id,
+                    personaName = persona.name,
+                    backgroundColor = persona.backgroundColor,
+                    data = data
+                )
+            }
+            _perPersonaHeatmaps.postValue(entries)
         }
     }
 

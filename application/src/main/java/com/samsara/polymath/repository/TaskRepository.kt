@@ -1,5 +1,6 @@
 package com.samsara.polymath.repository
 
+import com.samsara.polymath.data.DailyCompletionCount
 import com.samsara.polymath.data.RankStatus
 import com.samsara.polymath.data.Task
 import com.samsara.polymath.data.TaskDao
@@ -39,5 +40,11 @@ class TaskRepository(private val taskDao: TaskDao) {
 
     suspend fun getCompletedRecurringInstances(personaId: Long, title: String): List<Task> =
         taskDao.getCompletedRecurringInstances(personaId, title)
+
+    suspend fun getDailyCompletionsByPersona(personaId: Long, sinceMillis: Long): List<DailyCompletionCount> =
+        taskDao.getDailyCompletionsByPersona(personaId, sinceMillis)
+
+    suspend fun getDailyCompletionsGlobal(sinceMillis: Long): List<DailyCompletionCount> =
+        taskDao.getDailyCompletionsGlobal(sinceMillis)
 }
 

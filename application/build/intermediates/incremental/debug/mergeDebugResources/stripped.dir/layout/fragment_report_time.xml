@@ -59,6 +59,38 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- ==================== PER-PERSONA HEATMAPS ACCORDION ==================== -->
+        <LinearLayout
+            android:id="@+id/perPersonaHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="12dp"
+            android:layout_marginBottom="4dp"
+            android:background="?attr/selectableItemBackground">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/report_per_persona_activity"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+            <ImageView
+                android:id="@+id/perPersonaArrow"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_expand_more"
+                android:contentDescription="Expand" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/perPersonaContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone" />
+
         <!-- ==================== TIME SPENT ACCORDION ==================== -->
         <LinearLayout
             android:id="@+id/timeSpentHeader"

@@ -22,4 +22,5 @@ class TimeEntryRepository(private val timeEntryDao: TimeEntryDao) {
     fun getTotalTimesByPersonaFlow(personaId: Long): Flow<List<TaskIdTime>> = timeEntryDao.getTotalTimesByPersonaFlow(personaId)
     suspend fun getDailyTimeSums(sinceMillis: Long): List<DailyTimeSum> = timeEntryDao.getDailyTimeSums(sinceMillis)
     suspend fun getTimeBreakdownForDay(dayMillis: Long): List<DailyPersonaTimeSum> = timeEntryDao.getTimeBreakdownForDay(dayMillis)
+    suspend fun getDailyTimeSumsByPersona(personaId: Long, sinceMillis: Long): List<DailyTimeSum> = timeEntryDao.getDailyTimeSumsByPersona(personaId, sinceMillis)
 }
