@@ -73,18 +73,19 @@
                     android:id="@+id/heatmapArrow"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:rotation="180"
+                    android:rotation="0"
                     android:src="@android:drawable/arrow_down_float"
                     app:tint="@color/text_secondary" />
 
             </LinearLayout>
 
-            <!-- Heatmap content (collapsible) -->
+            <!-- Heatmap content (collapsible, starts closed) -->
             <LinearLayout
                 android:id="@+id/heatmapContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:visibility="gone"
                 android:paddingHorizontal="10dp"
                 android:paddingBottom="10dp">
 
