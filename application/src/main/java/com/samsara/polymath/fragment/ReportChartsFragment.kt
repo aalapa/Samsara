@@ -119,12 +119,13 @@ class ReportChartsFragment : Fragment() {
             personaMap[entry.personaId] = currentHours + (entry.totalTime / 3600000f)
         }
 
-        // Build stacked bar entries
+        // Build stacked bar entries (reversed: index 0 = most recent week, 12 = oldest)
         val barEntries = mutableListOf<BarEntry>()
         val weekLabels = mutableListOf<String>()
         val dateFormat = SimpleDateFormat("MMM d", Locale.getDefault())
 
-        for (weekIdx in 0..12) {
+        for (barIdx in 0..12) {
+            val weekIdx = 12 - barIdx // reverse: bar position 0 = week 12 (most recent)
             val weekStart = sinceMillis + weekIdx * weekMillis
             weekLabels.add(dateFormat.format(Date(weekStart)))
 
@@ -133,7 +134,7 @@ class ReportChartsFragment : Fragment() {
             for ((i, pid) in personaIds.withIndex()) {
                 values[i] = personaMap[pid] ?: 0f
             }
-            barEntries.add(BarEntry(weekIdx.toFloat(), values))
+            barEntries.add(BarEntry(barIdx.toFloat(), values))
         }
 
         val dataSet = BarDataSet(barEntries, "").apply {
@@ -225,13 +226,14 @@ class ReportChartsFragment : Fragment() {
             val colorStr = info?.second ?: "#007AFF"
             val lineColor = try { Color.parseColor(colorStr) } catch (_: Exception) { Color.parseColor("#007AFF") }
 
-            // Convert timestamps to "day index" (0 = 91 days ago, 91 = today)
+            // Convert timestamps to "days ago" (0 = today on left, 91 = oldest on right)
             // Apply log1p to score so large and small values are both visible
-            val entries = stats.sortedBy { it.timestamp }.map { stat ->
-                val dayIndex = ((stat.timestamp - (now - TimeUnit.DAYS.toMillis(91))) / dayMillis).toFloat()
+            // MPAndroidChart requires entries sorted by X ascending, so sort by daysAgo
+            val entries = stats.map { stat ->
+                val daysAgo = ((now - stat.timestamp) / dayMillis).toFloat().coerceIn(0f, 91f)
                 val logScore = Math.log1p(stat.score).toFloat()
-                Entry(dayIndex, logScore)
-            }
+                Entry(daysAgo, logScore)
+            }.sortedBy { it.x }
 
             val lineDataSet = LineDataSet(entries, name).apply {
                 color = lineColor
@@ -257,9 +259,8 @@ class ReportChartsFragment : Fragment() {
 
         val lineData = LineData(dataSets.toList())
 
-        // Build date labels for x-axis: day index -> date string
+        // Build date labels for x-axis: value = days ago (0 = today, 91 = oldest)
         val dateFormat = SimpleDateFormat("MMM d", Locale.getDefault())
-        val sinceMillis = now - TimeUnit.DAYS.toMillis(91)
 
         chart.apply {
             data = lineData
@@ -273,7 +274,7 @@ class ReportChartsFragment : Fragment() {
                 axisMaximum = 91f
                 valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
                     override fun getFormattedValue(value: Float): String {
-                        val millis = sinceMillis + (value.toLong() * dayMillis)
+                        val millis = now - (value.toLong() * dayMillis)
                         return dateFormat.format(Date(millis))
                     }
                 }
