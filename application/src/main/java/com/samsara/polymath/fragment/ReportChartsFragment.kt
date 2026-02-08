@@ -180,17 +180,17 @@ class ReportChartsFragment : Fragment() {
 
             legend.apply {
                 isEnabled = true
-                verticalAlignment = Legend.LegendVerticalAlignment.BOTTOM
-                horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
-                orientation = Legend.LegendOrientation.HORIZONTAL
-                setDrawInside(false)
-                xEntrySpace = 12f
-                yOffset = 10f
-                isWordWrapEnabled = true
+                verticalAlignment = Legend.LegendVerticalAlignment.TOP
+                horizontalAlignment = Legend.LegendHorizontalAlignment.RIGHT
+                orientation = Legend.LegendOrientation.VERTICAL
+                setDrawInside(true)
+                xEntrySpace = 6f
+                yEntrySpace = 4f
+                textSize = 10f
                 textColor = chartTextColor
             }
 
-            setExtraBottomOffset(12f)
+            setExtraBottomOffset(4f)
             setNoDataTextColor(chartTextColor)
             animateY(600)
             invalidate()
@@ -302,17 +302,17 @@ class ReportChartsFragment : Fragment() {
 
             legend.apply {
                 isEnabled = true
-                verticalAlignment = Legend.LegendVerticalAlignment.BOTTOM
-                horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
-                orientation = Legend.LegendOrientation.HORIZONTAL
-                setDrawInside(false)
-                xEntrySpace = 12f
-                yOffset = 10f
-                isWordWrapEnabled = true
+                verticalAlignment = Legend.LegendVerticalAlignment.TOP
+                horizontalAlignment = Legend.LegendHorizontalAlignment.RIGHT
+                orientation = Legend.LegendOrientation.VERTICAL
+                setDrawInside(true)
+                xEntrySpace = 6f
+                yEntrySpace = 4f
+                textSize = 10f
                 textColor = chartTextColor
             }
 
-            setExtraBottomOffset(12f)
+            setExtraBottomOffset(4f)
             setNoDataTextColor(chartTextColor)
             animateX(600)
             invalidate()
@@ -449,17 +449,17 @@ class ReportChartsFragment : Fragment() {
 
             legend.apply {
                 isEnabled = true
-                verticalAlignment = Legend.LegendVerticalAlignment.BOTTOM
-                horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
-                orientation = Legend.LegendOrientation.HORIZONTAL
-                setDrawInside(false)
-                xEntrySpace = 12f
-                yOffset = 10f
-                isWordWrapEnabled = true
+                verticalAlignment = Legend.LegendVerticalAlignment.TOP
+                horizontalAlignment = Legend.LegendHorizontalAlignment.RIGHT
+                orientation = Legend.LegendOrientation.VERTICAL
+                setDrawInside(true)
+                xEntrySpace = 6f
+                yEntrySpace = 4f
+                textSize = 10f
                 textColor = chartTextColor
             }
 
-            setExtraBottomOffset(8f)
+            setExtraBottomOffset(4f)
             setNoDataTextColor(chartTextColor)
             animateY(600)
             invalidate()
