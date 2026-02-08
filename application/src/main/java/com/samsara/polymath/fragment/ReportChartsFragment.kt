@@ -1,5 +1,6 @@
 package com.samsara.polymath.fragment
 
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -30,6 +31,19 @@ class ReportChartsFragment : Fragment() {
     private var _binding: FragmentReportChartsBinding? = null
     private val binding get() = _binding!!
     private val viewModel: PersonaReportViewModel by activityViewModels()
+
+    /** Whether the device is currently in dark mode. */
+    private val isDarkMode: Boolean
+        get() = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+                Configuration.UI_MODE_NIGHT_YES
+
+    /** Theme-aware text color for chart labels. */
+    private val chartTextColor: Int
+        get() = if (isDarkMode) Color.WHITE else Color.DKGRAY
+
+    /** Theme-aware grid line color. */
+    private val chartGridColor: Int
+        get() = if (isDarkMode) Color.parseColor("#555555") else Color.parseColor("#E0E0E0")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -82,6 +96,7 @@ class ReportChartsFragment : Fragment() {
     ) {
         if (dailyData.isEmpty()) {
             chart.setNoDataText(getString(com.samsara.polymath.R.string.chart_no_data))
+            chart.setNoDataTextColor(chartTextColor)
             chart.invalidate()
             return
         }
@@ -150,13 +165,15 @@ class ReportChartsFragment : Fragment() {
                 setDrawGridLines(false)
                 labelRotationAngle = -45f
                 textSize = 9f
+                textColor = chartTextColor
             }
 
             axisLeft.apply {
                 axisMinimum = 0f
                 setDrawGridLines(true)
-                gridColor = Color.parseColor("#E0E0E0")
+                gridColor = chartGridColor
                 textSize = 10f
+                textColor = chartTextColor
             }
 
             axisRight.isEnabled = false
@@ -170,9 +187,11 @@ class ReportChartsFragment : Fragment() {
                 xEntrySpace = 12f
                 yOffset = 10f
                 isWordWrapEnabled = true
+                textColor = chartTextColor
             }
 
             setExtraBottomOffset(12f)
+            setNoDataTextColor(chartTextColor)
             animateY(600)
             invalidate()
         }
@@ -187,13 +206,13 @@ class ReportChartsFragment : Fragment() {
     ) {
         if (scoreHistory.isEmpty() || scoreHistory.values.all { it.isEmpty() }) {
             chart.setNoDataText(getString(com.samsara.polymath.R.string.chart_no_data))
+            chart.setNoDataTextColor(chartTextColor)
             chart.invalidate()
             return
         }
 
         val dataSets = mutableListOf<LineDataSet>()
         val dateFormat = SimpleDateFormat("MMM d", Locale.getDefault())
-        val allTimestamps = mutableSetOf<Long>()
 
         for ((personaId, stats) in scoreHistory) {
             if (stats.size < 2) continue // Need at least 2 points for a line
@@ -204,7 +223,6 @@ class ReportChartsFragment : Fragment() {
             val lineColor = try { Color.parseColor(colorStr) } catch (_: Exception) { Color.parseColor("#007AFF") }
 
             val entries = stats.sortedBy { it.timestamp }.map { stat ->
-                allTimestamps.add(stat.timestamp)
                 Entry(stat.timestamp.toFloat(), stat.score.toFloat())
             }
 
@@ -222,6 +240,7 @@ class ReportChartsFragment : Fragment() {
 
         if (dataSets.isEmpty()) {
             chart.setNoDataText(getString(com.samsara.polymath.R.string.chart_no_data))
+            chart.setNoDataTextColor(chartTextColor)
             chart.invalidate()
             return
         }
@@ -243,13 +262,15 @@ class ReportChartsFragment : Fragment() {
                 }
                 labelRotationAngle = -45f
                 textSize = 9f
+                textColor = chartTextColor
             }
 
             axisLeft.apply {
                 axisMinimum = 0f
                 setDrawGridLines(true)
-                gridColor = Color.parseColor("#E0E0E0")
+                gridColor = chartGridColor
                 textSize = 10f
+                textColor = chartTextColor
             }
 
             axisRight.isEnabled = false
@@ -263,9 +284,11 @@ class ReportChartsFragment : Fragment() {
                 xEntrySpace = 12f
                 yOffset = 10f
                 isWordWrapEnabled = true
+                textColor = chartTextColor
             }
 
             setExtraBottomOffset(12f)
+            setNoDataTextColor(chartTextColor)
             animateX(600)
             invalidate()
         }
@@ -282,6 +305,7 @@ class ReportChartsFragment : Fragment() {
 
         if (reportsWithTime.isEmpty()) {
             chart.setNoDataText(getString(com.samsara.polymath.R.string.chart_no_data))
+            chart.setNoDataTextColor(chartTextColor)
             chart.invalidate()
             return
         }
@@ -300,6 +324,7 @@ class ReportChartsFragment : Fragment() {
             this.colors = colors
             setDrawValues(true)
             valueTextSize = 10f
+            valueTextColor = chartTextColor
             valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
                 override fun getFormattedValue(value: Float): String {
                     return if (value >= 1f) String.format("%.1fh", value)
@@ -329,19 +354,22 @@ class ReportChartsFragment : Fragment() {
                 granularity = 1f
                 setDrawGridLines(false)
                 textSize = 11f
+                textColor = chartTextColor
             }
 
             axisLeft.apply {
                 axisMinimum = 0f
                 setDrawGridLines(true)
-                gridColor = Color.parseColor("#E0E0E0")
+                gridColor = chartGridColor
                 textSize = 10f
+                textColor = chartTextColor
             }
 
             axisRight.isEnabled = false
             legend.isEnabled = false
 
             setExtraLeftOffset(8f)
+            setNoDataTextColor(chartTextColor)
             animateX(600)
             invalidate()
         }
@@ -358,6 +386,7 @@ class ReportChartsFragment : Fragment() {
 
         if (reportsWithTime.isEmpty()) {
             chart.setNoDataText(getString(com.samsara.polymath.R.string.chart_no_data))
+            chart.setNoDataTextColor(chartTextColor)
             chart.invalidate()
             return
         }
@@ -380,6 +409,7 @@ class ReportChartsFragment : Fragment() {
         }
 
         val pieData = PieData(dataSet)
+        val holeColor = if (isDarkMode) Color.parseColor("#303030") else Color.WHITE
 
         chart.apply {
             data = pieData
@@ -387,9 +417,9 @@ class ReportChartsFragment : Fragment() {
             isDrawHoleEnabled = true
             holeRadius = 45f
             transparentCircleRadius = 50f
-            setHoleColor(Color.WHITE)
+            setHoleColor(holeColor)
             setUsePercentValues(true)
-            setEntryLabelColor(Color.DKGRAY)
+            setEntryLabelColor(chartTextColor)
             setEntryLabelTextSize(10f)
 
             legend.apply {
@@ -401,9 +431,11 @@ class ReportChartsFragment : Fragment() {
                 xEntrySpace = 12f
                 yOffset = 10f
                 isWordWrapEnabled = true
+                textColor = chartTextColor
             }
 
             setExtraBottomOffset(8f)
+            setNoDataTextColor(chartTextColor)
             animateY(600)
             invalidate()
         }
