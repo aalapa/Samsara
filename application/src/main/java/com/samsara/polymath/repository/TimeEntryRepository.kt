@@ -7,6 +7,7 @@ import com.samsara.polymath.data.PersonaTimeSum
 import com.samsara.polymath.data.TaskIdTime
 import com.samsara.polymath.data.DailyTimeSum
 import com.samsara.polymath.data.DailyPersonaTimeSum
+import com.samsara.polymath.data.DailyPersonaTimeSumWithDay
 import kotlinx.coroutines.flow.Flow
 
 class TimeEntryRepository(private val timeEntryDao: TimeEntryDao) {
@@ -23,4 +24,5 @@ class TimeEntryRepository(private val timeEntryDao: TimeEntryDao) {
     suspend fun getDailyTimeSums(sinceMillis: Long): List<DailyTimeSum> = timeEntryDao.getDailyTimeSums(sinceMillis)
     suspend fun getTimeBreakdownForDay(dayMillis: Long): List<DailyPersonaTimeSum> = timeEntryDao.getTimeBreakdownForDay(dayMillis)
     suspend fun getDailyTimeSumsByPersona(personaId: Long, sinceMillis: Long): List<DailyTimeSum> = timeEntryDao.getDailyTimeSumsByPersona(personaId, sinceMillis)
+    suspend fun getDailyTimeSumsWithPersona(sinceMillis: Long): List<DailyPersonaTimeSumWithDay> = timeEntryDao.getDailyTimeSumsWithPersona(sinceMillis)
 }

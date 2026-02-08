@@ -3287,6 +3287,7 @@ id commentsRecyclerView
 id completeButton
 id completionBarChart
 id completionInfoTextView
+id completionLabelTextView
 id completionRateChangeTextView
 id completionRateTextView
 id completionRateTrendImageView
@@ -3410,6 +3411,7 @@ id hideable
 id home
 id homeAsUp
 id honorRequest
+id horizontalBarChart
 id horizontal_only
 id icon
 id icon_group
@@ -3436,6 +3438,7 @@ id leftToRight
 id legacy
 id line1
 id line3
+id lineChart
 id linear
 id listMode
 id list_item
@@ -3575,6 +3578,7 @@ id open_search_view_search_prefix
 id open_search_view_status_bar_spacer
 id open_search_view_toolbar
 id open_search_view_toolbar_container
+id opensLabelTextView
 id outline
 id outward
 id overshoot
@@ -3598,6 +3602,7 @@ id personaNameEditText
 id personaNameTextView
 id personaReportsRecyclerView
 id personasRecyclerView
+id pieChart
 id pin
 id pinDot1
 id pinDot2
@@ -3681,6 +3686,7 @@ id square
 id src_atop
 id src_in
 id src_over
+id stackedBarChart
 id standard
 id start
 id startHorizontal
@@ -3955,6 +3961,7 @@ layout dialog_add_task
 layout dialog_create_tag
 layout dialog_task_comments
 layout fingerprint_dialog_layout
+layout fragment_report_charts
 layout fragment_report_overview
 layout fragment_report_time
 layout fragment_report_trends
@@ -4090,6 +4097,15 @@ string change_pin
 string character_counter_content_description
 string character_counter_overflowed_content_description
 string character_counter_pattern
+string chart_no_data
+string chart_score_progression_subtitle
+string chart_score_progression_title
+string chart_time_by_persona_subtitle
+string chart_time_by_persona_title
+string chart_time_distribution_subtitle
+string chart_time_distribution_title
+string chart_weekly_time_subtitle
+string chart_weekly_time_title
 string clear_end_date
 string clear_text_end_icon_content_description
 string comment_hint
@@ -4297,6 +4313,7 @@ string report_most_improved
 string report_most_improved_tags
 string report_needs_attention
 string report_per_persona_activity
+string report_tab_charts
 string report_tab_overview
 string report_tab_time
 string report_tab_trends

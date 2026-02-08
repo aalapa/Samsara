@@ -623,6 +623,62 @@ public final class TimeEntryDao_Impl implements TimeEntryDao {
     }, $completion);
   }
 
+  @Override
+  public Object getDailyTimeSumsWithPersona(final long sinceMillis,
+      final Continuation<? super List<DailyPersonaTimeSumWithDay>> $completion) {
+    final String _sql = "\n"
+            + "        SELECT (te.startTime / 86400000) * 86400000 AS dayMillis,\n"
+            + "               t.personaId AS personaId,\n"
+            + "               p.name AS personaName,\n"
+            + "               p.backgroundColor AS personaColor,\n"
+            + "               COALESCE(SUM(te.endTime - te.startTime), 0) AS totalTime\n"
+            + "        FROM time_entries te\n"
+            + "        INNER JOIN tasks t ON te.taskId = t.id\n"
+            + "        INNER JOIN personas p ON t.personaId = p.id\n"
+            + "        WHERE te.endTime IS NOT NULL AND te.startTime >= ?\n"
+            + "        GROUP BY te.startTime / 86400000, t.personaId\n"
+            + "        ORDER BY dayMillis ASC, totalTime DESC\n"
+            + "    ";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, sinceMillis);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<DailyPersonaTimeSumWithDay>>() {
+      @Override
+      @NonNull
+      public List<DailyPersonaTimeSumWithDay> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfDayMillis = 0;
+          final int _cursorIndexOfPersonaId = 1;
+          final int _cursorIndexOfPersonaName = 2;
+          final int _cursorIndexOfPersonaColor = 3;
+          final int _cursorIndexOfTotalTime = 4;
+          final List<DailyPersonaTimeSumWithDay> _result = new ArrayList<DailyPersonaTimeSumWithDay>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final DailyPersonaTimeSumWithDay _item;
+            final long _tmpDayMillis;
+            _tmpDayMillis = _cursor.getLong(_cursorIndexOfDayMillis);
+            final long _tmpPersonaId;
+            _tmpPersonaId = _cursor.getLong(_cursorIndexOfPersonaId);
+            final String _tmpPersonaName;
+            _tmpPersonaName = _cursor.getString(_cursorIndexOfPersonaName);
+            final String _tmpPersonaColor;
+            _tmpPersonaColor = _cursor.getString(_cursorIndexOfPersonaColor);
+            final long _tmpTotalTime;
+            _tmpTotalTime = _cursor.getLong(_cursorIndexOfTotalTime);
+            _item = new DailyPersonaTimeSumWithDay(_tmpDayMillis,_tmpPersonaId,_tmpPersonaName,_tmpPersonaColor,_tmpTotalTime);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
+  }
+
   @NonNull
   public static List<Class<?>> getRequiredConverters() {
     return Collections.emptyList();

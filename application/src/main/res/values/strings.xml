@@ -129,5 +129,17 @@
     <string name="report_activity_heatmap">Activity Heatmap</string>
     <string name="heatmap_activity">Activity</string>
     <string name="report_per_persona_activity">Per-Persona Activity</string>
+
+    <!-- Charts tab -->
+    <string name="report_tab_charts">Charts</string>
+    <string name="chart_weekly_time_title">Weekly Time by Persona</string>
+    <string name="chart_weekly_time_subtitle">Time tracked per week, broken down by persona</string>
+    <string name="chart_score_progression_title">Score Progression</string>
+    <string name="chart_score_progression_subtitle">Persona score trends over the last 90 days</string>
+    <string name="chart_time_by_persona_title">Time Spent by Persona</string>
+    <string name="chart_time_by_persona_subtitle">Total time tracked per persona</string>
+    <string name="chart_time_distribution_title">Time Distribution</string>
+    <string name="chart_time_distribution_subtitle">How your time is distributed across personas</string>
+    <string name="chart_no_data">No data available yet</string>
 </resources>
 

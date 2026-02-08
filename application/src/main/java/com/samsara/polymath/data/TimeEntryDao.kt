@@ -30,6 +30,14 @@ data class DailyPersonaTimeSum(
     val totalTime: Long
 )
 
+data class DailyPersonaTimeSumWithDay(
+    val dayMillis: Long,
+    val personaId: Long,
+    val personaName: String,
+    val personaColor: String,
+    val totalTime: Long
+)
+
 @Dao
 interface TimeEntryDao {
     @Insert
@@ -119,4 +127,19 @@ interface TimeEntryDao {
         ORDER BY dayMillis ASC
     """)
     suspend fun getDailyTimeSumsByPersona(personaId: Long, sinceMillis: Long): List<DailyTimeSum>
+
+    @Query("""
+        SELECT (te.startTime / 86400000) * 86400000 AS dayMillis,
+               t.personaId AS personaId,
+               p.name AS personaName,
+               p.backgroundColor AS personaColor,
+               COALESCE(SUM(te.endTime - te.startTime), 0) AS totalTime
+        FROM time_entries te
+        INNER JOIN tasks t ON te.taskId = t.id
+        INNER JOIN personas p ON t.personaId = p.id
+        WHERE te.endTime IS NOT NULL AND te.startTime >= :sinceMillis
+        GROUP BY te.startTime / 86400000, t.personaId
+        ORDER BY dayMillis ASC, totalTime DESC
+    """)
+    suspend fun getDailyTimeSumsWithPersona(sinceMillis: Long): List<DailyPersonaTimeSumWithDay>
 }

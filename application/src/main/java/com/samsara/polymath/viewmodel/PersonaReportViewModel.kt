@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.samsara.polymath.data.*
+import com.samsara.polymath.data.DailyPersonaTimeSumWithDay
 import com.samsara.polymath.repository.PersonaOpenEventRepository
 import com.samsara.polymath.repository.PersonaRepository
 import com.samsara.polymath.repository.PersonaStatisticsRepository
@@ -41,6 +42,17 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
     // Per-persona heatmap data for the Report Time tab
     private val _perPersonaHeatmaps = MutableLiveData<List<PersonaHeatmapEntry>>()
     val perPersonaHeatmaps: LiveData<List<PersonaHeatmapEntry>> = _perPersonaHeatmaps
+
+    // Chart data for the Charts tab
+    private val _dailyTimeByPersona = MutableLiveData<List<DailyPersonaTimeSumWithDay>>()
+    val dailyTimeByPersona: LiveData<List<DailyPersonaTimeSumWithDay>> = _dailyTimeByPersona
+
+    private val _personaScoreHistory = MutableLiveData<Map<Long, List<PersonaStatistics>>>()
+    val personaScoreHistory: LiveData<Map<Long, List<PersonaStatistics>>> = _personaScoreHistory
+
+    // Persona names and colors for charts (personaId -> Pair(name, color))
+    private val _personaInfo = MutableLiveData<Map<Long, Pair<String, String>>>()
+    val personaInfo: LiveData<Map<Long, Pair<String, String>>> = _personaInfo
 
     private var _currentReportType = ReportType.WEEKLY
 
@@ -78,6 +90,7 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
             }
         }
         loadHeatmapData()
+        loadChartData()
     }
 
     /**
@@ -126,6 +139,30 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
                 )
             }
             _perPersonaHeatmaps.postValue(entries)
+        }
+    }
+
+    /**
+     * Load chart data: daily time by persona (stacked bar), score history (line chart),
+     * and persona info for colors.
+     */
+    fun loadChartData() {
+        viewModelScope.launch {
+            val sinceMillis = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(91)
+
+            // Stacked bar: daily time broken down by persona
+            val dailyData = timeEntryRepository.getDailyTimeSumsWithPersona(sinceMillis)
+            _dailyTimeByPersona.postValue(dailyData)
+
+            // Line chart: persona score progression from historical snapshots
+            val allStats = statisticsRepository.getStatisticsSince(sinceMillis)
+            val grouped = allStats.groupBy { it.personaId }
+            _personaScoreHistory.postValue(grouped)
+
+            // Persona info (name + color) for chart legends
+            val personas = personaRepository.getAllPersonasSync()
+            val infoMap = personas.associate { it.id to Pair(it.name, it.backgroundColor) }
+            _personaInfo.postValue(infoMap)
         }
     }
 

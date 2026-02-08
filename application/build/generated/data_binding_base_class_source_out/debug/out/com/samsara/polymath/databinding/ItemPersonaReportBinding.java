@@ -22,6 +22,9 @@ public final class ItemPersonaReportBinding implements ViewBinding {
   private final MaterialCardView rootView;
 
   @NonNull
+  public final TextView completionLabelTextView;
+
+  @NonNull
   public final TextView completionRateChangeTextView;
 
   @NonNull
@@ -40,6 +43,9 @@ public final class ItemPersonaReportBinding implements ViewBinding {
   public final ImageView openCountTrendImageView;
 
   @NonNull
+  public final TextView opensLabelTextView;
+
+  @NonNull
   public final TextView personaNameTextView;
 
   @NonNull
@@ -52,18 +58,21 @@ public final class ItemPersonaReportBinding implements ViewBinding {
   public final ImageView trendIndicatorImageView;
 
   private ItemPersonaReportBinding(@NonNull MaterialCardView rootView,
-      @NonNull TextView completionRateChangeTextView, @NonNull TextView completionRateTextView,
-      @NonNull ImageView completionRateTrendImageView, @NonNull TextView openCountChangeTextView,
-      @NonNull TextView openCountTextView, @NonNull ImageView openCountTrendImageView,
+      @NonNull TextView completionLabelTextView, @NonNull TextView completionRateChangeTextView,
+      @NonNull TextView completionRateTextView, @NonNull ImageView completionRateTrendImageView,
+      @NonNull TextView openCountChangeTextView, @NonNull TextView openCountTextView,
+      @NonNull ImageView openCountTrendImageView, @NonNull TextView opensLabelTextView,
       @NonNull TextView personaNameTextView, @NonNull LinearLayout tagsContainer,
       @NonNull TextView tasksTextView, @NonNull ImageView trendIndicatorImageView) {
     this.rootView = rootView;
+    this.completionLabelTextView = completionLabelTextView;
     this.completionRateChangeTextView = completionRateChangeTextView;
     this.completionRateTextView = completionRateTextView;
     this.completionRateTrendImageView = completionRateTrendImageView;
     this.openCountChangeTextView = openCountChangeTextView;
     this.openCountTextView = openCountTextView;
     this.openCountTrendImageView = openCountTrendImageView;
+    this.opensLabelTextView = opensLabelTextView;
     this.personaNameTextView = personaNameTextView;
     this.tagsContainer = tagsContainer;
     this.tasksTextView = tasksTextView;
@@ -97,6 +106,12 @@ public final class ItemPersonaReportBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.completionLabelTextView;
+      TextView completionLabelTextView = ViewBindings.findChildViewById(rootView, id);
+      if (completionLabelTextView == null) {
+        break missingId;
+      }
+
       id = R.id.completionRateChangeTextView;
       TextView completionRateChangeTextView = ViewBindings.findChildViewById(rootView, id);
       if (completionRateChangeTextView == null) {
@@ -133,6 +148,12 @@ public final class ItemPersonaReportBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.opensLabelTextView;
+      TextView opensLabelTextView = ViewBindings.findChildViewById(rootView, id);
+      if (opensLabelTextView == null) {
+        break missingId;
+      }
+
       id = R.id.personaNameTextView;
       TextView personaNameTextView = ViewBindings.findChildViewById(rootView, id);
       if (personaNameTextView == null) {
@@ -157,10 +178,10 @@ public final class ItemPersonaReportBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ItemPersonaReportBinding((MaterialCardView) rootView, completionRateChangeTextView,
-          completionRateTextView, completionRateTrendImageView, openCountChangeTextView,
-          openCountTextView, openCountTrendImageView, personaNameTextView, tagsContainer,
-          tasksTextView, trendIndicatorImageView);
+      return new ItemPersonaReportBinding((MaterialCardView) rootView, completionLabelTextView,
+          completionRateChangeTextView, completionRateTextView, completionRateTrendImageView,
+          openCountChangeTextView, openCountTextView, openCountTrendImageView, opensLabelTextView,
+          personaNameTextView, tagsContainer, tasksTextView, trendIndicatorImageView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

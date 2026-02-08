@@ -48,6 +48,7 @@ MERGED from [androidx.room:room-ktx:2.6.1] /Users/ragnor/.gradle/caches/8.11.1/t
 MERGED from [androidx.sqlite:sqlite-framework:2.4.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/1a001d464e52f1209b458311fb646c30/transformed/sqlite-framework-2.4.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.sqlite:sqlite:2.4.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/65df1628053c3f881457585b46a601ce/transformed/sqlite-2.4.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.annotation:annotation-experimental:1.4.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/3766615151dcf73fcc73354ced2f495f/transformed/jetified-annotation-experimental-1.4.0/AndroidManifest.xml:2:1-7:12
+MERGED from [com.github.PhilJay:MPAndroidChart:v3.1.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/b93dfd25214f1d9753e94cca728392c1/transformed/jetified-MPAndroidChart-v3.1.0/AndroidManifest.xml:2:1-20:12
 MERGED from [androidx.security:security-crypto:1.1.0-alpha06] /Users/ragnor/.gradle/caches/8.11.1/transforms/beb6ed6dda2eab0eb287f4aad1eca58a/transformed/jetified-security-crypto-1.1.0-alpha06/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/894bb76a3c6eec7c63c8bfc8dc43e4d2/transformed/cursoradapter-1.0.0/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.cardview:cardview:1.0.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/0ce7b8f8be1760a7556d79f4994b74ef/transformed/cardview-1.0.0/AndroidManifest.xml:17:1-22:12
@@ -289,6 +290,8 @@ MERGED from [androidx.sqlite:sqlite:2.4.0] /Users/ragnor/.gradle/caches/8.11.1/t
 MERGED from [androidx.sqlite:sqlite:2.4.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/65df1628053c3f881457585b46a601ce/transformed/sqlite-2.4.0/AndroidManifest.xml:20:5-44
 MERGED from [androidx.annotation:annotation-experimental:1.4.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/3766615151dcf73fcc73354ced2f495f/transformed/jetified-annotation-experimental-1.4.0/AndroidManifest.xml:5:5-44
 MERGED from [androidx.annotation:annotation-experimental:1.4.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/3766615151dcf73fcc73354ced2f495f/transformed/jetified-annotation-experimental-1.4.0/AndroidManifest.xml:5:5-44
+MERGED from [com.github.PhilJay:MPAndroidChart:v3.1.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/b93dfd25214f1d9753e94cca728392c1/transformed/jetified-MPAndroidChart-v3.1.0/AndroidManifest.xml:16:5-18:41
+MERGED from [com.github.PhilJay:MPAndroidChart:v3.1.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/b93dfd25214f1d9753e94cca728392c1/transformed/jetified-MPAndroidChart-v3.1.0/AndroidManifest.xml:16:5-18:41
 MERGED from [androidx.security:security-crypto:1.1.0-alpha06] /Users/ragnor/.gradle/caches/8.11.1/transforms/beb6ed6dda2eab0eb287f4aad1eca58a/transformed/jetified-security-crypto-1.1.0-alpha06/AndroidManifest.xml:20:5-44
 MERGED from [androidx.security:security-crypto:1.1.0-alpha06] /Users/ragnor/.gradle/caches/8.11.1/transforms/beb6ed6dda2eab0eb287f4aad1eca58a/transformed/jetified-security-crypto-1.1.0-alpha06/AndroidManifest.xml:20:5-44
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/ragnor/.gradle/caches/8.11.1/transforms/894bb76a3c6eec7c63c8bfc8dc43e4d2/transformed/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44

@@ -39,6 +39,27 @@ class PersonaReportAdapter : ListAdapter<PersonaReport, PersonaReportAdapter.Per
         fun bind(report: PersonaReport) {
             binding.personaNameTextView.text = report.persona.name
 
+            // Set card background to persona color
+            val bgColor = try {
+                Color.parseColor(report.persona.backgroundColor)
+            } catch (_: Exception) {
+                Color.WHITE
+            }
+            (binding.root as? com.google.android.material.card.MaterialCardView)?.setCardBackgroundColor(bgColor)
+
+            // Dynamic text color based on persona background luminance
+            val darkness = 1 - (0.299 * Color.red(bgColor) + 0.587 * Color.green(bgColor) + 0.114 * Color.blue(bgColor)) / 255
+            val textColor = if (darkness >= 0.5) Color.WHITE else Color.BLACK
+            val subtextColor = if (darkness >= 0.5) 0xFFB0BEC5.toInt() else 0xFF757575.toInt()
+            binding.personaNameTextView.setTextColor(textColor)
+            binding.openCountTextView.setTextColor(textColor)
+            binding.completionRateTextView.setTextColor(textColor)
+            binding.openCountChangeTextView.setTextColor(subtextColor)
+            binding.completionRateChangeTextView.setTextColor(subtextColor)
+            binding.tasksTextView.setTextColor(subtextColor)
+            binding.opensLabelTextView.setTextColor(subtextColor)
+            binding.completionLabelTextView.setTextColor(subtextColor)
+
             // Set overall trend indicator
             when (report.completionRateTrend) {
                 TrendDirection.UP -> {
