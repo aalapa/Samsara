@@ -211,28 +211,38 @@ class ReportChartsFragment : Fragment() {
             return
         }
 
+        // Use "days ago from now" as X-axis to avoid Float precision loss with timestamps
+        val now = System.currentTimeMillis()
+        val dayMillis = TimeUnit.DAYS.toMillis(1)
+
         val dataSets = mutableListOf<LineDataSet>()
-        val dateFormat = SimpleDateFormat("MMM d", Locale.getDefault())
 
         for ((personaId, stats) in scoreHistory) {
-            if (stats.size < 2) continue // Need at least 2 points for a line
+            if (stats.isEmpty()) continue
 
             val info = personaInfo[personaId]
             val name = info?.first ?: "Unknown"
             val colorStr = info?.second ?: "#007AFF"
             val lineColor = try { Color.parseColor(colorStr) } catch (_: Exception) { Color.parseColor("#007AFF") }
 
+            // Convert timestamps to "day index" (0 = 91 days ago, 91 = today)
+            // Apply log1p to score so large and small values are both visible
             val entries = stats.sortedBy { it.timestamp }.map { stat ->
-                Entry(stat.timestamp.toFloat(), stat.score.toFloat())
+                val dayIndex = ((stat.timestamp - (now - TimeUnit.DAYS.toMillis(91))) / dayMillis).toFloat()
+                val logScore = Math.log1p(stat.score).toFloat()
+                Entry(dayIndex, logScore)
             }
 
             val lineDataSet = LineDataSet(entries, name).apply {
                 color = lineColor
                 setCircleColor(lineColor)
-                circleRadius = 3f
+                circleRadius = if (entries.size == 1) 5f else 3f
                 lineWidth = 2f
                 setDrawValues(false)
-                mode = LineDataSet.Mode.CUBIC_BEZIER
+                setDrawCircles(true)
+                if (entries.size > 1) {
+                    mode = LineDataSet.Mode.CUBIC_BEZIER
+                }
                 setDrawFilled(false)
             }
             dataSets.add(lineDataSet)
@@ -247,6 +257,10 @@ class ReportChartsFragment : Fragment() {
 
         val lineData = LineData(dataSets.toList())
 
+        // Build date labels for x-axis: day index -> date string
+        val dateFormat = SimpleDateFormat("MMM d", Locale.getDefault())
+        val sinceMillis = now - TimeUnit.DAYS.toMillis(91)
+
         chart.apply {
             data = lineData
             description.isEnabled = false
@@ -254,10 +268,13 @@ class ReportChartsFragment : Fragment() {
             xAxis.apply {
                 position = XAxis.XAxisPosition.BOTTOM
                 setDrawGridLines(false)
-                granularity = TimeUnit.DAYS.toMillis(7).toFloat()
+                granularity = 7f // one label per week
+                axisMinimum = 0f
+                axisMaximum = 91f
                 valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
                     override fun getFormattedValue(value: Float): String {
-                        return dateFormat.format(Date(value.toLong()))
+                        val millis = sinceMillis + (value.toLong() * dayMillis)
+                        return dateFormat.format(Date(millis))
                     }
                 }
                 labelRotationAngle = -45f
@@ -271,6 +288,14 @@ class ReportChartsFragment : Fragment() {
                 gridColor = chartGridColor
                 textSize = 10f
                 textColor = chartTextColor
+                // Show actual score values on the Y-axis (reverse log1p)
+                valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
+                    override fun getFormattedValue(value: Float): String {
+                        val actual = Math.expm1(value.toDouble())
+                        return if (actual >= 10) String.format("%.0f", actual)
+                        else String.format("%.1f", actual)
+                    }
+                }
             }
 
             axisRight.isEnabled = false

@@ -11,9 +11,9 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 140,
-      "versionName": "2.1.36",
-      "outputFile": "samsara-debug-2.1.36.apk"
+      "versionCode": 143,
+      "versionName": "2.1.39",
+      "outputFile": "samsara-debug-2.1.39.apk"
     }
   ],
   "elementType": "File",
