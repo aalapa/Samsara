@@ -22,6 +22,10 @@ class CommentViewModel(application: Application) : AndroidViewModel(application)
         return repository.getCommentsByTask(taskId).asLiveData()
     }
 
+    fun getCommentsByRecurringGroup(recurringGroupId: Long): LiveData<List<Comment>> {
+        return repository.getCommentsByRecurringGroup(recurringGroupId).asLiveData()
+    }
+
     fun insertComment(taskId: Long, text: String, createdAt: Long = System.currentTimeMillis()) {
         viewModelScope.launch {
             repository.insertComment(

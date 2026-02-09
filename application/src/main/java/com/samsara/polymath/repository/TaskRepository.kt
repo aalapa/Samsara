@@ -38,6 +38,9 @@ class TaskRepository(private val taskDao: TaskDao) {
 
     fun getAllTasksWithEndDate(): Flow<List<Task>> = taskDao.getAllTasksWithEndDate()
 
+    suspend fun updateRecurringGroupId(id: Long, recurringGroupId: Long) =
+        taskDao.updateRecurringGroupId(id, recurringGroupId)
+
     suspend fun getCompletedRecurringInstances(personaId: Long, title: String): List<Task> =
         taskDao.getCompletedRecurringInstances(personaId, title)
 

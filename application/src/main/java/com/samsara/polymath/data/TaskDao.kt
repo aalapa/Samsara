@@ -52,6 +52,9 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE personaId = :personaId AND title = :title AND isRecurring = 1 AND isCompleted = 1 ORDER BY completedAt ASC")
     suspend fun getCompletedRecurringInstances(personaId: Long, title: String): List<Task>
 
+    @Query("UPDATE tasks SET recurringGroupId = :recurringGroupId WHERE id = :id")
+    suspend fun updateRecurringGroupId(id: Long, recurringGroupId: Long)
+
     @Query("""
         SELECT (completedAt / 86400000) * 86400000 AS dayMillis,
                COUNT(*) AS completionCount

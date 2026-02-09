@@ -597,8 +597,14 @@ class TasksActivity : AppCompatActivity() {
         dialogBinding.commentsRecyclerView.layoutManager = LinearLayoutManager(this)
         dialogBinding.commentsRecyclerView.adapter = commentAdapter
         
-        // Observe comments for this task
-        commentViewModel.getCommentsByTask(task.id).observe(this) { comments ->
+        // Observe comments: for recurring tasks with a group, show full running log
+        // across all instances; otherwise show only this task's comments
+        val commentsLiveData = if (task.isRecurring && task.recurringGroupId != null) {
+            commentViewModel.getCommentsByRecurringGroup(task.recurringGroupId)
+        } else {
+            commentViewModel.getCommentsByTask(task.id)
+        }
+        commentsLiveData.observe(this) { comments ->
             commentAdapter.submitList(comments)
             // Scroll to bottom to show newest comment
             if (comments.isNotEmpty()) {

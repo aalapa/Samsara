@@ -111,13 +111,24 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                 isCompleted = true,
                 completedAt = System.currentTimeMillis()
             )
-            
+
             // If it's a recurring task, create a new one with today's date
             if (task.isRecurring) {
+                // Determine the recurring group ID for linking comment history
+                // If the completing task already has a group ID, use it;
+                // otherwise, use its own ID as the group root
+                val groupId = task.recurringGroupId ?: task.id
+
+                // If the completing task didn't have a group ID yet, set it now
+                // so it becomes part of the group retroactively
+                if (task.recurringGroupId == null) {
+                    repository.updateRecurringGroupId(task.id, groupId)
+                }
+
                 val tasks = repository.getTasksByPersona(task.personaId)
                 val taskList = tasks.first()
                 val maxOrder = taskList.maxOfOrNull { it.order } ?: 0
-                
+
                 val nextDue = RecurringTaskUtil.calculateNextDueDate(
                     task.recurringFrequency, task.recurringDays, task.createdAt
                 )
@@ -132,7 +143,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                         recurringFrequency = task.recurringFrequency,
                         recurringDays = task.recurringDays,
                         createdAt = System.currentTimeMillis(),
-                        nextDueDate = nextDue
+                        nextDueDate = nextDue,
+                        recurringGroupId = groupId
                     )
                 )
             }

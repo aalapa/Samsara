@@ -149,6 +149,55 @@ public final class CommentDao_Impl implements CommentDao {
   }
 
   @Override
+  public Flow<List<Comment>> getCommentsByRecurringGroup(final long recurringGroupId) {
+    final String _sql = "\n"
+            + "        SELECT c.* FROM comments c\n"
+            + "        INNER JOIN tasks t ON c.taskId = t.id\n"
+            + "        WHERE t.recurringGroupId = ?\n"
+            + "        ORDER BY c.createdAt ASC\n"
+            + "    ";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, recurringGroupId);
+    return CoroutinesRoom.createFlow(__db, false, new String[] {"comments",
+        "tasks"}, new Callable<List<Comment>>() {
+      @Override
+      @NonNull
+      public List<Comment> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
+          final int _cursorIndexOfTaskId = CursorUtil.getColumnIndexOrThrow(_cursor, "taskId");
+          final int _cursorIndexOfText = CursorUtil.getColumnIndexOrThrow(_cursor, "text");
+          final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "createdAt");
+          final List<Comment> _result = new ArrayList<Comment>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final Comment _item;
+            final long _tmpId;
+            _tmpId = _cursor.getLong(_cursorIndexOfId);
+            final long _tmpTaskId;
+            _tmpTaskId = _cursor.getLong(_cursorIndexOfTaskId);
+            final String _tmpText;
+            _tmpText = _cursor.getString(_cursorIndexOfText);
+            final long _tmpCreatedAt;
+            _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
+            _item = new Comment(_tmpId,_tmpTaskId,_tmpText,_tmpCreatedAt);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+        }
+      }
+
+      @Override
+      protected void finalize() {
+        _statement.release();
+      }
+    });
+  }
+
+  @Override
   public Object getAllComments(final Continuation<? super List<Comment>> $completion) {
     final String _sql = "SELECT * FROM comments ORDER BY taskId ASC, createdAt ASC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
