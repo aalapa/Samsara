@@ -128,13 +128,16 @@ class TasksActivity : AppCompatActivity() {
     }
 
     private fun createItemTouchHelperCallback(): ItemTouchHelper.SimpleCallback {
+        // Mutable list used during drag to track visual reordering without DB writes
+        var dragList: MutableList<com.samsara.polymath.data.Task>? = null
+
         return object : ItemTouchHelper.SimpleCallback(
             ItemTouchHelper.UP or ItemTouchHelper.DOWN,  // Drag directions (manual via handle)
             ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT  // Swipe directions
         ) {
             // Disable long press to drag - only manual drag via handle
             override fun isLongPressDragEnabled(): Boolean = false
-            
+
             // Enable swipe
             override fun isItemViewSwipeEnabled(): Boolean = true
             override fun onMove(
@@ -148,27 +151,36 @@ class TasksActivity : AppCompatActivity() {
                     return false
                 }
 
-                val currentList = adapter.currentList.toMutableList()
-                val item = currentList.removeAt(fromPosition)
-                currentList.add(toPosition, item)
+                // Initialize drag list on first move
+                if (dragList == null) {
+                    dragList = adapter.currentList.toMutableList()
+                }
 
-                // Update order values and rank status
-                currentList.forEachIndexed { index, task ->
+                // Only do a visual swap — no DB writes during drag
+                val list = dragList!!
+                val item = list.removeAt(fromPosition)
+                list.add(toPosition, item)
+                adapter.submitList(list.toList())
+                return true
+            }
+
+            override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+                super.clearView(recyclerView, viewHolder)
+                // When the user drops the card, persist the final order to DB
+                val finalList = dragList ?: return
+                dragList = null
+
+                finalList.forEachIndexed { index, task ->
                     if (task.order != index) {
-                        // Determine rank status based on position change
                         val rankStatus = when {
-                            index == 0 && task.order == 0 -> com.samsara.polymath.data.RankStatus.STABLE // Always at top
-                            index < task.order -> com.samsara.polymath.data.RankStatus.UP // Moved up
-                            index > task.order -> com.samsara.polymath.data.RankStatus.DOWN // Moved down
-                            else -> task.rankStatus // No change
+                            index == 0 && task.order == 0 -> com.samsara.polymath.data.RankStatus.STABLE
+                            index < task.order -> com.samsara.polymath.data.RankStatus.UP
+                            index > task.order -> com.samsara.polymath.data.RankStatus.DOWN
+                            else -> task.rankStatus
                         }
-                        
                         viewModel.updateTaskOrderWithRank(task.id, index, task.order, rankStatus)
                     }
                 }
-
-                adapter.submitList(currentList)
-                return true
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {

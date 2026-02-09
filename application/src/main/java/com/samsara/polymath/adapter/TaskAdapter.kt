@@ -123,7 +123,7 @@ class TaskAdapter(
                 timerWrapperParams.marginStart = (timerMarginDp * density).toInt()
                 binding.timerLayout.layoutParams = timerWrapperParams
             }
-            val timerSizeDp = if (isCompact) 22 else 28
+            val timerSizeDp = if (isCompact) 28 else 36
             val timerSizePx = (timerSizeDp * density).toInt()
             val timerIconParams = binding.timerToggleImageView.layoutParams
             if (timerIconParams != null) {
