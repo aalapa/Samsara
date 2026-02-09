@@ -141,5 +141,10 @@
     <string name="chart_time_distribution_title">Time Distribution</string>
     <string name="chart_time_distribution_subtitle">How your time is distributed across personas</string>
     <string name="chart_no_data">No data available yet</string>
+
+    <!-- Avoid tasks -->
+    <string name="avoid_task">Avoid task (streak)</string>
+    <string name="avoid_task_hint">Completing means you broke the streak. Does not count toward positive completions.</string>
+    <string name="streak_broken_confirmation">You broke the streak. Mark as failed?</string>
 </resources>
 

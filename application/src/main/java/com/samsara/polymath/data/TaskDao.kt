@@ -37,7 +37,7 @@ interface TaskDao {
     @Query("UPDATE tasks SET isCompleted = :isCompleted, completedAt = :completedAt WHERE id = :id")
     suspend fun updateTaskCompletion(id: Long, isCompleted: Boolean, completedAt: Long?)
     
-    @Query("SELECT COUNT(*) FROM tasks WHERE personaId = :personaId AND isCompleted = 1")
+    @Query("SELECT COUNT(*) FROM tasks WHERE personaId = :personaId AND isCompleted = 1 AND isAvoidTask = 0")
     suspend fun getCompletedTaskCount(personaId: Long): Int
 
     @Query("SELECT * FROM tasks WHERE personaId = :personaId ORDER BY `order` ASC, createdAt ASC")
@@ -59,7 +59,7 @@ interface TaskDao {
         SELECT (completedAt / 86400000) * 86400000 AS dayMillis,
                COUNT(*) AS completionCount
         FROM tasks
-        WHERE personaId = :personaId AND isCompleted = 1 AND completedAt IS NOT NULL AND completedAt >= :sinceMillis
+        WHERE personaId = :personaId AND isCompleted = 1 AND isAvoidTask = 0 AND completedAt IS NOT NULL AND completedAt >= :sinceMillis
         GROUP BY completedAt / 86400000
         ORDER BY dayMillis ASC
     """)
@@ -69,7 +69,7 @@ interface TaskDao {
         SELECT (completedAt / 86400000) * 86400000 AS dayMillis,
                COUNT(*) AS completionCount
         FROM tasks
-        WHERE isCompleted = 1 AND completedAt IS NOT NULL AND completedAt >= :sinceMillis
+        WHERE isCompleted = 1 AND isAvoidTask = 0 AND completedAt IS NOT NULL AND completedAt >= :sinceMillis
         GROUP BY completedAt / 86400000
         ORDER BY dayMillis ASC
     """)

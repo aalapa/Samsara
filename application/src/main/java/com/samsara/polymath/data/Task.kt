@@ -35,7 +35,8 @@ data class Task(
     val recurringDays: String? = null, // Comma-separated Calendar.DAY_OF_WEEK values for CUSTOM; single day for WEEKLY/MONTHLY
     val endDate: Long? = null, // Optional deadline/end date (epoch millis, midnight of the date)
     val nextDueDate: Long? = null, // For recurring tasks: next due date (epoch millis, midnight). Null = due now.
-    val recurringGroupId: Long? = null // Links all instances of the same recurring task for comment history
+    val recurringGroupId: Long? = null, // Links all instances of the same recurring task for comment history
+    val isAvoidTask: Boolean = false // Avoid/streak task: completing means failure (e.g. "don't eat sugar")
 )
 
 enum class RecurringFrequency {

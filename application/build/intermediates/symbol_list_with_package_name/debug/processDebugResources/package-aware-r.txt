@@ -3230,6 +3230,8 @@ id auto
 id autoComplete
 id autoCompleteToEnd
 id autoCompleteToStart
+id avoidCheckBox
+id avoidHintTextView
 id barrier
 id baseline
 id beginOnFirstDraw
@@ -4077,6 +4079,8 @@ string androidx_startup
 string app_name
 string appbar_scrolling_view_behavior
 string authentication
+string avoid_task
+string avoid_task_hint
 string biometric_disabled
 string biometric_enabled
 string bottom_sheet_behavior
@@ -4335,6 +4339,7 @@ string side_sheet_accessibility_pane_title
 string side_sheet_behavior
 string skip_for_now
 string status_bar_notification_info_overflow
+string streak_broken_confirmation
 string sun
 string tag_color_hint
 string tag_in_use

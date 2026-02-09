@@ -67,7 +67,8 @@ class TaskAdapter(
         fun bind(task: Task, totalTaskCount: Int) {
             val isCompact = totalTaskCount > 7
 
-            binding.taskTitleTextView.text = task.title
+            // For avoid tasks, prefix with shield indicator
+            binding.taskTitleTextView.text = if (task.isAvoidTask) "\uD83D\uDEE1\uFE0F ${task.title}" else task.title
 
             if (task.description.isNotEmpty()) {
                 binding.taskDescriptionTextView.text = task.description
@@ -188,12 +189,24 @@ class TaskAdapter(
 
                 daysTextView.text = daysToComplete.toString()
 
-                val completionText = when {
-                    daysSinceCompletion == 0L -> binding.root.context.getString(R.string.done_today)
-                    daysSinceCompletion == 1L -> binding.root.context.getString(R.string.done_day_ago, daysSinceCompletion)
-                    else -> binding.root.context.getString(R.string.done_days_ago, daysSinceCompletion)
+                if (task.isAvoidTask) {
+                    // Avoid task completed = streak broken
+                    val brokeText = when {
+                        daysSinceCompletion == 0L -> "Broke today"
+                        daysSinceCompletion == 1L -> "Broke 1 day ago"
+                        else -> "Broke $daysSinceCompletion days ago"
+                    }
+                    binding.completionInfoTextView.text = "$daysToComplete day streak • $brokeText"
+                    binding.completionInfoTextView.setTextColor(Color.parseColor("#FF6B6B"))
+                } else {
+                    val completionText = when {
+                        daysSinceCompletion == 0L -> binding.root.context.getString(R.string.done_today)
+                        daysSinceCompletion == 1L -> binding.root.context.getString(R.string.done_day_ago, daysSinceCompletion)
+                        else -> binding.root.context.getString(R.string.done_days_ago, daysSinceCompletion)
+                    }
+                    binding.completionInfoTextView.text = "$daysToComplete days • $completionText"
+                    binding.completionInfoTextView.setTextColor(binding.root.context.getColor(R.color.completed_green))
                 }
-                binding.completionInfoTextView.text = "$daysToComplete days • $completionText"
                 binding.completionInfoTextView.visibility = View.VISIBLE
 
                 daysTextView.setBackgroundResource(R.drawable.circle_background_completed)

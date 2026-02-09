@@ -263,8 +263,8 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
     ): PersonaReport {
         // Get current period stats
         val allTasks = taskRepository.getTasksByPersonaSync(persona.id)
-        val currentCompletedTasks = allTasks.count { it.isCompleted }
-        val currentTotalTasks = allTasks.size
+        val currentCompletedTasks = allTasks.count { it.isCompleted && !it.isAvoidTask }
+        val currentTotalTasks = allTasks.count { !it.isAvoidTask }
         val currentCompletionRate = if (currentTotalTasks > 0) {
             currentCompletedTasks.toDouble() / currentTotalTasks
         } else {
@@ -366,8 +366,8 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
 
             personas.forEach { persona ->
                 val tasks = taskRepository.getTasksByPersonaSync(persona.id)
-                val completedTasks = tasks.count { it.isCompleted }
-                val totalTasks = tasks.size
+                val completedTasks = tasks.count { it.isCompleted && !it.isAvoidTask }
+                val totalTasks = tasks.count { !it.isAvoidTask }
                 val score = calculatePersonaScore(persona, totalTasks, completedTasks)
 
                 statisticsRepository.insertStatistics(

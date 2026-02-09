@@ -223,8 +223,13 @@ class TasksActivity : AppCompatActivity() {
         viewModel.getTasksByPersona(personaId).observe(this) { tasks ->
             // Update subtitle with task stats
             val openCount = tasks.count { !it.isCompleted }
-            val completedCount = tasks.count { it.isCompleted }
-            binding.toolbar.subtitle = "$openCount open · $completedCount done"
+            val completedCount = tasks.count { it.isCompleted && !it.isAvoidTask }
+            val avoidFailCount = tasks.count { it.isCompleted && it.isAvoidTask }
+            binding.toolbar.subtitle = if (avoidFailCount > 0) {
+                "$openCount open · $completedCount done · $avoidFailCount broke"
+            } else {
+                "$openCount open · $completedCount done"
+            }
 
             // Filter tasks based on showCompletedTasks flag
             val now = System.currentTimeMillis()
@@ -445,6 +450,11 @@ class TasksActivity : AppCompatActivity() {
         setupFrequencyPicker(dialogBinding)
         setupEndDatePicker(dialogBinding)
 
+        // Show/hide avoid hint when checkbox toggled
+        dialogBinding.avoidCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            dialogBinding.avoidHintTextView.visibility = if (isChecked) View.VISIBLE else View.GONE
+        }
+
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.add_task))
             .setView(dialogBinding.root)
@@ -461,13 +471,14 @@ class TasksActivity : AppCompatActivity() {
             val title = dialogBinding.taskTitleEditText.text?.toString()?.trim()
             val description = dialogBinding.taskDescriptionEditText.text?.toString()?.trim() ?: ""
             val isRecurring = dialogBinding.recurringCheckBox.isChecked
+            val isAvoidTask = dialogBinding.avoidCheckBox.isChecked
             val (frequency, days) = getFrequencyFromDialog(dialogBinding)
 
             if (!title.isNullOrEmpty()) {
                 val capitalizedTitle = title.replaceFirstChar {
                     if (it.isLowerCase()) it.uppercaseChar() else it
                 }
-                viewModel.insertTask(personaId, capitalizedTitle, description, personaBackgroundColor, isRecurring, frequency, days, selectedEndDate)
+                viewModel.insertTask(personaId, capitalizedTitle, description, personaBackgroundColor, isRecurring, frequency, days, selectedEndDate, isAvoidTask)
             } else {
                 Toast.makeText(this, "Please enter a task title", Toast.LENGTH_SHORT).show()
             }
@@ -483,8 +494,15 @@ class TasksActivity : AppCompatActivity() {
         dialogBinding.taskTitleEditText.setText(task.title)
         dialogBinding.taskDescriptionEditText.setText(task.description)
         dialogBinding.recurringCheckBox.isChecked = task.isRecurring
+        dialogBinding.avoidCheckBox.isChecked = task.isAvoidTask
+        dialogBinding.avoidHintTextView.visibility = if (task.isAvoidTask) View.VISIBLE else View.GONE
         setupFrequencyPicker(dialogBinding, task.recurringFrequency, task.recurringDays)
         setupEndDatePicker(dialogBinding, task.endDate)
+
+        // Show/hide avoid hint when checkbox toggled
+        dialogBinding.avoidCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            dialogBinding.avoidHintTextView.visibility = if (isChecked) View.VISIBLE else View.GONE
+        }
 
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.edit_task))
@@ -502,6 +520,7 @@ class TasksActivity : AppCompatActivity() {
             val title = dialogBinding.taskTitleEditText.text?.toString()?.trim()
             val description = dialogBinding.taskDescriptionEditText.text?.toString()?.trim() ?: ""
             val isRecurring = dialogBinding.recurringCheckBox.isChecked
+            val isAvoidTask = dialogBinding.avoidCheckBox.isChecked
             val (frequency, days) = getFrequencyFromDialog(dialogBinding)
 
             if (!title.isNullOrEmpty()) {
@@ -512,6 +531,7 @@ class TasksActivity : AppCompatActivity() {
                     title = capitalizedTitle,
                     description = description,
                     isRecurring = isRecurring,
+                    isAvoidTask = isAvoidTask,
                     recurringFrequency = frequency,
                     recurringDays = days,
                     endDate = selectedEndDate
@@ -555,9 +575,11 @@ class TasksActivity : AppCompatActivity() {
     }
 
     private fun showCompleteConfirmation(task: com.samsara.polymath.data.Task) {
+        val title = if (task.isAvoidTask) "Broke Streak" else "Complete Task"
+        val message = if (task.isAvoidTask) getString(R.string.streak_broken_confirmation) else getString(R.string.mark_complete_confirmation)
         MaterialAlertDialogBuilder(this)
-            .setTitle("Complete Task")
-            .setMessage(getString(R.string.mark_complete_confirmation))
+            .setTitle(title)
+            .setMessage(message)
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
                 viewModel.markTaskAsComplete(task)
                 pendingSwipeTask = null

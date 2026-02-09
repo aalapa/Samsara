@@ -24,7 +24,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     
     fun getTasksByPersona(personaId: Long): LiveData<List<Task>> = repository.getTasksByPersona(personaId).asLiveData()
     
-    fun insertTask(personaId: Long, title: String, description: String = "", personaBackgroundColor: String = "#007AFF", isRecurring: Boolean = false, recurringFrequency: String? = null, recurringDays: String? = null, endDate: Long? = null) {
+    fun insertTask(personaId: Long, title: String, description: String = "", personaBackgroundColor: String = "#007AFF", isRecurring: Boolean = false, recurringFrequency: String? = null, recurringDays: String? = null, endDate: Long? = null, isAvoidTask: Boolean = false) {
         viewModelScope.launch {
             val tasks = repository.getTasksByPersona(personaId)
             val taskList = tasks.first()
@@ -43,7 +43,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                     isRecurring = isRecurring,
                     recurringFrequency = recurringFrequency,
                     recurringDays = recurringDays,
-                    endDate = endDate
+                    endDate = endDate,
+                    isAvoidTask = isAvoidTask
                 )
             )
         }
@@ -144,7 +145,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                         recurringDays = task.recurringDays,
                         createdAt = System.currentTimeMillis(),
                         nextDueDate = nextDue,
-                        recurringGroupId = groupId
+                        recurringGroupId = groupId,
+                        isAvoidTask = task.isAvoidTask
                     )
                 )
             }

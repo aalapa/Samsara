@@ -64,7 +64,7 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
             // Calculate task counts and scores for each persona
             val personasWithStats = personas.map { persona ->
                 val personaTasks = allTasks.filter { it.personaId == persona.id }
-                val completedCount = personaTasks.count { it.isCompleted }
+                val completedCount = personaTasks.count { it.isCompleted && !it.isAvoidTask }
                 val openCount = personaTasks.count { !it.isCompleted }
 
                 // Calculate decay level based on days since last opened
@@ -318,7 +318,7 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
             // Helper function to calculate score for a persona
             fun calculatePersonaScore(persona: Persona): Double {
                 val personaTasks = allTasks.filter { it.personaId == persona.id }
-                val completedCount = personaTasks.count { it.isCompleted }
+                val completedCount = personaTasks.count { it.isCompleted && !it.isAvoidTask }
                 val openCount = personaTasks.count { !it.isCompleted }
                 val totalTasks = completedCount + openCount
 
