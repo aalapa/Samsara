@@ -630,40 +630,44 @@ class TasksActivity : AppCompatActivity() {
         val commentAdapter = CommentAdapter()
         dialogBinding.commentsRecyclerView.layoutManager = LinearLayoutManager(this)
         dialogBinding.commentsRecyclerView.adapter = commentAdapter
-        
-        // Observe comments: for recurring tasks with a group, show full running log
-        // across all instances; otherwise show only this task's comments
-        val commentsLiveData = if (task.isRecurring && task.recurringGroupId != null) {
-            commentViewModel.getCommentsByRecurringGroup(task.recurringGroupId)
+
+        // Observe comments using a coroutine scope tied to the dialog lifecycle.
+        // For recurring tasks with a group, show full running log across all instances;
+        // otherwise show only this task's comments.
+        val commentsFlow = if (task.isRecurring && task.recurringGroupId != null) {
+            commentViewModel.getCommentsByRecurringGroupFlow(task.recurringGroupId)
         } else {
-            commentViewModel.getCommentsByTask(task.id)
+            commentViewModel.getCommentsByTaskFlow(task.id)
         }
-        commentsLiveData.observe(this) { comments ->
-            commentAdapter.submitList(comments)
-            // Scroll to bottom to show newest comment
-            if (comments.isNotEmpty()) {
-                dialogBinding.commentsRecyclerView.post {
-                    dialogBinding.commentsRecyclerView.smoothScrollToPosition(comments.size - 1)
+        // Use a Job so we can cancel collection when the dialog is dismissed
+        val collectJob = lifecycleScope.launch {
+            commentsFlow.collect { comments ->
+                commentAdapter.submitList(comments)
+                // Scroll to bottom to show newest comment
+                if (comments.isNotEmpty()) {
+                    dialogBinding.commentsRecyclerView.post {
+                        dialogBinding.commentsRecyclerView.smoothScrollToPosition(comments.size - 1)
+                    }
                 }
             }
         }
-        
+
         val dialog = MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.comments))
             .setView(dialogBinding.root)
             .setPositiveButton(getString(R.string.add_comment), null) // Set to null to prevent auto-dismiss
             .setNegativeButton(getString(R.string.cancel), null)
             .create()
-        
+
         dialog.setOnShowListener {
             val titleView = dialog.findViewById<android.widget.TextView>(android.R.id.title)
             titleView?.setTextColor(android.graphics.Color.WHITE)
-            
+
             val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
             val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
             positiveButton?.setTextColor(android.graphics.Color.WHITE)
             negativeButton?.setTextColor(android.graphics.Color.WHITE)
-            
+
             // Override positive button to keep dialog open when adding comment
             positiveButton?.setOnClickListener {
                 val commentText = dialogBinding.commentEditText.text?.toString()?.trim()
@@ -674,11 +678,16 @@ class TasksActivity : AppCompatActivity() {
                     // Don't dismiss - keep dialog open for more comments
                 }
             }
-            
+
             // Focus on comment input
             dialogBinding.commentEditText.requestFocus()
         }
-        
+
+        // Cancel flow collection when dialog is dismissed to avoid observer leaks
+        dialog.setOnDismissListener {
+            collectJob.cancel()
+        }
+
         dialog.show()
     }
 

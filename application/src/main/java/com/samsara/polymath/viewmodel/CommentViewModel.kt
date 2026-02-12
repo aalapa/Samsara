@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.samsara.polymath.data.AppDatabase
 import com.samsara.polymath.data.Comment
 import com.samsara.polymath.repository.CommentRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 class CommentViewModel(application: Application) : AndroidViewModel(application) {
@@ -24,6 +25,14 @@ class CommentViewModel(application: Application) : AndroidViewModel(application)
 
     fun getCommentsByRecurringGroup(recurringGroupId: Long): LiveData<List<Comment>> {
         return repository.getCommentsByRecurringGroup(recurringGroupId).asLiveData()
+    }
+
+    fun getCommentsByTaskFlow(taskId: Long): Flow<List<Comment>> {
+        return repository.getCommentsByTask(taskId)
+    }
+
+    fun getCommentsByRecurringGroupFlow(recurringGroupId: Long): Flow<List<Comment>> {
+        return repository.getCommentsByRecurringGroup(recurringGroupId)
     }
 
     fun insertComment(taskId: Long, text: String, createdAt: Long = System.currentTimeMillis()) {
