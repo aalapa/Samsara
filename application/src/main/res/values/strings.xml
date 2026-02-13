@@ -51,6 +51,11 @@
     <string name="manage_tags">Manage Tags</string>
     <string name="filter_by_tags">Filter by Tags</string>
     <string name="show_all">All</string>
+    <string name="focus">Focus</string>
+    <string name="focus_persona">Focus</string>
+    <string name="unfocus_persona">Unfocus</string>
+    <string name="no_focused_personas">No personas in focus.\nUse the menu on a persona to add it.</string>
+    <string name="focus_limit_reached">Focus is limited to 7 personas. Unfocus one first.</string>
     <string name="untagged">Untagged</string>
     <string name="rename_tag">Rename Tag</string>
     <string name="delete_tag">Delete Tag</string>

@@ -3203,6 +3203,7 @@ id action_report
 id action_settings
 id action_show_completed
 id action_text
+id action_toggle_focus
 id actions
 id activity_chooser_view_content
 id add
@@ -3701,6 +3702,7 @@ id stretch
 id submenuarrow
 id submit_area
 id supportScrollUp
+id systemChipGroup
 id tabLayout
 id tabMode
 id tagColorEditText
@@ -4164,6 +4166,9 @@ string fingerprint_error_lockout
 string fingerprint_error_no_fingerprints
 string fingerprint_error_user_canceled
 string fingerprint_not_recognized
+string focus
+string focus_limit_reached
+string focus_persona
 string frequency
 string fri
 string generic_error_no_device_credential
@@ -4289,6 +4294,7 @@ string my_avatars_title
 string no
 string no_comments
 string no_end_date
+string no_focused_personas
 string no_gtd_tasks
 string no_tasks_due_today
 string overdue
@@ -4351,6 +4357,7 @@ string thu
 string timer_toggle
 string today
 string tue
+string unfocus_persona
 string untagged
 string upcoming
 string use_fingerprint

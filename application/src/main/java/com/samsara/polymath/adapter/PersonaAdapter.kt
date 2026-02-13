@@ -18,7 +18,8 @@ import com.samsara.polymath.databinding.ItemPersonaBinding
 class PersonaAdapter(
     private val onPersonaClick: (Persona) -> Unit,
     private val onPersonaEdit: (Persona) -> Unit,
-    private val onPersonaDelete: (Persona) -> Unit
+    private val onPersonaDelete: (Persona) -> Unit,
+    private val onPersonaToggleFocus: (Persona) -> Unit
 ) : ListAdapter<PersonaWithTaskCount, PersonaAdapter.PersonaViewHolder>(PersonaDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PersonaViewHolder {
@@ -125,8 +126,21 @@ class PersonaAdapter(
                 )
                 val popup = PopupMenu(contextWrapper, view)
                 popup.menuInflater.inflate(R.menu.persona_menu, popup.menu)
+
+                // Dynamically set Focus/Unfocus label based on current state
+                val focusItem = popup.menu.findItem(R.id.action_toggle_focus)
+                focusItem?.title = if (persona.isFocused) {
+                    view.context.getString(R.string.unfocus_persona)
+                } else {
+                    view.context.getString(R.string.focus_persona)
+                }
+
                 popup.setOnMenuItemClickListener { item ->
                     when (item.itemId) {
+                        R.id.action_toggle_focus -> {
+                            onPersonaToggleFocus(persona)
+                            true
+                        }
                         R.id.action_edit_persona -> {
                             onPersonaEdit(persona)
                             true

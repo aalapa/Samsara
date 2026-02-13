@@ -36,6 +36,9 @@ interface PersonaDao {
     @Query("UPDATE personas SET previousOpenCount = openCount")
     suspend fun saveAllPreviousOpenCounts()
 
+    @Query("UPDATE personas SET isFocused = :isFocused WHERE id = :id")
+    suspend fun updateFocusStatus(id: Long, isFocused: Boolean)
+
     @Query("SELECT * FROM personas ORDER BY createdAt ASC")
     suspend fun getAllPersonasList(): List<Persona>
     

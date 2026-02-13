@@ -26,6 +26,8 @@ class PersonaRepository(private val personaDao: PersonaDao) {
     suspend fun savePreviousOpenCount(id: Long) = personaDao.savePreviousOpenCount(id)
 
     suspend fun saveAllPreviousOpenCounts() = personaDao.saveAllPreviousOpenCounts()
+
+    suspend fun updateFocusStatus(id: Long, isFocused: Boolean) = personaDao.updateFocusStatus(id, isFocused)
     
     suspend fun getAllPersonasSync(): List<Persona> {
         return personaDao.getAllPersonasList()

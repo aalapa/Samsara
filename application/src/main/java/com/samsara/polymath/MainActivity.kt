@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: PersonaAdapter
     private lateinit var dailyTaskAdapter: DailyTaskAdapter
     private var isTodayMode = false
+    private var isFocusMode = true // Default to Focus view on launch
     private val gson = Gson()
     
     private val prefs by lazy { 
@@ -118,8 +119,8 @@ class MainActivity : AppCompatActivity() {
 
     /** Refresh all tag chip labels based on current expanded/checked state */
     private fun collapseOtherTagChips(allTags: List<com.samsara.polymath.data.Tag>) {
-        // Tag chips start at index 2 (after GTD, Show All) and end before the last (Untagged)
-        val tagChipStartIndex = 2
+        // Tag chips start at index 0 in filterChipGroup (system chips are in systemChipGroup)
+        val tagChipStartIndex = 0
         for (i in 0 until allTags.size) {
             val chipIndex = tagChipStartIndex + i
             val chip = binding.filterChipGroup.getChildAt(chipIndex) as? com.google.android.material.chip.Chip ?: continue
@@ -137,12 +138,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupFilterChips() {
         tagViewModel.allTags.observe(this) { allTags ->
+            binding.systemChipGroup.removeAllViews()
             binding.filterChipGroup.removeAllViews()
 
-            // Always show chip bar (for Today chip at minimum)
-            binding.filterChipsScrollView.visibility = View.VISIBLE
+            // --- System chips (in toolbar row) ---
 
-            // Add "GTD" chip (system chip — always full text)
+            // Add "GTD" chip
             val todayChip = com.google.android.material.chip.Chip(this).apply {
                 text = getString(R.string.gtd)
                 isCheckable = true
@@ -152,19 +153,33 @@ class MainActivity : AppCompatActivity() {
                     intArrayOf(android.graphics.Color.parseColor("#FF9500"), android.graphics.Color.parseColor("#E0E0E0"))
                 )
             }
-            binding.filterChipGroup.addView(todayChip)
+            binding.systemChipGroup.addView(todayChip)
 
-            // Add "Show All" chip (system chip — always full text)
+            // Add "Focus" chip
+            val focusChip = com.google.android.material.chip.Chip(this).apply {
+                text = getString(R.string.focus)
+                isCheckable = true
+                isChecked = isFocusMode
+                chipBackgroundColor = android.content.res.ColorStateList(
+                    arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+                    intArrayOf(android.graphics.Color.parseColor("#AF52DE"), android.graphics.Color.parseColor("#E0E0E0"))
+                )
+            }
+            binding.systemChipGroup.addView(focusChip)
+
+            // Add "All" chip
             val showAllChip = com.google.android.material.chip.Chip(this).apply {
                 text = getString(R.string.show_all)
                 isCheckable = true
-                isChecked = !isTodayMode && selectedFilterTagIds.isEmpty()
+                isChecked = !isTodayMode && !isFocusMode && selectedFilterTagIds.isEmpty()
             }
-            binding.filterChipGroup.addView(showAllChip)
+            binding.systemChipGroup.addView(showAllChip)
 
-            // Add tag filter chips — compact by default (3-letter abbreviation)
+            // --- Tag chips (in bottom row) ---
+            binding.filterChipsScrollView.visibility = View.VISIBLE
+
             allTags.forEach { tag ->
-                val isSelected = !isTodayMode && tag.id in selectedFilterTagIds
+                val isSelected = !isTodayMode && !isFocusMode && tag.id in selectedFilterTagIds
                 val chip = com.google.android.material.chip.Chip(this).apply {
                     text = if (isSelected || expandedTagId == tag.id) tag.name else abbreviateTag(tag.name)
                     isCheckable = true
@@ -184,8 +199,8 @@ class MainActivity : AppCompatActivity() {
                 binding.filterChipGroup.addView(chip)
             }
 
-            // Add "Untagged" chip — also compact
-            val isUntaggedSelected = !isTodayMode && -1L in selectedFilterTagIds
+            // Add "Untagged" chip
+            val isUntaggedSelected = !isTodayMode && !isFocusMode && -1L in selectedFilterTagIds
             val untaggedChip = com.google.android.material.chip.Chip(this).apply {
                 text = if (isUntaggedSelected || expandedTagId == -1L) getString(R.string.untagged) else abbreviateTag(getString(R.string.untagged))
                 isCheckable = true
@@ -193,8 +208,12 @@ class MainActivity : AppCompatActivity() {
             }
             binding.filterChipGroup.addView(untaggedChip)
 
-            // Helper to uncheck all chips except one
+            // Helper to uncheck all chips across both chip groups
             fun uncheckAllExcept(except: com.google.android.material.chip.Chip) {
+                for (i in 0 until binding.systemChipGroup.childCount) {
+                    val c = binding.systemChipGroup.getChildAt(i) as? com.google.android.material.chip.Chip
+                    if (c != except) c?.isChecked = false
+                }
                 for (i in 0 until binding.filterChipGroup.childCount) {
                     val c = binding.filterChipGroup.getChildAt(i) as? com.google.android.material.chip.Chip
                     if (c != except) c?.isChecked = false
@@ -205,6 +224,7 @@ class MainActivity : AppCompatActivity() {
             todayChip.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
                     isTodayMode = true
+                    isFocusMode = false
                     selectedFilterTagIds.clear()
                     expandedTagId = null
                     uncheckAllExcept(todayChip)
@@ -213,10 +233,25 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
+            // Wire Focus chip
+            focusChip.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    isFocusMode = true
+                    isTodayMode = false
+                    selectedFilterTagIds.clear()
+                    expandedTagId = null
+                    uncheckAllExcept(focusChip)
+                    collapseOtherTagChips(allTags)
+                    switchToPersonasMode()
+                    observePersonas()
+                }
+            }
+
             // Wire Show All chip
             showAllChip.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
                     isTodayMode = false
+                    isFocusMode = false
                     selectedFilterTagIds.clear()
                     expandedTagId = null
                     uncheckAllExcept(showAllChip)
@@ -226,17 +261,19 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            // Wire tag chips — tap toggles expand/collapse, check toggles filter
-            for (i in 2 until binding.filterChipGroup.childCount) {
+            // Wire tag chips — tags start at index 0 in filterChipGroup
+            for (i in 0 until binding.filterChipGroup.childCount) {
                 val chip = binding.filterChipGroup.getChildAt(i) as? com.google.android.material.chip.Chip ?: continue
-                val tagIndex = i - 2
+                val tagIndex = i
                 if (tagIndex < allTags.size) {
                     val tag = allTags[tagIndex]
 
                     chip.setOnCheckedChangeListener { _, isChecked ->
                         if (isChecked) {
                             isTodayMode = false
+                            isFocusMode = false
                             todayChip.isChecked = false
+                            focusChip.isChecked = false
                             showAllChip.isChecked = false
                             selectedFilterTagIds.add(tag.id)
                             expandedTagId = tag.id
@@ -244,7 +281,6 @@ class MainActivity : AppCompatActivity() {
                             switchToPersonasMode()
                         } else {
                             selectedFilterTagIds.remove(tag.id)
-                            // Collapse when unchecked unless still expanded via tap
                             if (expandedTagId == tag.id) expandedTagId = null
                             chip.text = abbreviateTag(tag.name)
                             if (selectedFilterTagIds.isEmpty()) showAllChip.isChecked = true
@@ -269,7 +305,9 @@ class MainActivity : AppCompatActivity() {
                     chip.setOnCheckedChangeListener { _, isChecked ->
                         if (isChecked) {
                             isTodayMode = false
+                            isFocusMode = false
                             todayChip.isChecked = false
+                            focusChip.isChecked = false
                             showAllChip.isChecked = false
                             selectedFilterTagIds.add(-1L)
                             expandedTagId = -1L
@@ -304,7 +342,7 @@ class MainActivity : AppCompatActivity() {
         binding.personasRecyclerView.visibility = View.GONE
         binding.dailyTasksRecyclerView.visibility = View.VISIBLE
         binding.addPersonaFab.visibility = View.GONE
-        binding.toolbar.title = getString(R.string.karmah_title)
+        binding.toolbar.title = ""
         observeDueTodayTasks()
     }
 
@@ -313,7 +351,7 @@ class MainActivity : AppCompatActivity() {
         binding.dailyTasksRecyclerView.visibility = View.GONE
         binding.emptyDailyTextView.visibility = View.GONE
         binding.addPersonaFab.visibility = View.VISIBLE
-        binding.toolbar.title = getString(R.string.my_avatars_title)
+        binding.toolbar.title = ""
     }
 
     private fun observeDueTodayTasks() {
@@ -429,6 +467,17 @@ class MainActivity : AppCompatActivity() {
             },
             onPersonaDelete = { persona ->
                 showDeletePersonaConfirmation(persona)
+            },
+            onPersonaToggleFocus = { persona ->
+                if (!persona.isFocused) {
+                    // Check focus limit before adding
+                    val currentFocusedCount = adapter.currentList.count { it.persona.isFocused }
+                    if (currentFocusedCount >= 7) {
+                        Toast.makeText(this, getString(R.string.focus_limit_reached), Toast.LENGTH_SHORT).show()
+                        return@PersonaAdapter
+                    }
+                }
+                viewModel.toggleFocus(persona.id, !persona.isFocused)
             }
         )
 
@@ -453,19 +502,37 @@ class MainActivity : AppCompatActivity() {
 
     private fun observePersonas() {
         viewModel.getAllPersonasWithTaskCount().observe(this) { personasWithCount ->
-            val filteredList = if (selectedFilterTagIds.isEmpty()) {
-                // Show all personas
-                personasWithCount
-            } else if (-1L in selectedFilterTagIds) {
-                // Show only untagged personas
-                personasWithCount.filter { it.tags.isEmpty() }
-            } else {
-                // Show personas that have at least one of the selected tags
-                personasWithCount.filter { personaWithCount ->
-                    personaWithCount.tags.any { tag -> tag.id in selectedFilterTagIds }
+            val filteredList = when {
+                isFocusMode -> {
+                    // Show only focused personas
+                    personasWithCount.filter { it.persona.isFocused }
+                }
+                selectedFilterTagIds.isEmpty() -> {
+                    // Show all personas
+                    personasWithCount
+                }
+                -1L in selectedFilterTagIds -> {
+                    // Show only untagged personas
+                    personasWithCount.filter { it.tags.isEmpty() }
+                }
+                else -> {
+                    // Show personas that have at least one of the selected tags
+                    personasWithCount.filter { personaWithCount ->
+                        personaWithCount.tags.any { tag -> tag.id in selectedFilterTagIds }
+                    }
                 }
             }
             adapter.submitList(filteredList)
+
+            // Show empty state when Focus mode has no results
+            if (isFocusMode && filteredList.isEmpty()) {
+                binding.emptyDailyTextView.text = getString(R.string.no_focused_personas)
+                binding.emptyDailyTextView.visibility = View.VISIBLE
+                binding.personasRecyclerView.visibility = View.GONE
+            } else if (!isTodayMode) {
+                binding.emptyDailyTextView.visibility = View.GONE
+                binding.personasRecyclerView.visibility = View.VISIBLE
+            }
         }
     }
 

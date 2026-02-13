@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_toggle_focus"
+        android:title="@string/focus_persona"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_edit_persona"
         android:title="@string/edit_persona"
         android:icon="@android:drawable/ic_menu_edit"

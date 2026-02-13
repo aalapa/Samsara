@@ -2114,6 +2114,9 @@
     <string name="fingerprint_error_no_fingerprints">No fingerprints enrolled.</string>
     <string name="fingerprint_error_user_canceled">Fingerprint operation canceled by user.</string>
     <string name="fingerprint_not_recognized">Not recognized</string>
+    <string name="focus">Focus</string>
+    <string name="focus_limit_reached">Focus is limited to 7 personas. Unfocus one first.</string>
+    <string name="focus_persona">Focus</string>
     <string name="frequency">Frequency</string>
     <string name="fri">Fri</string>
     <string name="generic_error_no_device_credential">No PIN, pattern, or password set.</string>
@@ -2245,6 +2248,7 @@
     <string name="no">No</string>
     <string name="no_comments">No comments yet. Add your first comment to track progress.</string>
     <string name="no_end_date">Not set</string>
+    <string name="no_focused_personas">No personas in focus.\nUse the menu on a persona to add it.</string>
     <string name="no_gtd_tasks">Nothing scheduled. You\'re all caught up!</string>
     <string name="no_tasks_due_today">No tasks due today</string>
     <string name="overdue">Overdue</string>
@@ -2309,6 +2313,7 @@
     <string name="timer_toggle">Toggle timer</string>
     <string name="today">Today</string>
     <string name="tue">Tue</string>
+    <string name="unfocus_persona">Unfocus</string>
     <string name="untagged">Untagged</string>
     <string name="upcoming">Upcoming</string>
     <string name="use_fingerprint">Use Fingerprint</string>

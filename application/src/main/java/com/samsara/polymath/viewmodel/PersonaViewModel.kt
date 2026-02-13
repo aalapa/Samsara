@@ -276,6 +276,12 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun toggleFocus(personaId: Long, isFocused: Boolean) {
+        viewModelScope.launch {
+            repository.updateFocusStatus(personaId, isFocused)
+        }
+    }
+
     suspend fun getAllPersonasSync(): List<Persona> {
         return repository.getAllPersonas().first()
     }

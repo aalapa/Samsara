@@ -10,7 +10,7 @@ data class ExportData(
     val timeEntries: List<TimeEntry> = emptyList(), // Added in version 7
     val personaOpenEvents: List<PersonaOpenEvent> = emptyList(), // Added in version 8
     val exportDate: Long = System.currentTimeMillis(),
-    val version: Int = 8 // Bumped to version 8 for persona open events
+    val version: Int = 9 // Bumped to version 9 for isFocused on personas
 )
 
 data class PersonaTagExport(

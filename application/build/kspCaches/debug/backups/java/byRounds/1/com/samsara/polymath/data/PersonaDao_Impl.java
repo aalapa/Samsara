@@ -56,13 +56,15 @@ public final class PersonaDao_Impl implements PersonaDao {
 
   private final SharedSQLiteStatement __preparedStmtOfSaveAllPreviousOpenCounts;
 
+  private final SharedSQLiteStatement __preparedStmtOfUpdateFocusStatus;
+
   public PersonaDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
     this.__insertionAdapterOfPersona = new EntityInsertionAdapter<Persona>(__db) {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR ABORT INTO `personas` (`id`,`name`,`createdAt`,`order`,`openCount`,`backgroundColor`,`textColor`,`previousOpenCount`,`rankStatus`,`lastOpenedAt`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?)";
+        return "INSERT OR ABORT INTO `personas` (`id`,`name`,`createdAt`,`order`,`openCount`,`backgroundColor`,`textColor`,`previousOpenCount`,`rankStatus`,`lastOpenedAt`,`isFocused`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -79,6 +81,8 @@ public final class PersonaDao_Impl implements PersonaDao {
         final String _tmp = __converters.fromRankStatus(entity.getRankStatus());
         statement.bindString(9, _tmp);
         statement.bindLong(10, entity.getLastOpenedAt());
+        final int _tmp_1 = entity.isFocused() ? 1 : 0;
+        statement.bindLong(11, _tmp_1);
       }
     };
     this.__deletionAdapterOfPersona = new EntityDeletionOrUpdateAdapter<Persona>(__db) {
@@ -98,7 +102,7 @@ public final class PersonaDao_Impl implements PersonaDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `personas` SET `id` = ?,`name` = ?,`createdAt` = ?,`order` = ?,`openCount` = ?,`backgroundColor` = ?,`textColor` = ?,`previousOpenCount` = ?,`rankStatus` = ?,`lastOpenedAt` = ? WHERE `id` = ?";
+        return "UPDATE OR ABORT `personas` SET `id` = ?,`name` = ?,`createdAt` = ?,`order` = ?,`openCount` = ?,`backgroundColor` = ?,`textColor` = ?,`previousOpenCount` = ?,`rankStatus` = ?,`lastOpenedAt` = ?,`isFocused` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -115,7 +119,9 @@ public final class PersonaDao_Impl implements PersonaDao {
         final String _tmp = __converters.fromRankStatus(entity.getRankStatus());
         statement.bindString(9, _tmp);
         statement.bindLong(10, entity.getLastOpenedAt());
-        statement.bindLong(11, entity.getId());
+        final int _tmp_1 = entity.isFocused() ? 1 : 0;
+        statement.bindLong(11, _tmp_1);
+        statement.bindLong(12, entity.getId());
       }
     };
     this.__preparedStmtOfIncrementOpenCount = new SharedSQLiteStatement(__db) {
@@ -155,6 +161,14 @@ public final class PersonaDao_Impl implements PersonaDao {
       @NonNull
       public String createQuery() {
         final String _query = "UPDATE personas SET previousOpenCount = openCount";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfUpdateFocusStatus = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "UPDATE personas SET isFocused = ? WHERE id = ?";
         return _query;
       }
     };
@@ -348,6 +362,35 @@ public final class PersonaDao_Impl implements PersonaDao {
   }
 
   @Override
+  public Object updateFocusStatus(final long id, final boolean isFocused,
+      final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfUpdateFocusStatus.acquire();
+        int _argIndex = 1;
+        final int _tmp = isFocused ? 1 : 0;
+        _stmt.bindLong(_argIndex, _tmp);
+        _argIndex = 2;
+        _stmt.bindLong(_argIndex, id);
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfUpdateFocusStatus.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
   public Flow<List<Persona>> getAllPersonas() {
     final String _sql = "SELECT * FROM personas ORDER BY createdAt ASC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
@@ -367,6 +410,7 @@ public final class PersonaDao_Impl implements PersonaDao {
           final int _cursorIndexOfPreviousOpenCount = CursorUtil.getColumnIndexOrThrow(_cursor, "previousOpenCount");
           final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
           final int _cursorIndexOfLastOpenedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "lastOpenedAt");
+          final int _cursorIndexOfIsFocused = CursorUtil.getColumnIndexOrThrow(_cursor, "isFocused");
           final List<Persona> _result = new ArrayList<Persona>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Persona _item;
@@ -392,7 +436,11 @@ public final class PersonaDao_Impl implements PersonaDao {
             _tmpRankStatus = __converters.toRankStatus(_tmp);
             final long _tmpLastOpenedAt;
             _tmpLastOpenedAt = _cursor.getLong(_cursorIndexOfLastOpenedAt);
-            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt);
+            final boolean _tmpIsFocused;
+            final int _tmp_1;
+            _tmp_1 = _cursor.getInt(_cursorIndexOfIsFocused);
+            _tmpIsFocused = _tmp_1 != 0;
+            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused);
             _result.add(_item);
           }
           return _result;
@@ -431,6 +479,7 @@ public final class PersonaDao_Impl implements PersonaDao {
           final int _cursorIndexOfPreviousOpenCount = CursorUtil.getColumnIndexOrThrow(_cursor, "previousOpenCount");
           final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
           final int _cursorIndexOfLastOpenedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "lastOpenedAt");
+          final int _cursorIndexOfIsFocused = CursorUtil.getColumnIndexOrThrow(_cursor, "isFocused");
           final Persona _result;
           if (_cursor.moveToFirst()) {
             final long _tmpId;
@@ -455,7 +504,11 @@ public final class PersonaDao_Impl implements PersonaDao {
             _tmpRankStatus = __converters.toRankStatus(_tmp);
             final long _tmpLastOpenedAt;
             _tmpLastOpenedAt = _cursor.getLong(_cursorIndexOfLastOpenedAt);
-            _result = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt);
+            final boolean _tmpIsFocused;
+            final int _tmp_1;
+            _tmp_1 = _cursor.getInt(_cursorIndexOfIsFocused);
+            _tmpIsFocused = _tmp_1 != 0;
+            _result = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused);
           } else {
             _result = null;
           }
@@ -489,6 +542,7 @@ public final class PersonaDao_Impl implements PersonaDao {
           final int _cursorIndexOfPreviousOpenCount = CursorUtil.getColumnIndexOrThrow(_cursor, "previousOpenCount");
           final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
           final int _cursorIndexOfLastOpenedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "lastOpenedAt");
+          final int _cursorIndexOfIsFocused = CursorUtil.getColumnIndexOrThrow(_cursor, "isFocused");
           final List<Persona> _result = new ArrayList<Persona>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Persona _item;
@@ -514,7 +568,11 @@ public final class PersonaDao_Impl implements PersonaDao {
             _tmpRankStatus = __converters.toRankStatus(_tmp);
             final long _tmpLastOpenedAt;
             _tmpLastOpenedAt = _cursor.getLong(_cursorIndexOfLastOpenedAt);
-            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt);
+            final boolean _tmpIsFocused;
+            final int _tmp_1;
+            _tmp_1 = _cursor.getInt(_cursorIndexOfIsFocused);
+            _tmpIsFocused = _tmp_1 != 0;
+            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused);
             _result.add(_item);
           }
           return _result;
@@ -549,6 +607,7 @@ public final class PersonaDao_Impl implements PersonaDao {
             final int _cursorIndexOfPreviousOpenCount = CursorUtil.getColumnIndexOrThrow(_cursor, "previousOpenCount");
             final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
             final int _cursorIndexOfLastOpenedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "lastOpenedAt");
+            final int _cursorIndexOfIsFocused = CursorUtil.getColumnIndexOrThrow(_cursor, "isFocused");
             final LongSparseArray<ArrayList<Tag>> _collectionTags = new LongSparseArray<ArrayList<Tag>>();
             while (_cursor.moveToNext()) {
               final long _tmpKey;
@@ -585,7 +644,11 @@ public final class PersonaDao_Impl implements PersonaDao {
               _tmpRankStatus = __converters.toRankStatus(_tmp);
               final long _tmpLastOpenedAt;
               _tmpLastOpenedAt = _cursor.getLong(_cursorIndexOfLastOpenedAt);
-              _tmpPersona = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt);
+              final boolean _tmpIsFocused;
+              final int _tmp_1;
+              _tmp_1 = _cursor.getInt(_cursorIndexOfIsFocused);
+              _tmpIsFocused = _tmp_1 != 0;
+              _tmpPersona = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused);
               final ArrayList<Tag> _tmpTagsCollection;
               final long _tmpKey_1;
               _tmpKey_1 = _cursor.getLong(_cursorIndexOfId);
@@ -636,6 +699,7 @@ public final class PersonaDao_Impl implements PersonaDao {
             final int _cursorIndexOfPreviousOpenCount = CursorUtil.getColumnIndexOrThrow(_cursor, "previousOpenCount");
             final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
             final int _cursorIndexOfLastOpenedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "lastOpenedAt");
+            final int _cursorIndexOfIsFocused = CursorUtil.getColumnIndexOrThrow(_cursor, "isFocused");
             final LongSparseArray<ArrayList<Tag>> _collectionTags = new LongSparseArray<ArrayList<Tag>>();
             while (_cursor.moveToNext()) {
               final long _tmpKey;
@@ -671,7 +735,11 @@ public final class PersonaDao_Impl implements PersonaDao {
               _tmpRankStatus = __converters.toRankStatus(_tmp);
               final long _tmpLastOpenedAt;
               _tmpLastOpenedAt = _cursor.getLong(_cursorIndexOfLastOpenedAt);
-              _tmpPersona = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt);
+              final boolean _tmpIsFocused;
+              final int _tmp_1;
+              _tmp_1 = _cursor.getInt(_cursorIndexOfIsFocused);
+              _tmpIsFocused = _tmp_1 != 0;
+              _tmpPersona = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused);
               final ArrayList<Tag> _tmpTagsCollection;
               final long _tmpKey_1;
               _tmpKey_1 = _cursor.getLong(_cursorIndexOfId);
@@ -725,6 +793,7 @@ public final class PersonaDao_Impl implements PersonaDao {
           final int _cursorIndexOfPreviousOpenCount = CursorUtil.getColumnIndexOrThrow(_cursor, "previousOpenCount");
           final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
           final int _cursorIndexOfLastOpenedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "lastOpenedAt");
+          final int _cursorIndexOfIsFocused = CursorUtil.getColumnIndexOrThrow(_cursor, "isFocused");
           final List<Persona> _result = new ArrayList<Persona>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Persona _item_1;
@@ -750,7 +819,11 @@ public final class PersonaDao_Impl implements PersonaDao {
             _tmpRankStatus = __converters.toRankStatus(_tmp);
             final long _tmpLastOpenedAt;
             _tmpLastOpenedAt = _cursor.getLong(_cursorIndexOfLastOpenedAt);
-            _item_1 = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt);
+            final boolean _tmpIsFocused;
+            final int _tmp_1;
+            _tmp_1 = _cursor.getInt(_cursorIndexOfIsFocused);
+            _tmpIsFocused = _tmp_1 != 0;
+            _item_1 = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused);
             _result.add(_item_1);
           }
           return _result;
@@ -787,6 +860,7 @@ public final class PersonaDao_Impl implements PersonaDao {
           final int _cursorIndexOfPreviousOpenCount = CursorUtil.getColumnIndexOrThrow(_cursor, "previousOpenCount");
           final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
           final int _cursorIndexOfLastOpenedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "lastOpenedAt");
+          final int _cursorIndexOfIsFocused = CursorUtil.getColumnIndexOrThrow(_cursor, "isFocused");
           final List<Persona> _result = new ArrayList<Persona>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Persona _item;
@@ -812,7 +886,11 @@ public final class PersonaDao_Impl implements PersonaDao {
             _tmpRankStatus = __converters.toRankStatus(_tmp);
             final long _tmpLastOpenedAt;
             _tmpLastOpenedAt = _cursor.getLong(_cursorIndexOfLastOpenedAt);
-            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt);
+            final boolean _tmpIsFocused;
+            final int _tmp_1;
+            _tmp_1 = _cursor.getInt(_cursorIndexOfIsFocused);
+            _tmpIsFocused = _tmp_1 != 0;
+            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused);
             _result.add(_item);
           }
           return _result;
