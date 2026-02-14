@@ -660,6 +660,9 @@ class TasksActivity : AppCompatActivity() {
             .create()
 
         dialog.setOnShowListener {
+            // Ensure dialog resizes when keyboard appears so buttons stay visible
+            dialog.window?.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+
             val titleView = dialog.findViewById<android.widget.TextView>(android.R.id.title)
             titleView?.setTextColor(android.graphics.Color.WHITE)
 

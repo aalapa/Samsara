@@ -342,7 +342,6 @@ class MainActivity : AppCompatActivity() {
         binding.personasRecyclerView.visibility = View.GONE
         binding.dailyTasksRecyclerView.visibility = View.VISIBLE
         binding.addPersonaFab.visibility = View.GONE
-        binding.toolbar.title = ""
         observeDueTodayTasks()
     }
 
@@ -351,7 +350,6 @@ class MainActivity : AppCompatActivity() {
         binding.dailyTasksRecyclerView.visibility = View.GONE
         binding.emptyDailyTextView.visibility = View.GONE
         binding.addPersonaFab.visibility = View.VISIBLE
-        binding.toolbar.title = ""
     }
 
     private fun observeDueTodayTasks() {
