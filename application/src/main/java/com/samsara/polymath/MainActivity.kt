@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dailyTaskAdapter: DailyTaskAdapter
     private var isTodayMode = false
     private var isFocusMode = true // Default to Focus view on launch
+    private var isChakraMode = false
     private val gson = Gson()
     
     private val prefs by lazy { 
@@ -141,7 +142,10 @@ class MainActivity : AppCompatActivity() {
             binding.systemChipGroup.removeAllViews()
             binding.filterChipGroup.removeAllViews()
 
-            // --- System chips (in toolbar row) ---
+            // Always show the chip row (system chips are always present)
+            binding.filterChipsScrollView.visibility = View.VISIBLE
+
+            // --- System chips ---
 
             // Add "GTD" chip
             val todayChip = com.google.android.material.chip.Chip(this).apply {
@@ -167,19 +171,30 @@ class MainActivity : AppCompatActivity() {
             }
             binding.systemChipGroup.addView(focusChip)
 
+            // Add "Chakra" chip
+            val chakraChip = com.google.android.material.chip.Chip(this).apply {
+                text = getString(R.string.chakra)
+                isCheckable = true
+                isChecked = isChakraMode
+                chipBackgroundColor = android.content.res.ColorStateList(
+                    arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+                    intArrayOf(android.graphics.Color.parseColor("#5856D6"), android.graphics.Color.parseColor("#E0E0E0"))
+                )
+            }
+            binding.systemChipGroup.addView(chakraChip)
+
             // Add "All" chip
             val showAllChip = com.google.android.material.chip.Chip(this).apply {
                 text = getString(R.string.show_all)
                 isCheckable = true
-                isChecked = !isTodayMode && !isFocusMode && selectedFilterTagIds.isEmpty()
+                isChecked = !isTodayMode && !isFocusMode && !isChakraMode && selectedFilterTagIds.isEmpty()
             }
             binding.systemChipGroup.addView(showAllChip)
 
-            // --- Tag chips (in bottom row) ---
-            binding.filterChipsScrollView.visibility = View.VISIBLE
+            // --- Tag chips ---
 
             allTags.forEach { tag ->
-                val isSelected = !isTodayMode && !isFocusMode && tag.id in selectedFilterTagIds
+                val isSelected = !isTodayMode && !isFocusMode && !isChakraMode && tag.id in selectedFilterTagIds
                 val chip = com.google.android.material.chip.Chip(this).apply {
                     text = if (isSelected || expandedTagId == tag.id) tag.name else abbreviateTag(tag.name)
                     isCheckable = true
@@ -200,7 +215,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             // Add "Untagged" chip
-            val isUntaggedSelected = !isTodayMode && !isFocusMode && -1L in selectedFilterTagIds
+            val isUntaggedSelected = !isTodayMode && !isFocusMode && !isChakraMode && -1L in selectedFilterTagIds
             val untaggedChip = com.google.android.material.chip.Chip(this).apply {
                 text = if (isUntaggedSelected || expandedTagId == -1L) getString(R.string.untagged) else abbreviateTag(getString(R.string.untagged))
                 isCheckable = true
@@ -225,6 +240,7 @@ class MainActivity : AppCompatActivity() {
                 if (isChecked) {
                     isTodayMode = true
                     isFocusMode = false
+                    isChakraMode = false
                     selectedFilterTagIds.clear()
                     expandedTagId = null
                     uncheckAllExcept(todayChip)
@@ -238,9 +254,25 @@ class MainActivity : AppCompatActivity() {
                 if (isChecked) {
                     isFocusMode = true
                     isTodayMode = false
+                    isChakraMode = false
                     selectedFilterTagIds.clear()
                     expandedTagId = null
                     uncheckAllExcept(focusChip)
+                    collapseOtherTagChips(allTags)
+                    switchToPersonasMode()
+                    observePersonas()
+                }
+            }
+
+            // Wire Chakra chip
+            chakraChip.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    isChakraMode = true
+                    isTodayMode = false
+                    isFocusMode = false
+                    selectedFilterTagIds.clear()
+                    expandedTagId = null
+                    uncheckAllExcept(chakraChip)
                     collapseOtherTagChips(allTags)
                     switchToPersonasMode()
                     observePersonas()
@@ -252,6 +284,7 @@ class MainActivity : AppCompatActivity() {
                 if (isChecked) {
                     isTodayMode = false
                     isFocusMode = false
+                    isChakraMode = false
                     selectedFilterTagIds.clear()
                     expandedTagId = null
                     uncheckAllExcept(showAllChip)
@@ -272,8 +305,10 @@ class MainActivity : AppCompatActivity() {
                         if (isChecked) {
                             isTodayMode = false
                             isFocusMode = false
+                            isChakraMode = false
                             todayChip.isChecked = false
                             focusChip.isChecked = false
+                            chakraChip.isChecked = false
                             showAllChip.isChecked = false
                             selectedFilterTagIds.add(tag.id)
                             expandedTagId = tag.id
@@ -306,8 +341,10 @@ class MainActivity : AppCompatActivity() {
                         if (isChecked) {
                             isTodayMode = false
                             isFocusMode = false
+                            isChakraMode = false
                             todayChip.isChecked = false
                             focusChip.isChecked = false
+                            chakraChip.isChecked = false
                             showAllChip.isChecked = false
                             selectedFilterTagIds.add(-1L)
                             expandedTagId = -1L
@@ -476,6 +513,17 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 viewModel.toggleFocus(persona.id, !persona.isFocused)
+            },
+            onPersonaToggleChakra = { persona ->
+                if (!persona.isChakra) {
+                    // Check chakra limit before adding
+                    val currentChakraCount = adapter.currentList.count { it.persona.isChakra }
+                    if (currentChakraCount >= 7) {
+                        Toast.makeText(this, getString(R.string.chakra_limit_reached), Toast.LENGTH_SHORT).show()
+                        return@PersonaAdapter
+                    }
+                }
+                viewModel.toggleChakra(persona.id, !persona.isChakra)
             }
         )
 
@@ -505,6 +553,10 @@ class MainActivity : AppCompatActivity() {
                     // Show only focused personas
                     personasWithCount.filter { it.persona.isFocused }
                 }
+                isChakraMode -> {
+                    // Show only chakra personas
+                    personasWithCount.filter { it.persona.isChakra }
+                }
                 selectedFilterTagIds.isEmpty() -> {
                     // Show all personas
                     personasWithCount
@@ -522,9 +574,13 @@ class MainActivity : AppCompatActivity() {
             }
             adapter.submitList(filteredList)
 
-            // Show empty state when Focus mode has no results
+            // Show empty state when Focus or Chakra mode has no results
             if (isFocusMode && filteredList.isEmpty()) {
                 binding.emptyDailyTextView.text = getString(R.string.no_focused_personas)
+                binding.emptyDailyTextView.visibility = View.VISIBLE
+                binding.personasRecyclerView.visibility = View.GONE
+            } else if (isChakraMode && filteredList.isEmpty()) {
+                binding.emptyDailyTextView.text = getString(R.string.no_chakra_personas)
                 binding.emptyDailyTextView.visibility = View.VISIBLE
                 binding.personasRecyclerView.visibility = View.GONE
             } else if (!isTodayMode) {

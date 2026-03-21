@@ -6,6 +6,10 @@
         android:title="@string/focus_persona"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_toggle_chakra"
+        android:title="@string/chakra_persona"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_edit_persona"
         android:title="@string/edit_persona"
         android:icon="@android:drawable/ic_menu_edit"

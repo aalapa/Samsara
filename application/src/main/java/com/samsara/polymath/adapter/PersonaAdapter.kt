@@ -19,7 +19,8 @@ class PersonaAdapter(
     private val onPersonaClick: (Persona) -> Unit,
     private val onPersonaEdit: (Persona) -> Unit,
     private val onPersonaDelete: (Persona) -> Unit,
-    private val onPersonaToggleFocus: (Persona) -> Unit
+    private val onPersonaToggleFocus: (Persona) -> Unit,
+    private val onPersonaToggleChakra: (Persona) -> Unit
 ) : ListAdapter<PersonaWithTaskCount, PersonaAdapter.PersonaViewHolder>(PersonaDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PersonaViewHolder {
@@ -135,10 +136,22 @@ class PersonaAdapter(
                     view.context.getString(R.string.focus_persona)
                 }
 
+                // Dynamically set Chakra/Unchakra label based on current state
+                val chakraItem = popup.menu.findItem(R.id.action_toggle_chakra)
+                chakraItem?.title = if (persona.isChakra) {
+                    view.context.getString(R.string.unchakra_persona)
+                } else {
+                    view.context.getString(R.string.chakra_persona)
+                }
+
                 popup.setOnMenuItemClickListener { item ->
                     when (item.itemId) {
                         R.id.action_toggle_focus -> {
                             onPersonaToggleFocus(persona)
+                            true
+                        }
+                        R.id.action_toggle_chakra -> {
+                            onPersonaToggleChakra(persona)
                             true
                         }
                         R.id.action_edit_persona -> {

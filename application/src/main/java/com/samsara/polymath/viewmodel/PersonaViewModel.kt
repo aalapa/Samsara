@@ -282,6 +282,12 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun toggleChakra(personaId: Long, isChakra: Boolean) {
+        viewModelScope.launch {
+            repository.updateChakraStatus(personaId, isChakra)
+        }
+    }
+
     suspend fun getAllPersonasSync(): List<Persona> {
         return repository.getAllPersonas().first()
     }
