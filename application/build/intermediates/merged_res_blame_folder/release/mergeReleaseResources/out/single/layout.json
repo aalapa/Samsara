@@ -1,86 +1,90 @@
 [
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/activity_tasks.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/activity_tasks.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/activity_tag_management.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/activity_tag_management.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/activity_tag_management.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/activity_tag_management.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/fragment_report_overview.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/fragment_report_overview.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/fragment_report_time.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/fragment_report_time.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/fragment_report_trends.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/fragment_report_trends.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/item_comment.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/item_comment.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/item_task.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/item_task.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/activity_lock.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/activity_lock.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/activity_pin_setup.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/activity_pin_setup.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/dialog_add_task.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/dialog_add_task.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/fragment_report_charts.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/fragment_report_charts.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/dialog_add_persona.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/dialog_add_persona.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/activity_persona_report.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/activity_persona_report.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/activity_persona_report.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/activity_persona_report.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/activity_lock.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/activity_lock.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/activity_settings.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/activity_settings.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/item_tag_management.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/item_tag_management.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/activity_pin_setup.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/activity_pin_setup.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/dialog_create_tag.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/dialog_create_tag.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/fragment_report_overview.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/fragment_report_overview.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/activity_tasks.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/activity_tasks.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/item_persona_report.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/item_persona_report.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/dialog_add_task.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/dialog_add_task.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/item_daily_task.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/item_daily_task.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/dialog_add_persona.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/dialog_add_persona.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/item_tag_management.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/item_tag_management.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/item_comment.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/item_comment.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/dialog_create_tag.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/dialog_create_tag.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/item_persona_report.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/item_persona_report.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/fragment_report_trends.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/fragment_report_trends.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/item_daily_task.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/item_daily_task.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/item_task.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/item_task.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/fragment_report_time.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/fragment_report_time.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/item_persona.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/item_persona.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/activity_settings.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/activity_settings.xml"
+    },
+    {
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/item_persona.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/item_persona.xml"
+    },
+    {
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/dialog_task_comments.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/dialog_task_comments.xml"
     },
     {
         "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/activity_main.xml",
         "source": "com.samsara.polymath.application-main-46:/layout/activity_main.xml"
     },
     {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/fragment_report_charts.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/fragment_report_charts.xml"
-    },
-    {
-        "merged": "com.samsara.polymath.application-mergeReleaseResources-44:/layout/dialog_task_comments.xml",
-        "source": "com.samsara.polymath.application-main-46:/layout/dialog_task_comments.xml"
+        "merged": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-mergeReleaseResources-44:/layout/activity_main.xml",
+        "source": "/Users/ragnor/.gradle/daemon/8.11.1/com.samsara.polymath.application-main-46:/layout/activity_main.xml"
     }
 ]

@@ -42,14 +42,6 @@
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/systemChipGroup"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    app:chipSpacingHorizontal="4dp"
-                    app:singleLine="true"
-                    app:selectionRequired="false" />
 
             </LinearLayout>
 
@@ -67,7 +59,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Filter Chips Container -->
+    <!-- System + Filter Chips Container (scrollable row) -->
     <HorizontalScrollView
         android:id="@+id/filterChipsScrollView"
         android:layout_width="match_parent"
@@ -76,18 +68,33 @@
         android:background="@color/background_secondary"
         android:paddingVertical="8dp"
         android:paddingHorizontal="16dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/filterChipGroup"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:chipSpacingHorizontal="8dp"
-            app:singleLine="true"
-            app:selectionRequired="false" />
+            android:orientation="horizontal">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/systemChipGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:chipSpacingHorizontal="4dp"
+                app:singleLine="true"
+                app:selectionRequired="false" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/filterChipGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:chipSpacingHorizontal="8dp"
+                app:singleLine="true"
+                app:selectionRequired="false" />
+
+        </LinearLayout>
 
     </HorizontalScrollView>
 

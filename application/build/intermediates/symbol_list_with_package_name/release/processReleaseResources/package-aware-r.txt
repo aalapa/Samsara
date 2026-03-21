@@ -3203,6 +3203,7 @@ id action_report
 id action_settings
 id action_show_completed
 id action_text
+id action_toggle_chakra
 id action_toggle_focus
 id actions
 id activity_chooser_view_content
@@ -4100,6 +4101,9 @@ string call_notification_incoming_text
 string call_notification_ongoing_text
 string call_notification_screening_text
 string cancel
+string chakra
+string chakra_limit_reached
+string chakra_persona
 string change_pin
 string character_counter_content_description
 string character_counter_overflowed_content_description
@@ -4293,6 +4297,7 @@ string mtrl_timepicker_cancel
 string mtrl_timepicker_confirm
 string my_avatars_title
 string no
+string no_chakra_personas
 string no_comments
 string no_end_date
 string no_focused_personas
@@ -4358,6 +4363,7 @@ string thu
 string timer_toggle
 string today
 string tue
+string unchakra_persona
 string unfocus_persona
 string untagged
 string upcoming

@@ -58,13 +58,15 @@ public final class PersonaDao_Impl implements PersonaDao {
 
   private final SharedSQLiteStatement __preparedStmtOfUpdateFocusStatus;
 
+  private final SharedSQLiteStatement __preparedStmtOfUpdateChakraStatus;
+
   public PersonaDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
     this.__insertionAdapterOfPersona = new EntityInsertionAdapter<Persona>(__db) {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR ABORT INTO `personas` (`id`,`name`,`createdAt`,`order`,`openCount`,`backgroundColor`,`textColor`,`previousOpenCount`,`rankStatus`,`lastOpenedAt`,`isFocused`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?,?)";
+        return "INSERT OR ABORT INTO `personas` (`id`,`name`,`createdAt`,`order`,`openCount`,`backgroundColor`,`textColor`,`previousOpenCount`,`rankStatus`,`lastOpenedAt`,`isFocused`,`isChakra`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -83,6 +85,8 @@ public final class PersonaDao_Impl implements PersonaDao {
         statement.bindLong(10, entity.getLastOpenedAt());
         final int _tmp_1 = entity.isFocused() ? 1 : 0;
         statement.bindLong(11, _tmp_1);
+        final int _tmp_2 = entity.isChakra() ? 1 : 0;
+        statement.bindLong(12, _tmp_2);
       }
     };
     this.__deletionAdapterOfPersona = new EntityDeletionOrUpdateAdapter<Persona>(__db) {
@@ -102,7 +106,7 @@ public final class PersonaDao_Impl implements PersonaDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `personas` SET `id` = ?,`name` = ?,`createdAt` = ?,`order` = ?,`openCount` = ?,`backgroundColor` = ?,`textColor` = ?,`previousOpenCount` = ?,`rankStatus` = ?,`lastOpenedAt` = ?,`isFocused` = ? WHERE `id` = ?";
+        return "UPDATE OR ABORT `personas` SET `id` = ?,`name` = ?,`createdAt` = ?,`order` = ?,`openCount` = ?,`backgroundColor` = ?,`textColor` = ?,`previousOpenCount` = ?,`rankStatus` = ?,`lastOpenedAt` = ?,`isFocused` = ?,`isChakra` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -121,7 +125,9 @@ public final class PersonaDao_Impl implements PersonaDao {
         statement.bindLong(10, entity.getLastOpenedAt());
         final int _tmp_1 = entity.isFocused() ? 1 : 0;
         statement.bindLong(11, _tmp_1);
-        statement.bindLong(12, entity.getId());
+        final int _tmp_2 = entity.isChakra() ? 1 : 0;
+        statement.bindLong(12, _tmp_2);
+        statement.bindLong(13, entity.getId());
       }
     };
     this.__preparedStmtOfIncrementOpenCount = new SharedSQLiteStatement(__db) {
@@ -169,6 +175,14 @@ public final class PersonaDao_Impl implements PersonaDao {
       @NonNull
       public String createQuery() {
         final String _query = "UPDATE personas SET isFocused = ? WHERE id = ?";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfUpdateChakraStatus = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "UPDATE personas SET isChakra = ? WHERE id = ?";
         return _query;
       }
     };
@@ -391,6 +405,35 @@ public final class PersonaDao_Impl implements PersonaDao {
   }
 
   @Override
+  public Object updateChakraStatus(final long id, final boolean isChakra,
+      final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfUpdateChakraStatus.acquire();
+        int _argIndex = 1;
+        final int _tmp = isChakra ? 1 : 0;
+        _stmt.bindLong(_argIndex, _tmp);
+        _argIndex = 2;
+        _stmt.bindLong(_argIndex, id);
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfUpdateChakraStatus.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
   public Flow<List<Persona>> getAllPersonas() {
     final String _sql = "SELECT * FROM personas ORDER BY createdAt ASC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
@@ -411,6 +454,7 @@ public final class PersonaDao_Impl implements PersonaDao {
           final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
           final int _cursorIndexOfLastOpenedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "lastOpenedAt");
           final int _cursorIndexOfIsFocused = CursorUtil.getColumnIndexOrThrow(_cursor, "isFocused");
+          final int _cursorIndexOfIsChakra = CursorUtil.getColumnIndexOrThrow(_cursor, "isChakra");
           final List<Persona> _result = new ArrayList<Persona>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Persona _item;
@@ -440,7 +484,11 @@ public final class PersonaDao_Impl implements PersonaDao {
             final int _tmp_1;
             _tmp_1 = _cursor.getInt(_cursorIndexOfIsFocused);
             _tmpIsFocused = _tmp_1 != 0;
-            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused);
+            final boolean _tmpIsChakra;
+            final int _tmp_2;
+            _tmp_2 = _cursor.getInt(_cursorIndexOfIsChakra);
+            _tmpIsChakra = _tmp_2 != 0;
+            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused,_tmpIsChakra);
             _result.add(_item);
           }
           return _result;
@@ -480,6 +528,7 @@ public final class PersonaDao_Impl implements PersonaDao {
           final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
           final int _cursorIndexOfLastOpenedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "lastOpenedAt");
           final int _cursorIndexOfIsFocused = CursorUtil.getColumnIndexOrThrow(_cursor, "isFocused");
+          final int _cursorIndexOfIsChakra = CursorUtil.getColumnIndexOrThrow(_cursor, "isChakra");
           final Persona _result;
           if (_cursor.moveToFirst()) {
             final long _tmpId;
@@ -508,7 +557,11 @@ public final class PersonaDao_Impl implements PersonaDao {
             final int _tmp_1;
             _tmp_1 = _cursor.getInt(_cursorIndexOfIsFocused);
             _tmpIsFocused = _tmp_1 != 0;
-            _result = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused);
+            final boolean _tmpIsChakra;
+            final int _tmp_2;
+            _tmp_2 = _cursor.getInt(_cursorIndexOfIsChakra);
+            _tmpIsChakra = _tmp_2 != 0;
+            _result = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused,_tmpIsChakra);
           } else {
             _result = null;
           }
@@ -543,6 +596,7 @@ public final class PersonaDao_Impl implements PersonaDao {
           final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
           final int _cursorIndexOfLastOpenedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "lastOpenedAt");
           final int _cursorIndexOfIsFocused = CursorUtil.getColumnIndexOrThrow(_cursor, "isFocused");
+          final int _cursorIndexOfIsChakra = CursorUtil.getColumnIndexOrThrow(_cursor, "isChakra");
           final List<Persona> _result = new ArrayList<Persona>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Persona _item;
@@ -572,7 +626,11 @@ public final class PersonaDao_Impl implements PersonaDao {
             final int _tmp_1;
             _tmp_1 = _cursor.getInt(_cursorIndexOfIsFocused);
             _tmpIsFocused = _tmp_1 != 0;
-            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused);
+            final boolean _tmpIsChakra;
+            final int _tmp_2;
+            _tmp_2 = _cursor.getInt(_cursorIndexOfIsChakra);
+            _tmpIsChakra = _tmp_2 != 0;
+            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused,_tmpIsChakra);
             _result.add(_item);
           }
           return _result;
@@ -608,6 +666,7 @@ public final class PersonaDao_Impl implements PersonaDao {
             final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
             final int _cursorIndexOfLastOpenedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "lastOpenedAt");
             final int _cursorIndexOfIsFocused = CursorUtil.getColumnIndexOrThrow(_cursor, "isFocused");
+            final int _cursorIndexOfIsChakra = CursorUtil.getColumnIndexOrThrow(_cursor, "isChakra");
             final LongSparseArray<ArrayList<Tag>> _collectionTags = new LongSparseArray<ArrayList<Tag>>();
             while (_cursor.moveToNext()) {
               final long _tmpKey;
@@ -648,7 +707,11 @@ public final class PersonaDao_Impl implements PersonaDao {
               final int _tmp_1;
               _tmp_1 = _cursor.getInt(_cursorIndexOfIsFocused);
               _tmpIsFocused = _tmp_1 != 0;
-              _tmpPersona = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused);
+              final boolean _tmpIsChakra;
+              final int _tmp_2;
+              _tmp_2 = _cursor.getInt(_cursorIndexOfIsChakra);
+              _tmpIsChakra = _tmp_2 != 0;
+              _tmpPersona = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused,_tmpIsChakra);
               final ArrayList<Tag> _tmpTagsCollection;
               final long _tmpKey_1;
               _tmpKey_1 = _cursor.getLong(_cursorIndexOfId);
@@ -700,6 +763,7 @@ public final class PersonaDao_Impl implements PersonaDao {
             final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
             final int _cursorIndexOfLastOpenedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "lastOpenedAt");
             final int _cursorIndexOfIsFocused = CursorUtil.getColumnIndexOrThrow(_cursor, "isFocused");
+            final int _cursorIndexOfIsChakra = CursorUtil.getColumnIndexOrThrow(_cursor, "isChakra");
             final LongSparseArray<ArrayList<Tag>> _collectionTags = new LongSparseArray<ArrayList<Tag>>();
             while (_cursor.moveToNext()) {
               final long _tmpKey;
@@ -739,7 +803,11 @@ public final class PersonaDao_Impl implements PersonaDao {
               final int _tmp_1;
               _tmp_1 = _cursor.getInt(_cursorIndexOfIsFocused);
               _tmpIsFocused = _tmp_1 != 0;
-              _tmpPersona = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused);
+              final boolean _tmpIsChakra;
+              final int _tmp_2;
+              _tmp_2 = _cursor.getInt(_cursorIndexOfIsChakra);
+              _tmpIsChakra = _tmp_2 != 0;
+              _tmpPersona = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused,_tmpIsChakra);
               final ArrayList<Tag> _tmpTagsCollection;
               final long _tmpKey_1;
               _tmpKey_1 = _cursor.getLong(_cursorIndexOfId);
@@ -794,6 +862,7 @@ public final class PersonaDao_Impl implements PersonaDao {
           final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
           final int _cursorIndexOfLastOpenedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "lastOpenedAt");
           final int _cursorIndexOfIsFocused = CursorUtil.getColumnIndexOrThrow(_cursor, "isFocused");
+          final int _cursorIndexOfIsChakra = CursorUtil.getColumnIndexOrThrow(_cursor, "isChakra");
           final List<Persona> _result = new ArrayList<Persona>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Persona _item_1;
@@ -823,7 +892,11 @@ public final class PersonaDao_Impl implements PersonaDao {
             final int _tmp_1;
             _tmp_1 = _cursor.getInt(_cursorIndexOfIsFocused);
             _tmpIsFocused = _tmp_1 != 0;
-            _item_1 = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused);
+            final boolean _tmpIsChakra;
+            final int _tmp_2;
+            _tmp_2 = _cursor.getInt(_cursorIndexOfIsChakra);
+            _tmpIsChakra = _tmp_2 != 0;
+            _item_1 = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused,_tmpIsChakra);
             _result.add(_item_1);
           }
           return _result;
@@ -861,6 +934,7 @@ public final class PersonaDao_Impl implements PersonaDao {
           final int _cursorIndexOfRankStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "rankStatus");
           final int _cursorIndexOfLastOpenedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "lastOpenedAt");
           final int _cursorIndexOfIsFocused = CursorUtil.getColumnIndexOrThrow(_cursor, "isFocused");
+          final int _cursorIndexOfIsChakra = CursorUtil.getColumnIndexOrThrow(_cursor, "isChakra");
           final List<Persona> _result = new ArrayList<Persona>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Persona _item;
@@ -890,7 +964,11 @@ public final class PersonaDao_Impl implements PersonaDao {
             final int _tmp_1;
             _tmp_1 = _cursor.getInt(_cursorIndexOfIsFocused);
             _tmpIsFocused = _tmp_1 != 0;
-            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused);
+            final boolean _tmpIsChakra;
+            final int _tmp_2;
+            _tmp_2 = _cursor.getInt(_cursorIndexOfIsChakra);
+            _tmpIsChakra = _tmp_2 != 0;
+            _item = new Persona(_tmpId,_tmpName,_tmpCreatedAt,_tmpOrder,_tmpOpenCount,_tmpBackgroundColor,_tmpTextColor,_tmpPreviousOpenCount,_tmpRankStatus,_tmpLastOpenedAt,_tmpIsFocused,_tmpIsChakra);
             _result.add(_item);
           }
           return _result;
