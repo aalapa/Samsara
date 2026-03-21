@@ -28,6 +28,8 @@ class PersonaRepository(private val personaDao: PersonaDao) {
     suspend fun saveAllPreviousOpenCounts() = personaDao.saveAllPreviousOpenCounts()
 
     suspend fun updateFocusStatus(id: Long, isFocused: Boolean) = personaDao.updateFocusStatus(id, isFocused)
+
+    suspend fun updateChakraStatus(id: Long, isChakra: Boolean) = personaDao.updateChakraStatus(id, isChakra)
     
     suspend fun getAllPersonasSync(): List<Persona> {
         return personaDao.getAllPersonasList()

@@ -16,7 +16,8 @@ data class Persona(
     val previousOpenCount: Int = 0, // Track previous open count for rank changes
     val rankStatus: RankStatus = RankStatus.STABLE, // Track movement: STABLE, UP, DOWN
     val lastOpenedAt: Long = System.currentTimeMillis(), // Track when persona was last opened for decay
-    val isFocused: Boolean = false // Whether this persona is in the user's Focus view
+    val isFocused: Boolean = false, // Whether this persona is in the user's Focus view
+    val isChakra: Boolean = false // Whether this persona is in the user's Chakra view
 )
 
 /**
