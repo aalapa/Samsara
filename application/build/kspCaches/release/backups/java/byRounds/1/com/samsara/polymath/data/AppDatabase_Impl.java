@@ -41,14 +41,16 @@ public final class AppDatabase_Impl extends AppDatabase {
 
   private volatile TimeEntryDao _timeEntryDao;
 
+  private volatile PersonaOpenEventDao _personaOpenEventDao;
+
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(15) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(20) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS `personas` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `order` INTEGER NOT NULL, `openCount` INTEGER NOT NULL, `backgroundColor` TEXT NOT NULL, `textColor` TEXT NOT NULL, `previousOpenCount` INTEGER NOT NULL, `rankStatus` TEXT NOT NULL, `lastOpenedAt` INTEGER NOT NULL)");
-        db.execSQL("CREATE TABLE IF NOT EXISTS `tasks` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `personaId` INTEGER NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `completedAt` INTEGER, `isCompleted` INTEGER NOT NULL, `isRecurring` INTEGER NOT NULL, `order` INTEGER NOT NULL, `backgroundColor` TEXT NOT NULL, `previousOrder` INTEGER NOT NULL, `rankStatus` TEXT NOT NULL, `recurringFrequency` TEXT, `recurringDays` TEXT, `endDate` INTEGER, FOREIGN KEY(`personaId`) REFERENCES `personas`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `personas` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `order` INTEGER NOT NULL, `openCount` INTEGER NOT NULL, `backgroundColor` TEXT NOT NULL, `textColor` TEXT NOT NULL, `previousOpenCount` INTEGER NOT NULL, `rankStatus` TEXT NOT NULL, `lastOpenedAt` INTEGER NOT NULL, `isFocused` INTEGER NOT NULL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `tasks` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `personaId` INTEGER NOT NULL, `title` TEXT NOT NULL, `description` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `completedAt` INTEGER, `isCompleted` INTEGER NOT NULL, `isRecurring` INTEGER NOT NULL, `order` INTEGER NOT NULL, `backgroundColor` TEXT NOT NULL, `previousOrder` INTEGER NOT NULL, `rankStatus` TEXT NOT NULL, `recurringFrequency` TEXT, `recurringDays` TEXT, `endDate` INTEGER, `nextDueDate` INTEGER, `recurringGroupId` INTEGER, `isAvoidTask` INTEGER NOT NULL, FOREIGN KEY(`personaId`) REFERENCES `personas`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_tasks_personaId` ON `tasks` (`personaId`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `comments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `text` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, FOREIGN KEY(`taskId`) REFERENCES `tasks`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_comments_taskId` ON `comments` (`taskId`)");
@@ -59,8 +61,11 @@ public final class AppDatabase_Impl extends AppDatabase {
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_persona_tags_tagId` ON `persona_tags` (`tagId`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `time_entries` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `taskId` INTEGER NOT NULL, `startTime` INTEGER NOT NULL, `endTime` INTEGER, FOREIGN KEY(`taskId`) REFERENCES `tasks`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_time_entries_taskId` ON `time_entries` (`taskId`)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `persona_open_events` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `personaId` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL, FOREIGN KEY(`personaId`) REFERENCES `personas`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_persona_open_events_personaId` ON `persona_open_events` (`personaId`)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_persona_open_events_timestamp` ON `persona_open_events` (`timestamp`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '90d97b9e9b00efb0bbfe6f281d0fab8a')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fc9320a24bcf2d7674a2deb53eb29740')");
       }
 
       @Override
@@ -72,6 +77,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         db.execSQL("DROP TABLE IF EXISTS `tags`");
         db.execSQL("DROP TABLE IF EXISTS `persona_tags`");
         db.execSQL("DROP TABLE IF EXISTS `time_entries`");
+        db.execSQL("DROP TABLE IF EXISTS `persona_open_events`");
         final List<? extends RoomDatabase.Callback> _callbacks = mCallbacks;
         if (_callbacks != null) {
           for (RoomDatabase.Callback _callback : _callbacks) {
@@ -116,7 +122,7 @@ public final class AppDatabase_Impl extends AppDatabase {
       @NonNull
       public RoomOpenHelper.ValidationResult onValidateSchema(
           @NonNull final SupportSQLiteDatabase db) {
-        final HashMap<String, TableInfo.Column> _columnsPersonas = new HashMap<String, TableInfo.Column>(10);
+        final HashMap<String, TableInfo.Column> _columnsPersonas = new HashMap<String, TableInfo.Column>(11);
         _columnsPersonas.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPersonas.put("name", new TableInfo.Column("name", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPersonas.put("createdAt", new TableInfo.Column("createdAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -127,6 +133,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         _columnsPersonas.put("previousOpenCount", new TableInfo.Column("previousOpenCount", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPersonas.put("rankStatus", new TableInfo.Column("rankStatus", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsPersonas.put("lastOpenedAt", new TableInfo.Column("lastOpenedAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsPersonas.put("isFocused", new TableInfo.Column("isFocused", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysPersonas = new HashSet<TableInfo.ForeignKey>(0);
         final HashSet<TableInfo.Index> _indicesPersonas = new HashSet<TableInfo.Index>(0);
         final TableInfo _infoPersonas = new TableInfo("personas", _columnsPersonas, _foreignKeysPersonas, _indicesPersonas);
@@ -136,7 +143,7 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoPersonas + "\n"
                   + " Found:\n" + _existingPersonas);
         }
-        final HashMap<String, TableInfo.Column> _columnsTasks = new HashMap<String, TableInfo.Column>(15);
+        final HashMap<String, TableInfo.Column> _columnsTasks = new HashMap<String, TableInfo.Column>(18);
         _columnsTasks.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTasks.put("personaId", new TableInfo.Column("personaId", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTasks.put("title", new TableInfo.Column("title", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -152,6 +159,9 @@ public final class AppDatabase_Impl extends AppDatabase {
         _columnsTasks.put("recurringFrequency", new TableInfo.Column("recurringFrequency", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTasks.put("recurringDays", new TableInfo.Column("recurringDays", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsTasks.put("endDate", new TableInfo.Column("endDate", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsTasks.put("nextDueDate", new TableInfo.Column("nextDueDate", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsTasks.put("recurringGroupId", new TableInfo.Column("recurringGroupId", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsTasks.put("isAvoidTask", new TableInfo.Column("isAvoidTask", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysTasks = new HashSet<TableInfo.ForeignKey>(1);
         _foreignKeysTasks.add(new TableInfo.ForeignKey("personas", "CASCADE", "NO ACTION", Arrays.asList("personaId"), Arrays.asList("id")));
         final HashSet<TableInfo.Index> _indicesTasks = new HashSet<TableInfo.Index>(1);
@@ -244,9 +254,25 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoTimeEntries + "\n"
                   + " Found:\n" + _existingTimeEntries);
         }
+        final HashMap<String, TableInfo.Column> _columnsPersonaOpenEvents = new HashMap<String, TableInfo.Column>(3);
+        _columnsPersonaOpenEvents.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsPersonaOpenEvents.put("personaId", new TableInfo.Column("personaId", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsPersonaOpenEvents.put("timestamp", new TableInfo.Column("timestamp", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysPersonaOpenEvents = new HashSet<TableInfo.ForeignKey>(1);
+        _foreignKeysPersonaOpenEvents.add(new TableInfo.ForeignKey("personas", "CASCADE", "NO ACTION", Arrays.asList("personaId"), Arrays.asList("id")));
+        final HashSet<TableInfo.Index> _indicesPersonaOpenEvents = new HashSet<TableInfo.Index>(2);
+        _indicesPersonaOpenEvents.add(new TableInfo.Index("index_persona_open_events_personaId", false, Arrays.asList("personaId"), Arrays.asList("ASC")));
+        _indicesPersonaOpenEvents.add(new TableInfo.Index("index_persona_open_events_timestamp", false, Arrays.asList("timestamp"), Arrays.asList("ASC")));
+        final TableInfo _infoPersonaOpenEvents = new TableInfo("persona_open_events", _columnsPersonaOpenEvents, _foreignKeysPersonaOpenEvents, _indicesPersonaOpenEvents);
+        final TableInfo _existingPersonaOpenEvents = TableInfo.read(db, "persona_open_events");
+        if (!_infoPersonaOpenEvents.equals(_existingPersonaOpenEvents)) {
+          return new RoomOpenHelper.ValidationResult(false, "persona_open_events(com.samsara.polymath.data.PersonaOpenEvent).\n"
+                  + " Expected:\n" + _infoPersonaOpenEvents + "\n"
+                  + " Found:\n" + _existingPersonaOpenEvents);
+        }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "90d97b9e9b00efb0bbfe6f281d0fab8a", "1202ce00ca8b3a5264a1f9cd70bb6d08");
+    }, "fc9320a24bcf2d7674a2deb53eb29740", "1994baab60b4193fe3be85bfc5a3b3b9");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
@@ -257,7 +283,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected InvalidationTracker createInvalidationTracker() {
     final HashMap<String, String> _shadowTablesMap = new HashMap<String, String>(0);
     final HashMap<String, Set<String>> _viewTables = new HashMap<String, Set<String>>(0);
-    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "personas","tasks","comments","persona_statistics","tags","persona_tags","time_entries");
+    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "personas","tasks","comments","persona_statistics","tags","persona_tags","time_entries","persona_open_events");
   }
 
   @Override
@@ -280,6 +306,7 @@ public final class AppDatabase_Impl extends AppDatabase {
       _db.execSQL("DELETE FROM `tags`");
       _db.execSQL("DELETE FROM `persona_tags`");
       _db.execSQL("DELETE FROM `time_entries`");
+      _db.execSQL("DELETE FROM `persona_open_events`");
       super.setTransactionSuccessful();
     } finally {
       super.endTransaction();
@@ -304,6 +331,7 @@ public final class AppDatabase_Impl extends AppDatabase {
     _typeConvertersMap.put(TagDao.class, TagDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(PersonaTagDao.class, PersonaTagDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(TimeEntryDao.class, TimeEntryDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(PersonaOpenEventDao.class, PersonaOpenEventDao_Impl.getRequiredConverters());
     return _typeConvertersMap;
   }
 
@@ -416,6 +444,20 @@ public final class AppDatabase_Impl extends AppDatabase {
           _timeEntryDao = new TimeEntryDao_Impl(this);
         }
         return _timeEntryDao;
+      }
+    }
+  }
+
+  @Override
+  public PersonaOpenEventDao personaOpenEventDao() {
+    if (_personaOpenEventDao != null) {
+      return _personaOpenEventDao;
+    } else {
+      synchronized(this) {
+        if(_personaOpenEventDao == null) {
+          _personaOpenEventDao = new PersonaOpenEventDao_Impl(this);
+        }
+        return _personaOpenEventDao;
       }
     }
   }

@@ -27,6 +27,12 @@ public final class DialogAddTaskBinding implements ViewBinding {
   private final LinearLayout rootView;
 
   @NonNull
+  public final MaterialCheckBox avoidCheckBox;
+
+  @NonNull
+  public final TextView avoidHintTextView;
+
+  @NonNull
   public final ImageView clearEndDateButton;
 
   @NonNull
@@ -78,6 +84,7 @@ public final class DialogAddTaskBinding implements ViewBinding {
   public final TextInputEditText taskTitleEditText;
 
   private DialogAddTaskBinding(@NonNull LinearLayout rootView,
+      @NonNull MaterialCheckBox avoidCheckBox, @NonNull TextView avoidHintTextView,
       @NonNull ImageView clearEndDateButton, @NonNull ChipGroup dayChipGroup,
       @NonNull LinearLayout endDateContainer, @NonNull TextView endDateLabel,
       @NonNull LinearLayout frequencyContainer, @NonNull TextView frequencyInfoLabel,
@@ -89,6 +96,8 @@ public final class DialogAddTaskBinding implements ViewBinding {
       @NonNull TextInputEditText taskDescriptionEditText,
       @NonNull TextInputEditText taskTitleEditText) {
     this.rootView = rootView;
+    this.avoidCheckBox = avoidCheckBox;
+    this.avoidHintTextView = avoidHintTextView;
     this.clearEndDateButton = clearEndDateButton;
     this.dayChipGroup = dayChipGroup;
     this.endDateContainer = endDateContainer;
@@ -135,6 +144,18 @@ public final class DialogAddTaskBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.avoidCheckBox;
+      MaterialCheckBox avoidCheckBox = ViewBindings.findChildViewById(rootView, id);
+      if (avoidCheckBox == null) {
+        break missingId;
+      }
+
+      id = R.id.avoidHintTextView;
+      TextView avoidHintTextView = ViewBindings.findChildViewById(rootView, id);
+      if (avoidHintTextView == null) {
+        break missingId;
+      }
+
       id = R.id.clearEndDateButton;
       ImageView clearEndDateButton = ViewBindings.findChildViewById(rootView, id);
       if (clearEndDateButton == null) {
@@ -237,11 +258,11 @@ public final class DialogAddTaskBinding implements ViewBinding {
         break missingId;
       }
 
-      return new DialogAddTaskBinding((LinearLayout) rootView, clearEndDateButton, dayChipGroup,
-          endDateContainer, endDateLabel, frequencyContainer, frequencyInfoLabel,
-          frequencyRadioGroup, monthIntervalContainer, monthIntervalPicker, monthIntervalSuffix,
-          radioCustom, radioDaily, radioMonthly, radioWeekly, recurringCheckBox,
-          taskDescriptionEditText, taskTitleEditText);
+      return new DialogAddTaskBinding((LinearLayout) rootView, avoidCheckBox, avoidHintTextView,
+          clearEndDateButton, dayChipGroup, endDateContainer, endDateLabel, frequencyContainer,
+          frequencyInfoLabel, frequencyRadioGroup, monthIntervalContainer, monthIntervalPicker,
+          monthIntervalSuffix, radioCustom, radioDaily, radioMonthly, radioWeekly,
+          recurringCheckBox, taskDescriptionEditText, taskTitleEditText);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -1,2 +1,2 @@
 #- File Locator -
-listingFile=../../../../outputs/apk/release/output-metadata.json
+listingFile=../../../../../../../../Library/CloudStorage/GoogleDrive-alapataravind@gmail.com/My Drive/release/output-metadata.json

@@ -43,6 +43,8 @@ public final class TagDao_Impl implements TagDao {
 
   private final SharedSQLiteStatement __preparedStmtOfUpdateTagOrder;
 
+  private final SharedSQLiteStatement __preparedStmtOfDeleteAllTags;
+
   public TagDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
     this.__insertionAdapterOfTag = new EntityInsertionAdapter<Tag>(__db) {
@@ -106,6 +108,14 @@ public final class TagDao_Impl implements TagDao {
       @NonNull
       public String createQuery() {
         final String _query = "UPDATE tags SET `order` = ? WHERE id = ?";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfDeleteAllTags = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "DELETE FROM tags";
         return _query;
       }
     };
@@ -188,6 +198,29 @@ public final class TagDao_Impl implements TagDao {
           }
         } finally {
           __preparedStmtOfUpdateTagOrder.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object deleteAllTags(final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfDeleteAllTags.acquire();
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfDeleteAllTags.release(_stmt);
         }
       }
     }, $completion);

@@ -4,6 +4,9 @@ package com.samsara.polymath.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -12,8 +15,10 @@ import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.samsara.polymath.R;
+import com.samsara.polymath.view.HeatmapView;
 import java.lang.NullPointerException;
 import java.lang.Override;
 import java.lang.String;
@@ -29,6 +34,24 @@ public final class ActivityTasksBinding implements ViewBinding {
   public final AppBarLayout appBarLayout;
 
   @NonNull
+  public final ImageView heatmapArrow;
+
+  @NonNull
+  public final MaterialCardView heatmapCard;
+
+  @NonNull
+  public final LinearLayout heatmapContent;
+
+  @NonNull
+  public final LinearLayout heatmapHeader;
+
+  @NonNull
+  public final TextView heatmapTitle;
+
+  @NonNull
+  public final HeatmapView personaHeatmapView;
+
+  @NonNull
   public final RecyclerView tasksRecyclerView;
 
   @NonNull
@@ -36,10 +59,19 @@ public final class ActivityTasksBinding implements ViewBinding {
 
   private ActivityTasksBinding(@NonNull ConstraintLayout rootView,
       @NonNull FloatingActionButton addTaskFab, @NonNull AppBarLayout appBarLayout,
+      @NonNull ImageView heatmapArrow, @NonNull MaterialCardView heatmapCard,
+      @NonNull LinearLayout heatmapContent, @NonNull LinearLayout heatmapHeader,
+      @NonNull TextView heatmapTitle, @NonNull HeatmapView personaHeatmapView,
       @NonNull RecyclerView tasksRecyclerView, @NonNull MaterialToolbar toolbar) {
     this.rootView = rootView;
     this.addTaskFab = addTaskFab;
     this.appBarLayout = appBarLayout;
+    this.heatmapArrow = heatmapArrow;
+    this.heatmapCard = heatmapCard;
+    this.heatmapContent = heatmapContent;
+    this.heatmapHeader = heatmapHeader;
+    this.heatmapTitle = heatmapTitle;
+    this.personaHeatmapView = personaHeatmapView;
     this.tasksRecyclerView = tasksRecyclerView;
     this.toolbar = toolbar;
   }
@@ -83,6 +115,42 @@ public final class ActivityTasksBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.heatmapArrow;
+      ImageView heatmapArrow = ViewBindings.findChildViewById(rootView, id);
+      if (heatmapArrow == null) {
+        break missingId;
+      }
+
+      id = R.id.heatmapCard;
+      MaterialCardView heatmapCard = ViewBindings.findChildViewById(rootView, id);
+      if (heatmapCard == null) {
+        break missingId;
+      }
+
+      id = R.id.heatmapContent;
+      LinearLayout heatmapContent = ViewBindings.findChildViewById(rootView, id);
+      if (heatmapContent == null) {
+        break missingId;
+      }
+
+      id = R.id.heatmapHeader;
+      LinearLayout heatmapHeader = ViewBindings.findChildViewById(rootView, id);
+      if (heatmapHeader == null) {
+        break missingId;
+      }
+
+      id = R.id.heatmapTitle;
+      TextView heatmapTitle = ViewBindings.findChildViewById(rootView, id);
+      if (heatmapTitle == null) {
+        break missingId;
+      }
+
+      id = R.id.personaHeatmapView;
+      HeatmapView personaHeatmapView = ViewBindings.findChildViewById(rootView, id);
+      if (personaHeatmapView == null) {
+        break missingId;
+      }
+
       id = R.id.tasksRecyclerView;
       RecyclerView tasksRecyclerView = ViewBindings.findChildViewById(rootView, id);
       if (tasksRecyclerView == null) {
@@ -96,7 +164,8 @@ public final class ActivityTasksBinding implements ViewBinding {
       }
 
       return new ActivityTasksBinding((ConstraintLayout) rootView, addTaskFab, appBarLayout,
-          tasksRecyclerView, toolbar);
+          heatmapArrow, heatmapCard, heatmapContent, heatmapHeader, heatmapTitle,
+          personaHeatmapView, tasksRecyclerView, toolbar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

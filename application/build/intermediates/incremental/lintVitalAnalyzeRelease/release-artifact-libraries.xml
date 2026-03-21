@@ -39,6 +39,19 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
+      name="androidx.viewpager2:viewpager2:1.1.0@aar"
+      jars="/Users/ragnor/.gradle/caches/8.11.1/transforms/4118fdb59204e3ca3599f2f7ec3c2341/transformed/jetified-viewpager2-1.1.0/jars/classes.jar"
+      resolved="androidx.viewpager2:viewpager2:1.1.0"
+      folder="/Users/ragnor/.gradle/caches/8.11.1/transforms/4118fdb59204e3ca3599f2f7ec3c2341/transformed/jetified-viewpager2-1.1.0"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
       name="androidx.biometric:biometric:1.1.0@aar"
       jars="/Users/ragnor/.gradle/caches/8.11.1/transforms/d4ce32ac96533711cc10a4843fa72bcd/transformed/biometric-1.1.0/jars/classes.jar"
       resolved="androidx.biometric:biometric:1.1.0"
@@ -52,10 +65,10 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
-      name="androidx.viewpager2:viewpager2:1.1.0-beta02@aar"
-      jars="/Users/ragnor/.gradle/caches/8.11.1/transforms/afe646716aa448c0f1062d6309f4cbbc/transformed/jetified-viewpager2-1.1.0-beta02/jars/classes.jar"
-      resolved="androidx.viewpager2:viewpager2:1.1.0-beta02"
-      folder="/Users/ragnor/.gradle/caches/8.11.1/transforms/afe646716aa448c0f1062d6309f4cbbc/transformed/jetified-viewpager2-1.1.0-beta02"
+      name="androidx.fragment:fragment:1.6.2@aar"
+      jars="/Users/ragnor/.gradle/caches/8.11.1/transforms/68903e4253ddfb67df3b076dbb25851e/transformed/fragment-1.6.2/jars/classes.jar"
+      resolved="androidx.fragment:fragment:1.6.2"
+      folder="/Users/ragnor/.gradle/caches/8.11.1/transforms/68903e4253ddfb67df3b076dbb25851e/transformed/fragment-1.6.2"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"
@@ -65,10 +78,10 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
-      name="androidx.fragment:fragment:1.3.6@aar"
-      jars="/Users/ragnor/.gradle/caches/8.11.1/transforms/8680feb5a8406041da75e8b148519b5f/transformed/fragment-1.3.6/jars/classes.jar"
-      resolved="androidx.fragment:fragment:1.3.6"
-      folder="/Users/ragnor/.gradle/caches/8.11.1/transforms/8680feb5a8406041da75e8b148519b5f/transformed/fragment-1.3.6"
+      name="androidx.fragment:fragment-ktx:1.6.2@aar"
+      jars="/Users/ragnor/.gradle/caches/8.11.1/transforms/3f2e9ce6198e58fa0c81772bd726ff6e/transformed/jetified-fragment-ktx-1.6.2/jars/classes.jar"
+      resolved="androidx.fragment:fragment-ktx:1.6.2"
+      folder="/Users/ragnor/.gradle/caches/8.11.1/transforms/3f2e9ce6198e58fa0c81772bd726ff6e/transformed/jetified-fragment-ktx-1.6.2"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"
@@ -82,6 +95,19 @@
       jars="/Users/ragnor/.gradle/caches/8.11.1/transforms/af615532afaf7a9a0ada2b8fc4fb286b/transformed/jetified-activity-1.8.0/jars/classes.jar"
       resolved="androidx.activity:activity:1.8.0"
       folder="/Users/ragnor/.gradle/caches/8.11.1/transforms/af615532afaf7a9a0ada2b8fc4fb286b/transformed/jetified-activity-1.8.0"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
+      name="androidx.activity:activity-ktx:1.8.0@aar"
+      jars="/Users/ragnor/.gradle/caches/8.11.1/transforms/06c4fc1a5209db36eb2b2f18944ff020/transformed/jetified-activity-ktx-1.8.0/jars/classes.jar"
+      resolved="androidx.activity:activity-ktx:1.8.0"
+      folder="/Users/ragnor/.gradle/caches/8.11.1/transforms/06c4fc1a5209db36eb2b2f18944ff020/transformed/jetified-activity-ktx-1.8.0"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"
@@ -260,6 +286,19 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
+      name="androidx.lifecycle:lifecycle-runtime-ktx:2.7.0@aar"
+      jars="/Users/ragnor/.gradle/caches/8.11.1/transforms/77df97e302d96e66a141c329ce860f82/transformed/jetified-lifecycle-runtime-ktx-2.7.0/jars/classes.jar"
+      resolved="androidx.lifecycle:lifecycle-runtime-ktx:2.7.0"
+      folder="/Users/ragnor/.gradle/caches/8.11.1/transforms/77df97e302d96e66a141c329ce860f82/transformed/jetified-lifecycle-runtime-ktx-2.7.0"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
       name="androidx.lifecycle:lifecycle-common:2.7.0@jar"
       jars="/Users/ragnor/.gradle/caches/modules-2/files-2.1/androidx.lifecycle/lifecycle-common/2.7.0/85334205d65cca70ed0109c3acbd29e22a2d9cb1/lifecycle-common-2.7.0.jar"
       resolved="androidx.lifecycle:lifecycle-common:2.7.0"/>
@@ -411,6 +450,19 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
+      name="androidx.savedstate:savedstate-ktx:1.2.1@aar"
+      jars="/Users/ragnor/.gradle/caches/8.11.1/transforms/45e4f4a6bf598d21201daedd34f292ba/transformed/jetified-savedstate-ktx-1.2.1/jars/classes.jar"
+      resolved="androidx.savedstate:savedstate-ktx:1.2.1"
+      folder="/Users/ragnor/.gradle/caches/8.11.1/transforms/45e4f4a6bf598d21201daedd34f292ba/transformed/jetified-savedstate-ktx-1.2.1"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
+  <library
       name="androidx.savedstate:savedstate:1.2.1@aar"
       jars="/Users/ragnor/.gradle/caches/8.11.1/transforms/a26d5dd99707b81ba3db81ebfa988e9c/transformed/jetified-savedstate-1.2.1/jars/classes.jar"
       resolved="androidx.savedstate:savedstate:1.2.1"
@@ -424,10 +476,10 @@
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
   <library
-      name="androidx.annotation:annotation-experimental:1.3.0@aar"
-      jars="/Users/ragnor/.gradle/caches/8.11.1/transforms/14f78538338805497a0eb1f1bca497a1/transformed/jetified-annotation-experimental-1.3.0/jars/classes.jar"
-      resolved="androidx.annotation:annotation-experimental:1.3.0"
-      folder="/Users/ragnor/.gradle/caches/8.11.1/transforms/14f78538338805497a0eb1f1bca497a1/transformed/jetified-annotation-experimental-1.3.0"
+      name="androidx.annotation:annotation-experimental:1.4.0@aar"
+      jars="/Users/ragnor/.gradle/caches/8.11.1/transforms/3766615151dcf73fcc73354ced2f495f/transformed/jetified-annotation-experimental-1.4.0/jars/classes.jar"
+      resolved="androidx.annotation:annotation-experimental:1.4.0"
+      folder="/Users/ragnor/.gradle/caches/8.11.1/transforms/3766615151dcf73fcc73354ced2f495f/transformed/jetified-annotation-experimental-1.4.0"
       manifest="AndroidManifest.xml"
       resFolder="res"
       assetsFolder="assets"
@@ -436,6 +488,10 @@
       symbolFile="R.txt"
       externalAnnotations="annotations.zip"
       proguardRules="proguard.txt"/>
+  <library
+      name="androidx.collection:collection-ktx:1.1.0@jar"
+      jars="/Users/ragnor/.gradle/caches/modules-2/files-2.1/androidx.collection/collection-ktx/1.1.0/f807b2f366f7b75142a67d2f3c10031065b5168/collection-ktx-1.1.0.jar"
+      resolved="androidx.collection:collection-ktx:1.1.0"/>
   <library
       name="androidx.security:security-crypto:1.1.0-alpha06@aar"
       jars="/Users/ragnor/.gradle/caches/8.11.1/transforms/beb6ed6dda2eab0eb287f4aad1eca58a/transformed/jetified-security-crypto-1.1.0-alpha06/jars/classes.jar"
@@ -628,6 +684,19 @@
       name="com.google.code.gson:gson:2.10.1@jar"
       jars="/Users/ragnor/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.10.1/b3add478d4382b78ea20b1671390a858002feb6c/gson-2.10.1.jar"
       resolved="com.google.code.gson:gson:2.10.1"/>
+  <library
+      name="com.github.PhilJay:MPAndroidChart:v3.1.0@aar"
+      jars="/Users/ragnor/.gradle/caches/8.11.1/transforms/b93dfd25214f1d9753e94cca728392c1/transformed/jetified-MPAndroidChart-v3.1.0/jars/classes.jar"
+      resolved="com.github.PhilJay:MPAndroidChart:v3.1.0"
+      folder="/Users/ragnor/.gradle/caches/8.11.1/transforms/b93dfd25214f1d9753e94cca728392c1/transformed/jetified-MPAndroidChart-v3.1.0"
+      manifest="AndroidManifest.xml"
+      resFolder="res"
+      assetsFolder="assets"
+      lintJar="lint.jar"
+      publicResources="public.txt"
+      symbolFile="R.txt"
+      externalAnnotations="annotations.zip"
+      proguardRules="proguard.txt"/>
   <library
       name="org.jetbrains:annotations:23.0.0@jar"
       jars="/Users/ragnor/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/23.0.0/8cc20c07506ec18e0834947b84a864bfc094484e/annotations-23.0.0.jar"

@@ -1,0 +1,6 @@
+com.samsara.polymath.test.application-jetified-annotation-experimental-1.4.0-0 /Users/ragnor/.gradle/caches/8.11.1/transforms/3766615151dcf73fcc73354ced2f495f/transformed/jetified-annotation-experimental-1.4.0/res
+com.samsara.polymath.test.application-jetified-core-1.5.0-1 /Users/ragnor/.gradle/caches/8.11.1/transforms/bdf504499aa6ddfab77c67a9d504a703/transformed/jetified-core-1.5.0/res
+com.samsara.polymath.test.application-androidTest-2 /Users/ragnor/StudioProjects/Samsara/application/build/generated/res/resValues/androidTest/debug
+com.samsara.polymath.test.application-mergeDebugAndroidTestResources-3 /Users/ragnor/StudioProjects/Samsara/application/build/intermediates/incremental/debugAndroidTest/mergeDebugAndroidTestResources/merged.dir
+com.samsara.polymath.test.application-mergeDebugAndroidTestResources-4 /Users/ragnor/StudioProjects/Samsara/application/build/intermediates/incremental/debugAndroidTest/mergeDebugAndroidTestResources/stripped.dir
+com.samsara.polymath.test.application-debugAndroidTest-5 /Users/ragnor/StudioProjects/Samsara/application/build/intermediates/merged_res/debugAndroidTest/mergeDebugAndroidTestResources

@@ -408,7 +408,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
-    private fun setupMenuButton() {
+    private fun setupMenuButton() { 
         binding.menuButton.setOnClickListener { view ->
             val contextWrapper = android.view.ContextThemeWrapper(this, R.style.PopupMenuTheme)
             val popup = androidx.appcompat.widget.PopupMenu(contextWrapper, view)

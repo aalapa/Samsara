@@ -49,13 +49,15 @@ public final class TaskDao_Impl implements TaskDao {
 
   private final SharedSQLiteStatement __preparedStmtOfUpdateTaskCompletion;
 
+  private final SharedSQLiteStatement __preparedStmtOfUpdateRecurringGroupId;
+
   public TaskDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
     this.__insertionAdapterOfTask = new EntityInsertionAdapter<Task>(__db) {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR ABORT INTO `tasks` (`id`,`personaId`,`title`,`description`,`createdAt`,`completedAt`,`isCompleted`,`isRecurring`,`order`,`backgroundColor`,`previousOrder`,`rankStatus`,`recurringFrequency`,`recurringDays`,`endDate`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        return "INSERT OR ABORT INTO `tasks` (`id`,`personaId`,`title`,`description`,`createdAt`,`completedAt`,`isCompleted`,`isRecurring`,`order`,`backgroundColor`,`previousOrder`,`rankStatus`,`recurringFrequency`,`recurringDays`,`endDate`,`nextDueDate`,`recurringGroupId`,`isAvoidTask`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -95,6 +97,18 @@ public final class TaskDao_Impl implements TaskDao {
         } else {
           statement.bindLong(15, entity.getEndDate());
         }
+        if (entity.getNextDueDate() == null) {
+          statement.bindNull(16);
+        } else {
+          statement.bindLong(16, entity.getNextDueDate());
+        }
+        if (entity.getRecurringGroupId() == null) {
+          statement.bindNull(17);
+        } else {
+          statement.bindLong(17, entity.getRecurringGroupId());
+        }
+        final int _tmp_3 = entity.isAvoidTask() ? 1 : 0;
+        statement.bindLong(18, _tmp_3);
       }
     };
     this.__deletionAdapterOfTask = new EntityDeletionOrUpdateAdapter<Task>(__db) {
@@ -114,7 +128,7 @@ public final class TaskDao_Impl implements TaskDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `tasks` SET `id` = ?,`personaId` = ?,`title` = ?,`description` = ?,`createdAt` = ?,`completedAt` = ?,`isCompleted` = ?,`isRecurring` = ?,`order` = ?,`backgroundColor` = ?,`previousOrder` = ?,`rankStatus` = ?,`recurringFrequency` = ?,`recurringDays` = ?,`endDate` = ? WHERE `id` = ?";
+        return "UPDATE OR ABORT `tasks` SET `id` = ?,`personaId` = ?,`title` = ?,`description` = ?,`createdAt` = ?,`completedAt` = ?,`isCompleted` = ?,`isRecurring` = ?,`order` = ?,`backgroundColor` = ?,`previousOrder` = ?,`rankStatus` = ?,`recurringFrequency` = ?,`recurringDays` = ?,`endDate` = ?,`nextDueDate` = ?,`recurringGroupId` = ?,`isAvoidTask` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -154,7 +168,19 @@ public final class TaskDao_Impl implements TaskDao {
         } else {
           statement.bindLong(15, entity.getEndDate());
         }
-        statement.bindLong(16, entity.getId());
+        if (entity.getNextDueDate() == null) {
+          statement.bindNull(16);
+        } else {
+          statement.bindLong(16, entity.getNextDueDate());
+        }
+        if (entity.getRecurringGroupId() == null) {
+          statement.bindNull(17);
+        } else {
+          statement.bindLong(17, entity.getRecurringGroupId());
+        }
+        final int _tmp_3 = entity.isAvoidTask() ? 1 : 0;
+        statement.bindLong(18, _tmp_3);
+        statement.bindLong(19, entity.getId());
       }
     };
     this.__preparedStmtOfUpdateTaskOrder = new SharedSQLiteStatement(__db) {
@@ -178,6 +204,14 @@ public final class TaskDao_Impl implements TaskDao {
       @NonNull
       public String createQuery() {
         final String _query = "UPDATE tasks SET isCompleted = ?, completedAt = ? WHERE id = ?";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfUpdateRecurringGroupId = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "UPDATE tasks SET recurringGroupId = ? WHERE id = ?";
         return _query;
       }
     };
@@ -333,6 +367,34 @@ public final class TaskDao_Impl implements TaskDao {
   }
 
   @Override
+  public Object updateRecurringGroupId(final long id, final long recurringGroupId,
+      final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfUpdateRecurringGroupId.acquire();
+        int _argIndex = 1;
+        _stmt.bindLong(_argIndex, recurringGroupId);
+        _argIndex = 2;
+        _stmt.bindLong(_argIndex, id);
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfUpdateRecurringGroupId.release(_stmt);
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
   public Flow<List<Task>> getTasksByPersona(final long personaId) {
     final String _sql = "SELECT * FROM tasks WHERE personaId = ? ORDER BY `order` ASC, createdAt ASC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
@@ -359,6 +421,9 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfRecurringFrequency = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringFrequency");
           final int _cursorIndexOfRecurringDays = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringDays");
           final int _cursorIndexOfEndDate = CursorUtil.getColumnIndexOrThrow(_cursor, "endDate");
+          final int _cursorIndexOfNextDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "nextDueDate");
+          final int _cursorIndexOfRecurringGroupId = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringGroupId");
+          final int _cursorIndexOfIsAvoidTask = CursorUtil.getColumnIndexOrThrow(_cursor, "isAvoidTask");
           final List<Task> _result = new ArrayList<Task>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Task _item;
@@ -414,7 +479,23 @@ public final class TaskDao_Impl implements TaskDao {
             } else {
               _tmpEndDate = _cursor.getLong(_cursorIndexOfEndDate);
             }
-            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate);
+            final Long _tmpNextDueDate;
+            if (_cursor.isNull(_cursorIndexOfNextDueDate)) {
+              _tmpNextDueDate = null;
+            } else {
+              _tmpNextDueDate = _cursor.getLong(_cursorIndexOfNextDueDate);
+            }
+            final Long _tmpRecurringGroupId;
+            if (_cursor.isNull(_cursorIndexOfRecurringGroupId)) {
+              _tmpRecurringGroupId = null;
+            } else {
+              _tmpRecurringGroupId = _cursor.getLong(_cursorIndexOfRecurringGroupId);
+            }
+            final boolean _tmpIsAvoidTask;
+            final int _tmp_3;
+            _tmp_3 = _cursor.getInt(_cursorIndexOfIsAvoidTask);
+            _tmpIsAvoidTask = _tmp_3 != 0;
+            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate,_tmpNextDueDate,_tmpRecurringGroupId,_tmpIsAvoidTask);
             _result.add(_item);
           }
           return _result;
@@ -455,6 +536,9 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfRecurringFrequency = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringFrequency");
           final int _cursorIndexOfRecurringDays = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringDays");
           final int _cursorIndexOfEndDate = CursorUtil.getColumnIndexOrThrow(_cursor, "endDate");
+          final int _cursorIndexOfNextDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "nextDueDate");
+          final int _cursorIndexOfRecurringGroupId = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringGroupId");
+          final int _cursorIndexOfIsAvoidTask = CursorUtil.getColumnIndexOrThrow(_cursor, "isAvoidTask");
           final List<Task> _result = new ArrayList<Task>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Task _item;
@@ -510,7 +594,23 @@ public final class TaskDao_Impl implements TaskDao {
             } else {
               _tmpEndDate = _cursor.getLong(_cursorIndexOfEndDate);
             }
-            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate);
+            final Long _tmpNextDueDate;
+            if (_cursor.isNull(_cursorIndexOfNextDueDate)) {
+              _tmpNextDueDate = null;
+            } else {
+              _tmpNextDueDate = _cursor.getLong(_cursorIndexOfNextDueDate);
+            }
+            final Long _tmpRecurringGroupId;
+            if (_cursor.isNull(_cursorIndexOfRecurringGroupId)) {
+              _tmpRecurringGroupId = null;
+            } else {
+              _tmpRecurringGroupId = _cursor.getLong(_cursorIndexOfRecurringGroupId);
+            }
+            final boolean _tmpIsAvoidTask;
+            final int _tmp_3;
+            _tmp_3 = _cursor.getInt(_cursorIndexOfIsAvoidTask);
+            _tmpIsAvoidTask = _tmp_3 != 0;
+            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate,_tmpNextDueDate,_tmpRecurringGroupId,_tmpIsAvoidTask);
             _result.add(_item);
           }
           return _result;
@@ -554,6 +654,9 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfRecurringFrequency = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringFrequency");
           final int _cursorIndexOfRecurringDays = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringDays");
           final int _cursorIndexOfEndDate = CursorUtil.getColumnIndexOrThrow(_cursor, "endDate");
+          final int _cursorIndexOfNextDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "nextDueDate");
+          final int _cursorIndexOfRecurringGroupId = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringGroupId");
+          final int _cursorIndexOfIsAvoidTask = CursorUtil.getColumnIndexOrThrow(_cursor, "isAvoidTask");
           final Task _result;
           if (_cursor.moveToFirst()) {
             final long _tmpId;
@@ -608,7 +711,23 @@ public final class TaskDao_Impl implements TaskDao {
             } else {
               _tmpEndDate = _cursor.getLong(_cursorIndexOfEndDate);
             }
-            _result = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate);
+            final Long _tmpNextDueDate;
+            if (_cursor.isNull(_cursorIndexOfNextDueDate)) {
+              _tmpNextDueDate = null;
+            } else {
+              _tmpNextDueDate = _cursor.getLong(_cursorIndexOfNextDueDate);
+            }
+            final Long _tmpRecurringGroupId;
+            if (_cursor.isNull(_cursorIndexOfRecurringGroupId)) {
+              _tmpRecurringGroupId = null;
+            } else {
+              _tmpRecurringGroupId = _cursor.getLong(_cursorIndexOfRecurringGroupId);
+            }
+            final boolean _tmpIsAvoidTask;
+            final int _tmp_3;
+            _tmp_3 = _cursor.getInt(_cursorIndexOfIsAvoidTask);
+            _tmpIsAvoidTask = _tmp_3 != 0;
+            _result = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate,_tmpNextDueDate,_tmpRecurringGroupId,_tmpIsAvoidTask);
           } else {
             _result = null;
           }
@@ -624,7 +743,7 @@ public final class TaskDao_Impl implements TaskDao {
   @Override
   public Object getCompletedTaskCount(final long personaId,
       final Continuation<? super Integer> $completion) {
-    final String _sql = "SELECT COUNT(*) FROM tasks WHERE personaId = ? AND isCompleted = 1";
+    final String _sql = "SELECT COUNT(*) FROM tasks WHERE personaId = ? AND isCompleted = 1 AND isAvoidTask = 0";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
     _statement.bindLong(_argIndex, personaId);
@@ -681,6 +800,9 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfRecurringFrequency = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringFrequency");
           final int _cursorIndexOfRecurringDays = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringDays");
           final int _cursorIndexOfEndDate = CursorUtil.getColumnIndexOrThrow(_cursor, "endDate");
+          final int _cursorIndexOfNextDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "nextDueDate");
+          final int _cursorIndexOfRecurringGroupId = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringGroupId");
+          final int _cursorIndexOfIsAvoidTask = CursorUtil.getColumnIndexOrThrow(_cursor, "isAvoidTask");
           final List<Task> _result = new ArrayList<Task>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Task _item;
@@ -736,7 +858,23 @@ public final class TaskDao_Impl implements TaskDao {
             } else {
               _tmpEndDate = _cursor.getLong(_cursorIndexOfEndDate);
             }
-            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate);
+            final Long _tmpNextDueDate;
+            if (_cursor.isNull(_cursorIndexOfNextDueDate)) {
+              _tmpNextDueDate = null;
+            } else {
+              _tmpNextDueDate = _cursor.getLong(_cursorIndexOfNextDueDate);
+            }
+            final Long _tmpRecurringGroupId;
+            if (_cursor.isNull(_cursorIndexOfRecurringGroupId)) {
+              _tmpRecurringGroupId = null;
+            } else {
+              _tmpRecurringGroupId = _cursor.getLong(_cursorIndexOfRecurringGroupId);
+            }
+            final boolean _tmpIsAvoidTask;
+            final int _tmp_3;
+            _tmp_3 = _cursor.getInt(_cursorIndexOfIsAvoidTask);
+            _tmpIsAvoidTask = _tmp_3 != 0;
+            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate,_tmpNextDueDate,_tmpRecurringGroupId,_tmpIsAvoidTask);
             _result.add(_item);
           }
           return _result;
@@ -773,6 +911,9 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfRecurringFrequency = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringFrequency");
           final int _cursorIndexOfRecurringDays = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringDays");
           final int _cursorIndexOfEndDate = CursorUtil.getColumnIndexOrThrow(_cursor, "endDate");
+          final int _cursorIndexOfNextDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "nextDueDate");
+          final int _cursorIndexOfRecurringGroupId = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringGroupId");
+          final int _cursorIndexOfIsAvoidTask = CursorUtil.getColumnIndexOrThrow(_cursor, "isAvoidTask");
           final List<Task> _result = new ArrayList<Task>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Task _item;
@@ -828,7 +969,23 @@ public final class TaskDao_Impl implements TaskDao {
             } else {
               _tmpEndDate = _cursor.getLong(_cursorIndexOfEndDate);
             }
-            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate);
+            final Long _tmpNextDueDate;
+            if (_cursor.isNull(_cursorIndexOfNextDueDate)) {
+              _tmpNextDueDate = null;
+            } else {
+              _tmpNextDueDate = _cursor.getLong(_cursorIndexOfNextDueDate);
+            }
+            final Long _tmpRecurringGroupId;
+            if (_cursor.isNull(_cursorIndexOfRecurringGroupId)) {
+              _tmpRecurringGroupId = null;
+            } else {
+              _tmpRecurringGroupId = _cursor.getLong(_cursorIndexOfRecurringGroupId);
+            }
+            final boolean _tmpIsAvoidTask;
+            final int _tmp_3;
+            _tmp_3 = _cursor.getInt(_cursorIndexOfIsAvoidTask);
+            _tmpIsAvoidTask = _tmp_3 != 0;
+            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate,_tmpNextDueDate,_tmpRecurringGroupId,_tmpIsAvoidTask);
             _result.add(_item);
           }
           return _result;
@@ -869,6 +1026,9 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfRecurringFrequency = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringFrequency");
           final int _cursorIndexOfRecurringDays = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringDays");
           final int _cursorIndexOfEndDate = CursorUtil.getColumnIndexOrThrow(_cursor, "endDate");
+          final int _cursorIndexOfNextDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "nextDueDate");
+          final int _cursorIndexOfRecurringGroupId = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringGroupId");
+          final int _cursorIndexOfIsAvoidTask = CursorUtil.getColumnIndexOrThrow(_cursor, "isAvoidTask");
           final List<Task> _result = new ArrayList<Task>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Task _item;
@@ -924,7 +1084,23 @@ public final class TaskDao_Impl implements TaskDao {
             } else {
               _tmpEndDate = _cursor.getLong(_cursorIndexOfEndDate);
             }
-            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate);
+            final Long _tmpNextDueDate;
+            if (_cursor.isNull(_cursorIndexOfNextDueDate)) {
+              _tmpNextDueDate = null;
+            } else {
+              _tmpNextDueDate = _cursor.getLong(_cursorIndexOfNextDueDate);
+            }
+            final Long _tmpRecurringGroupId;
+            if (_cursor.isNull(_cursorIndexOfRecurringGroupId)) {
+              _tmpRecurringGroupId = null;
+            } else {
+              _tmpRecurringGroupId = _cursor.getLong(_cursorIndexOfRecurringGroupId);
+            }
+            final boolean _tmpIsAvoidTask;
+            final int _tmp_3;
+            _tmp_3 = _cursor.getInt(_cursorIndexOfIsAvoidTask);
+            _tmpIsAvoidTask = _tmp_3 != 0;
+            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate,_tmpNextDueDate,_tmpRecurringGroupId,_tmpIsAvoidTask);
             _result.add(_item);
           }
           return _result;
@@ -971,6 +1147,9 @@ public final class TaskDao_Impl implements TaskDao {
           final int _cursorIndexOfRecurringFrequency = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringFrequency");
           final int _cursorIndexOfRecurringDays = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringDays");
           final int _cursorIndexOfEndDate = CursorUtil.getColumnIndexOrThrow(_cursor, "endDate");
+          final int _cursorIndexOfNextDueDate = CursorUtil.getColumnIndexOrThrow(_cursor, "nextDueDate");
+          final int _cursorIndexOfRecurringGroupId = CursorUtil.getColumnIndexOrThrow(_cursor, "recurringGroupId");
+          final int _cursorIndexOfIsAvoidTask = CursorUtil.getColumnIndexOrThrow(_cursor, "isAvoidTask");
           final List<Task> _result = new ArrayList<Task>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final Task _item;
@@ -1026,7 +1205,109 @@ public final class TaskDao_Impl implements TaskDao {
             } else {
               _tmpEndDate = _cursor.getLong(_cursorIndexOfEndDate);
             }
-            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate);
+            final Long _tmpNextDueDate;
+            if (_cursor.isNull(_cursorIndexOfNextDueDate)) {
+              _tmpNextDueDate = null;
+            } else {
+              _tmpNextDueDate = _cursor.getLong(_cursorIndexOfNextDueDate);
+            }
+            final Long _tmpRecurringGroupId;
+            if (_cursor.isNull(_cursorIndexOfRecurringGroupId)) {
+              _tmpRecurringGroupId = null;
+            } else {
+              _tmpRecurringGroupId = _cursor.getLong(_cursorIndexOfRecurringGroupId);
+            }
+            final boolean _tmpIsAvoidTask;
+            final int _tmp_3;
+            _tmp_3 = _cursor.getInt(_cursorIndexOfIsAvoidTask);
+            _tmpIsAvoidTask = _tmp_3 != 0;
+            _item = new Task(_tmpId,_tmpPersonaId,_tmpTitle,_tmpDescription,_tmpCreatedAt,_tmpCompletedAt,_tmpIsCompleted,_tmpIsRecurring,_tmpOrder,_tmpBackgroundColor,_tmpPreviousOrder,_tmpRankStatus,_tmpRecurringFrequency,_tmpRecurringDays,_tmpEndDate,_tmpNextDueDate,_tmpRecurringGroupId,_tmpIsAvoidTask);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object getDailyCompletionsByPersona(final long personaId, final long sinceMillis,
+      final Continuation<? super List<DailyCompletionCount>> $completion) {
+    final String _sql = "\n"
+            + "        SELECT (completedAt / 86400000) * 86400000 AS dayMillis,\n"
+            + "               COUNT(*) AS completionCount\n"
+            + "        FROM tasks\n"
+            + "        WHERE personaId = ? AND isCompleted = 1 AND isAvoidTask = 0 AND completedAt IS NOT NULL AND completedAt >= ?\n"
+            + "        GROUP BY completedAt / 86400000\n"
+            + "        ORDER BY dayMillis ASC\n"
+            + "    ";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 2);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, personaId);
+    _argIndex = 2;
+    _statement.bindLong(_argIndex, sinceMillis);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<DailyCompletionCount>>() {
+      @Override
+      @NonNull
+      public List<DailyCompletionCount> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfDayMillis = 0;
+          final int _cursorIndexOfCompletionCount = 1;
+          final List<DailyCompletionCount> _result = new ArrayList<DailyCompletionCount>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final DailyCompletionCount _item;
+            final long _tmpDayMillis;
+            _tmpDayMillis = _cursor.getLong(_cursorIndexOfDayMillis);
+            final long _tmpCompletionCount;
+            _tmpCompletionCount = _cursor.getLong(_cursorIndexOfCompletionCount);
+            _item = new DailyCompletionCount(_tmpDayMillis,_tmpCompletionCount);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object getDailyCompletionsGlobal(final long sinceMillis,
+      final Continuation<? super List<DailyCompletionCount>> $completion) {
+    final String _sql = "\n"
+            + "        SELECT (completedAt / 86400000) * 86400000 AS dayMillis,\n"
+            + "               COUNT(*) AS completionCount\n"
+            + "        FROM tasks\n"
+            + "        WHERE isCompleted = 1 AND isAvoidTask = 0 AND completedAt IS NOT NULL AND completedAt >= ?\n"
+            + "        GROUP BY completedAt / 86400000\n"
+            + "        ORDER BY dayMillis ASC\n"
+            + "    ";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, sinceMillis);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<DailyCompletionCount>>() {
+      @Override
+      @NonNull
+      public List<DailyCompletionCount> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfDayMillis = 0;
+          final int _cursorIndexOfCompletionCount = 1;
+          final List<DailyCompletionCount> _result = new ArrayList<DailyCompletionCount>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final DailyCompletionCount _item;
+            final long _tmpDayMillis;
+            _tmpDayMillis = _cursor.getLong(_cursorIndexOfDayMillis);
+            final long _tmpCompletionCount;
+            _tmpCompletionCount = _cursor.getLong(_cursorIndexOfCompletionCount);
+            _item = new DailyCompletionCount(_tmpDayMillis,_tmpCompletionCount);
             _result.add(_item);
           }
           return _result;
