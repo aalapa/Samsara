@@ -645,8 +645,8 @@ class TasksActivity : AppCompatActivity() {
                 commentAdapter.submitList(comments)
                 // Scroll to bottom to show newest comment
                 if (comments.isNotEmpty()) {
-                    dialogBinding.commentsRecyclerView.post {
-                        dialogBinding.commentsRecyclerView.smoothScrollToPosition(comments.size - 1)
+                    dialogBinding.nestedScrollView.post {
+                        dialogBinding.nestedScrollView.fullScroll(android.view.View.FOCUS_DOWN)
                     }
                 }
             }
@@ -678,12 +678,18 @@ class TasksActivity : AppCompatActivity() {
                     commentViewModel.insertComment(task.id, commentText)
                     dialogBinding.commentEditText.text?.clear()
                     dialogBinding.commentEditText.requestFocus()
+                    dialogBinding.nestedScrollView.post {
+                        dialogBinding.nestedScrollView.fullScroll(android.view.View.FOCUS_DOWN)
+                    }
                     // Don't dismiss - keep dialog open for more comments
                 }
             }
 
-            // Focus on comment input
+            // Focus on comment input and scroll to it (in case comments fill the visible area)
             dialogBinding.commentEditText.requestFocus()
+            dialogBinding.nestedScrollView.post {
+                dialogBinding.nestedScrollView.fullScroll(android.view.View.FOCUS_DOWN)
+            }
         }
 
         // Cancel flow collection when dialog is dismissed to avoid observer leaks
