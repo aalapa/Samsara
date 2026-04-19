@@ -4,14 +4,15 @@ package com.samsara.polymath.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.samsara.polymath.R;
 import com.samsara.polymath.view.CompletionBarChartView;
 import java.lang.NullPointerException;
@@ -20,10 +21,13 @@ import java.lang.String;
 
 public final class DialogTaskCommentsBinding implements ViewBinding {
   @NonNull
-  private final LinearLayout rootView;
+  private final NestedScrollView rootView;
 
   @NonNull
   public final TextInputEditText commentEditText;
+
+  @NonNull
+  public final TextInputLayout commentInputLayout;
 
   @NonNull
   public final RecyclerView commentsRecyclerView;
@@ -32,21 +36,28 @@ public final class DialogTaskCommentsBinding implements ViewBinding {
   public final CompletionBarChartView completionBarChart;
 
   @NonNull
+  public final NestedScrollView nestedScrollView;
+
+  @NonNull
   public final TextView taskTitleTextView;
 
-  private DialogTaskCommentsBinding(@NonNull LinearLayout rootView,
-      @NonNull TextInputEditText commentEditText, @NonNull RecyclerView commentsRecyclerView,
-      @NonNull CompletionBarChartView completionBarChart, @NonNull TextView taskTitleTextView) {
+  private DialogTaskCommentsBinding(@NonNull NestedScrollView rootView,
+      @NonNull TextInputEditText commentEditText, @NonNull TextInputLayout commentInputLayout,
+      @NonNull RecyclerView commentsRecyclerView,
+      @NonNull CompletionBarChartView completionBarChart,
+      @NonNull NestedScrollView nestedScrollView, @NonNull TextView taskTitleTextView) {
     this.rootView = rootView;
     this.commentEditText = commentEditText;
+    this.commentInputLayout = commentInputLayout;
     this.commentsRecyclerView = commentsRecyclerView;
     this.completionBarChart = completionBarChart;
+    this.nestedScrollView = nestedScrollView;
     this.taskTitleTextView = taskTitleTextView;
   }
 
   @Override
   @NonNull
-  public LinearLayout getRoot() {
+  public NestedScrollView getRoot() {
     return rootView;
   }
 
@@ -77,6 +88,12 @@ public final class DialogTaskCommentsBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.commentInputLayout;
+      TextInputLayout commentInputLayout = ViewBindings.findChildViewById(rootView, id);
+      if (commentInputLayout == null) {
+        break missingId;
+      }
+
       id = R.id.commentsRecyclerView;
       RecyclerView commentsRecyclerView = ViewBindings.findChildViewById(rootView, id);
       if (commentsRecyclerView == null) {
@@ -89,14 +106,17 @@ public final class DialogTaskCommentsBinding implements ViewBinding {
         break missingId;
       }
 
+      NestedScrollView nestedScrollView = (NestedScrollView) rootView;
+
       id = R.id.taskTitleTextView;
       TextView taskTitleTextView = ViewBindings.findChildViewById(rootView, id);
       if (taskTitleTextView == null) {
         break missingId;
       }
 
-      return new DialogTaskCommentsBinding((LinearLayout) rootView, commentEditText,
-          commentsRecyclerView, completionBarChart, taskTitleTextView);
+      return new DialogTaskCommentsBinding((NestedScrollView) rootView, commentEditText,
+          commentInputLayout, commentsRecyclerView, completionBarChart, nestedScrollView,
+          taskTitleTextView);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

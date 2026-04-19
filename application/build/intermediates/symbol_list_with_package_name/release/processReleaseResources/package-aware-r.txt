@@ -3286,6 +3286,7 @@ id closest
 id collapseActionView
 id commentDateTextView
 id commentEditText
+id commentInputLayout
 id commentTextTextView
 id commentsRecyclerView
 id completeButton
@@ -3551,6 +3552,7 @@ id needsAttentionCard1
 id needsAttentionCard2
 id needsAttentionContent
 id needsAttentionHeader
+id nestedScrollView
 id never
 id neverCompleteToEnd
 id neverCompleteToStart
