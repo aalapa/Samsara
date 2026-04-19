@@ -22,6 +22,7 @@ import com.samsara.polymath.adapter.DailyTaskAdapter
 import com.samsara.polymath.adapter.DailyTaskItem
 import com.samsara.polymath.adapter.GtdListItem
 import com.samsara.polymath.adapter.PersonaAdapter
+import com.samsara.polymath.data.DecayLevel
 import com.samsara.polymath.data.AppDatabase
 import com.samsara.polymath.data.Comment
 import com.samsara.polymath.data.ExportData
@@ -505,8 +506,7 @@ class MainActivity : AppCompatActivity() {
             },
             onPersonaToggleFocus = { persona ->
                 if (!persona.isFocused) {
-                    // Check focus limit before adding
-                    val currentFocusedCount = adapter.currentList.count { it.persona.isFocused }
+                    val currentFocusedCount = adapter.countPersonas { it.persona.isFocused }
                     if (currentFocusedCount >= 7) {
                         Toast.makeText(this, getString(R.string.focus_limit_reached), Toast.LENGTH_SHORT).show()
                         return@PersonaAdapter
@@ -516,8 +516,7 @@ class MainActivity : AppCompatActivity() {
             },
             onPersonaToggleChakra = { persona ->
                 if (!persona.isChakra) {
-                    // Check chakra limit before adding
-                    val currentChakraCount = adapter.currentList.count { it.persona.isChakra }
+                    val currentChakraCount = adapter.countPersonas { it.persona.isChakra }
                     if (currentChakraCount >= 7) {
                         Toast.makeText(this, getString(R.string.chakra_limit_reached), Toast.LENGTH_SHORT).show()
                         return@PersonaAdapter
@@ -549,32 +548,19 @@ class MainActivity : AppCompatActivity() {
     private fun observePersonas() {
         viewModel.getAllPersonasWithTaskCount().observe(this) { personasWithCount ->
             val filteredList = when {
-                isFocusMode -> {
-                    // Show only focused personas
-                    personasWithCount.filter { it.persona.isFocused }
-                }
-                isChakraMode -> {
-                    // Show only chakra personas
-                    personasWithCount.filter { it.persona.isChakra }
-                }
-                selectedFilterTagIds.isEmpty() -> {
-                    // Show all personas
-                    personasWithCount
-                }
-                -1L in selectedFilterTagIds -> {
-                    // Show only untagged personas
-                    personasWithCount.filter { it.tags.isEmpty() }
-                }
-                else -> {
-                    // Show personas that have at least one of the selected tags
-                    personasWithCount.filter { personaWithCount ->
-                        personaWithCount.tags.any { tag -> tag.id in selectedFilterTagIds }
-                    }
+                isFocusMode -> personasWithCount.filter { it.persona.isFocused }
+                isChakraMode -> personasWithCount.filter { it.persona.isChakra }
+                selectedFilterTagIds.isEmpty() -> personasWithCount
+                -1L in selectedFilterTagIds -> personasWithCount.filter { it.tags.isEmpty() }
+                else -> personasWithCount.filter { personaWithCount ->
+                    personaWithCount.tags.any { tag -> tag.id in selectedFilterTagIds }
                 }
             }
-            adapter.submitList(filteredList)
 
-            // Show empty state when Focus or Chakra mode has no results
+            val active = filteredList.filter { it.decayLevel != DecayLevel.SERIOUS }
+            val archived = filteredList.filter { it.decayLevel == DecayLevel.SERIOUS }
+            adapter.setPersonas(active, archived)
+
             if (isFocusMode && filteredList.isEmpty()) {
                 binding.emptyDailyTextView.text = getString(R.string.no_focused_personas)
                 binding.emptyDailyTextView.visibility = View.VISIBLE

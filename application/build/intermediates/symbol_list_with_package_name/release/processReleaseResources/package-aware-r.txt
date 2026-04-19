@@ -3226,6 +3226,8 @@ id anticipate
 id appBarLayout
 id appNameTextView
 id arc
+id archivedChevronTextView
+id archivedLabelTextView
 id asConfigured
 id async
 id auto
@@ -3975,6 +3977,7 @@ layout fragment_report_time
 layout fragment_report_trends
 layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
+layout item_archived_header
 layout item_comment
 layout item_daily_task
 layout item_persona
@@ -4084,6 +4087,7 @@ string add_task
 string androidx_startup
 string app_name
 string appbar_scrolling_view_behavior
+string archived
 string authentication
 string avoid_task
 string avoid_task_hint

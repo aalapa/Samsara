@@ -13,6 +13,7 @@ import com.samsara.polymath.data.DecayLevel
 import com.samsara.polymath.data.Persona
 import com.samsara.polymath.data.PersonaWithTaskCount
 import com.samsara.polymath.data.RankStatus
+import com.samsara.polymath.databinding.ItemArchivedHeaderBinding
 import com.samsara.polymath.databinding.ItemPersonaBinding
 
 class PersonaAdapter(
@@ -21,19 +22,78 @@ class PersonaAdapter(
     private val onPersonaDelete: (Persona) -> Unit,
     private val onPersonaToggleFocus: (Persona) -> Unit,
     private val onPersonaToggleChakra: (Persona) -> Unit
-) : ListAdapter<PersonaWithTaskCount, PersonaAdapter.PersonaViewHolder>(PersonaDiffCallback()) {
+) : ListAdapter<PersonaListItem, RecyclerView.ViewHolder>(PersonaListDiffCallback()) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PersonaViewHolder {
-        val binding = ItemPersonaBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
-        return PersonaViewHolder(binding)
+    private var activePersonas: List<PersonaWithTaskCount> = emptyList()
+    private var archivedPersonas: List<PersonaWithTaskCount> = emptyList()
+    private var isArchivedExpanded = false
+
+    fun setPersonas(active: List<PersonaWithTaskCount>, archived: List<PersonaWithTaskCount>) {
+        activePersonas = active
+        archivedPersonas = archived
+        submitList(buildDisplayList())
     }
 
-    override fun onBindViewHolder(holder: PersonaViewHolder, position: Int) {
-        holder.bind(getItem(position))
+    fun countPersonas(predicate: (PersonaWithTaskCount) -> Boolean): Int =
+        (activePersonas + archivedPersonas).count(predicate)
+
+    private fun buildDisplayList(): List<PersonaListItem> {
+        val items = mutableListOf<PersonaListItem>()
+        activePersonas.forEach { items.add(PersonaListItem.PersonaItem(it)) }
+        if (archivedPersonas.isNotEmpty()) {
+            items.add(PersonaListItem.ArchivedHeader)
+            if (isArchivedExpanded) {
+                archivedPersonas.forEach { items.add(PersonaListItem.PersonaItem(it)) }
+            }
+        }
+        return items
+    }
+
+    companion object {
+        private const val VIEW_TYPE_PERSONA = 0
+        private const val VIEW_TYPE_HEADER = 1
+    }
+
+    override fun getItemViewType(position: Int): Int = when (getItem(position)) {
+        is PersonaListItem.PersonaItem -> VIEW_TYPE_PERSONA
+        is PersonaListItem.ArchivedHeader -> VIEW_TYPE_HEADER
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when (viewType) {
+            VIEW_TYPE_HEADER -> {
+                val binding = ItemArchivedHeaderBinding.inflate(
+                    LayoutInflater.from(parent.context), parent, false
+                )
+                HeaderViewHolder(binding)
+            }
+            else -> {
+                val binding = ItemPersonaBinding.inflate(
+                    LayoutInflater.from(parent.context), parent, false
+                )
+                PersonaViewHolder(binding)
+            }
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (val item = getItem(position)) {
+            is PersonaListItem.PersonaItem -> (holder as PersonaViewHolder).bind(item.data)
+            is PersonaListItem.ArchivedHeader -> (holder as HeaderViewHolder).bind(isArchivedExpanded) {
+                isArchivedExpanded = !isArchivedExpanded
+                submitList(buildDisplayList())
+            }
+        }
+    }
+
+    inner class HeaderViewHolder(
+        private val binding: ItemArchivedHeaderBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(expanded: Boolean, onToggle: () -> Unit) {
+            binding.archivedChevronTextView.text = if (expanded) "▼" else "▶"
+            binding.root.setOnClickListener { onToggle() }
+        }
     }
 
     inner class PersonaViewHolder(
@@ -43,18 +103,15 @@ class PersonaAdapter(
         fun bind(personaWithCount: PersonaWithTaskCount) {
             val persona = personaWithCount.persona
             val completedCount = personaWithCount.completedTaskCount
-            
-            // Display persona name with completed task count prefix
+
             val displayText = "$completedCount ${persona.name}"
             binding.personaNameTextView.text = displayText
-            
-            // Helper function to determine if color is dark
+
             fun isColorDark(color: Int): Boolean {
                 val darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
                 return darkness >= 0.5
             }
-            
-            // Helper function to desaturate a color (0.0 = grayscale, 1.0 = full color)
+
             fun desaturateColor(color: Int, saturation: Float): Int {
                 val r = Color.red(color)
                 val g = Color.green(color)
@@ -65,33 +122,26 @@ class PersonaAdapter(
                 val newB = (gray + saturation * (b - gray)).toInt().coerceIn(0, 255)
                 return Color.rgb(newR, newG, newB)
             }
-            
-            // Parse original background color
+
             var bgColor = Color.parseColor("#FFFFFF")
             try {
                 bgColor = Color.parseColor(persona.backgroundColor)
             } catch (e: Exception) {
-                // Fallback to white if parsing fails
                 bgColor = Color.parseColor("#FFFFFF")
             }
 
-            // Calculate FINAL background color after applying decay
             val finalBgColor = when (personaWithCount.decayLevel) {
                 DecayLevel.SERIOUS -> desaturateColor(bgColor, 0.3f)
                 else -> bgColor
             }
-            
-            // Calculate text color based on FINAL background color
+
             val textColor = if (isColorDark(finalBgColor)) Color.WHITE else Color.BLACK
             val menuIconColor = if (isColorDark(finalBgColor)) Color.WHITE else Color.BLACK
-            
-            // Apply colors to UI
+
             binding.personaNameTextView.setTextColor(textColor)
             binding.openCountTextView.setTextColor(textColor)
             binding.menuButton.setColorFilter(menuIconColor)
-            
-            // Show score (rounded to integer) if greater than 0
-            // Score = (1 + completedTasks/totalTasks) × openCount × decayMultiplier
+
             val score = personaWithCount.score
             if (score > 0) {
                 binding.openCountTextView.text = score.toInt().toString()
@@ -100,7 +150,6 @@ class PersonaAdapter(
                 binding.openCountTextView.visibility = View.GONE
             }
 
-            // Set rank indicator icon based on rank status
             val rankStatus = personaWithCount.rankStatus
             when (rankStatus) {
                 RankStatus.UP -> {
@@ -116,10 +165,8 @@ class PersonaAdapter(
                 }
             }
 
-            // Apply visual decay based on decay level
             applyDecayVisuals(personaWithCount.decayLevel, finalBgColor)
 
-            // Setup three dots menu
             binding.menuButton.setOnClickListener { view ->
                 val contextWrapper = android.view.ContextThemeWrapper(
                     view.context,
@@ -128,7 +175,6 @@ class PersonaAdapter(
                 val popup = PopupMenu(contextWrapper, view)
                 popup.menuInflater.inflate(R.menu.persona_menu, popup.menu)
 
-                // Dynamically set Focus/Unfocus label based on current state
                 val focusItem = popup.menu.findItem(R.id.action_toggle_focus)
                 focusItem?.title = if (persona.isFocused) {
                     view.context.getString(R.string.unfocus_persona)
@@ -136,7 +182,6 @@ class PersonaAdapter(
                     view.context.getString(R.string.focus_persona)
                 }
 
-                // Dynamically set Chakra/Unchakra label based on current state
                 val chakraItem = popup.menu.findItem(R.id.action_toggle_chakra)
                 chakraItem?.title = if (persona.isChakra) {
                     view.context.getString(R.string.unchakra_persona)
@@ -167,22 +212,14 @@ class PersonaAdapter(
                 }
                 popup.show()
             }
-            
+
             binding.root.setOnClickListener {
                 onPersonaClick(persona)
             }
-            
-            // Keep tags hidden to maintain compact card size
+
             binding.tagsChipGroup.visibility = View.GONE
         }
 
-        /**
-         * Apply visual decay effects based on decay level.
-         * - NONE: No effect (100% opacity, full color)
-         * - SLIGHT: 90% opacity
-         * - MEDIUM: 75% opacity
-         * - SERIOUS: 60% opacity + desaturated background color
-         */
         private fun applyDecayVisuals(decayLevel: DecayLevel, bgColor: Int) {
             when (decayLevel) {
                 DecayLevel.NONE -> {
@@ -199,45 +236,45 @@ class PersonaAdapter(
                 }
                 DecayLevel.SERIOUS -> {
                     binding.root.alpha = 0.60f
-                    // Apply desaturation to the background color
                     binding.root.setCardBackgroundColor(desaturateColor(bgColor, 0.3f))
                 }
             }
         }
 
-        /**
-         * Desaturate a color by a given factor (0.0 = grayscale, 1.0 = full color)
-         */
         private fun desaturateColor(color: Int, saturation: Float): Int {
             val r = Color.red(color)
             val g = Color.green(color)
             val b = Color.blue(color)
-
-            // Calculate grayscale value using luminance formula
             val gray = (0.299 * r + 0.587 * g + 0.114 * b).toInt()
-
-            // Blend between grayscale and original color
             val newR = (gray + saturation * (r - gray)).toInt().coerceIn(0, 255)
             val newG = (gray + saturation * (g - gray)).toInt().coerceIn(0, 255)
             val newB = (gray + saturation * (b - gray)).toInt().coerceIn(0, 255)
-
             return Color.rgb(newR, newG, newB)
         }
     }
 
-    class PersonaDiffCallback : DiffUtil.ItemCallback<PersonaWithTaskCount>() {
-        override fun areItemsTheSame(oldItem: PersonaWithTaskCount, newItem: PersonaWithTaskCount): Boolean {
-            return oldItem.persona.id == newItem.persona.id
+    class PersonaListDiffCallback : DiffUtil.ItemCallback<PersonaListItem>() {
+        override fun areItemsTheSame(oldItem: PersonaListItem, newItem: PersonaListItem): Boolean {
+            return when {
+                oldItem is PersonaListItem.ArchivedHeader && newItem is PersonaListItem.ArchivedHeader -> true
+                oldItem is PersonaListItem.PersonaItem && newItem is PersonaListItem.PersonaItem ->
+                    oldItem.data.persona.id == newItem.data.persona.id
+                else -> false
+            }
         }
 
-        override fun areContentsTheSame(oldItem: PersonaWithTaskCount, newItem: PersonaWithTaskCount): Boolean {
-            return oldItem.persona == newItem.persona
-                && oldItem.completedTaskCount == newItem.completedTaskCount
-                && oldItem.openTaskCount == newItem.openTaskCount
-                && oldItem.score == newItem.score
-                && oldItem.rankStatus == newItem.rankStatus
-                && oldItem.decayLevel == newItem.decayLevel
+        override fun areContentsTheSame(oldItem: PersonaListItem, newItem: PersonaListItem): Boolean {
+            return when {
+                oldItem is PersonaListItem.ArchivedHeader && newItem is PersonaListItem.ArchivedHeader -> true
+                oldItem is PersonaListItem.PersonaItem && newItem is PersonaListItem.PersonaItem ->
+                    oldItem.data.persona == newItem.data.persona
+                        && oldItem.data.completedTaskCount == newItem.data.completedTaskCount
+                        && oldItem.data.openTaskCount == newItem.data.openTaskCount
+                        && oldItem.data.score == newItem.data.score
+                        && oldItem.data.rankStatus == newItem.data.rankStatus
+                        && oldItem.data.decayLevel == newItem.data.decayLevel
+                else -> false
+            }
         }
     }
 }
-

@@ -92,6 +92,7 @@
     <string name="overdue">Overdue</string>
     <string name="due_today">Due Today</string>
     <string name="upcoming">Upcoming</string>
+    <string name="archived">Archived</string>
     <string name="no_gtd_tasks">Nothing scheduled. You\'re all caught up!</string>
 
     <!-- Authentication -->
