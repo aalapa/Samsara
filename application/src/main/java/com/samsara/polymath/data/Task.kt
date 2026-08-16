@@ -37,7 +37,9 @@ data class Task(
     val nextDueDate: Long? = null, // For recurring tasks: next due date (epoch millis, midnight). Null = due now.
     val recurringGroupId: Long? = null,
     val isAvoidTask: Boolean = false,
-    val parentTaskId: Long? = null // null = top-level task; non-null = subtask of that task
+    val parentTaskId: Long? = null,
+    val timeChunk: String = "MORNING",  // MORNING | AFTERNOON | EVENING | NIGHT
+    val scheduledDays: Int = 0           // 0 = every day; bitmask otherwise (see ScheduledDays)
 )
 
 enum class RecurringFrequency {

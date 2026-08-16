@@ -120,6 +120,19 @@
             android:clickable="true"
             android:focusable="true" />
 
+        <TextView
+            android:id="@+id/segRoutine"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Routine"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="@color/ink_muted"
+            android:clickable="true"
+            android:focusable="true" />
+
     </LinearLayout>
 
     <!-- Tag chips row (scrollable, restyled) -->

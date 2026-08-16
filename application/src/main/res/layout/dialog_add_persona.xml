@@ -81,6 +81,29 @@
 
         </HorizontalScrollView>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Routine"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/ink" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/routineSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </ScrollView>

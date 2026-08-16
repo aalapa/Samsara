@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: PersonaAdapter
     private var isFocusMode = true // Default to Focus view on launch
     private var isChakraMode = false
+    private var isRoutineMode = false
     private val gson = Gson()
     
     private val prefs by lazy { 
@@ -144,21 +145,28 @@ class MainActivity : AppCompatActivity() {
         // Wire segmented control buttons
         updateSegmentVisuals()
         binding.segAll.setOnClickListener {
-            isFocusMode = false; isChakraMode = false
+            isFocusMode = false; isChakraMode = false; isRoutineMode = false
             selectedFilterTagIds.clear(); expandedTagId = null
             clearTagChipSelections(); updateSegmentVisuals()
             binding.filterChipsScrollView.visibility = View.VISIBLE
             switchToPersonasMode(); observePersonas()
         }
         binding.segFocus.setOnClickListener {
-            isFocusMode = true; isChakraMode = false
+            isFocusMode = true; isChakraMode = false; isRoutineMode = false
             selectedFilterTagIds.clear(); expandedTagId = null
             clearTagChipSelections(); updateSegmentVisuals()
             binding.filterChipsScrollView.visibility = View.GONE
             switchToPersonasMode(); observePersonas()
         }
         binding.segChakra.setOnClickListener {
-            isChakraMode = true; isFocusMode = false
+            isChakraMode = true; isFocusMode = false; isRoutineMode = false
+            selectedFilterTagIds.clear(); expandedTagId = null
+            clearTagChipSelections(); updateSegmentVisuals()
+            binding.filterChipsScrollView.visibility = View.GONE
+            switchToPersonasMode(); observePersonas()
+        }
+        binding.segRoutine.setOnClickListener {
+            isRoutineMode = true; isChakraMode = false; isFocusMode = false
             selectedFilterTagIds.clear(); expandedTagId = null
             clearTagChipSelections(); updateSegmentVisuals()
             binding.filterChipsScrollView.visibility = View.GONE
@@ -265,11 +273,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateSegmentVisuals() {
         val segCorner = 9f * resources.displayMetrics.density
-        val isAllActive = !isFocusMode && !isChakraMode && selectedFilterTagIds.isEmpty()
+        val isAllActive = !isFocusMode && !isChakraMode && !isRoutineMode && selectedFilterTagIds.isEmpty()
         listOf(
             Triple(binding.segAll, isAllActive, null as Int?),
             Triple(binding.segFocus, isFocusMode, R.color.mode_focus),
-            Triple(binding.segChakra, isChakraMode, R.color.mode_chakra)
+            Triple(binding.segChakra, isChakraMode, R.color.mode_chakra),
+            Triple(binding.segRoutine, isRoutineMode, null as Int?)
         ).forEach { (tv, active, colorRes) ->
             if (active) {
                 tv.background = android.graphics.drawable.GradientDrawable().apply {
@@ -346,7 +355,11 @@ class MainActivity : AppCompatActivity() {
                 // Increment open count when persona is opened
                 viewModel.incrementOpenCount(persona.id)
                 // Navigate to tasks activity with persona background color
-                TasksActivity.start(this, persona.id, persona.name, persona.backgroundColor)
+                if (persona.isRoutine) {
+                    RoutineActivity.start(this, persona.id, persona.name, persona.backgroundColor)
+                } else {
+                    TasksActivity.start(this, persona.id, persona.name, persona.backgroundColor)
+                }
             },
             onPersonaEdit = { persona ->
                 showEditPersonaDialog(persona)
@@ -384,8 +397,9 @@ class MainActivity : AppCompatActivity() {
     private fun observePersonas() {
         viewModel.getAllPersonasWithTaskCount().observe(this) { personasWithCount ->
             val filteredList = when {
-                isFocusMode -> personasWithCount.filter { it.persona.isFocused }
-                isChakraMode -> personasWithCount.filter { it.persona.isChakra }
+                isFocusMode    -> personasWithCount.filter { it.persona.isFocused }
+                isChakraMode   -> personasWithCount.filter { it.persona.isChakra }
+                isRoutineMode  -> personasWithCount.filter { it.persona.isRoutine }
                 selectedFilterTagIds.isEmpty() -> personasWithCount
                 -1L in selectedFilterTagIds -> personasWithCount.filter { it.tags.isEmpty() }
                 else -> personasWithCount.filter { personaWithCount ->
@@ -423,6 +437,7 @@ class MainActivity : AppCompatActivity() {
         val selectedTagIds = mutableSetOf<Long>()
         var selectedColor = personaColorPalette.first()
         setupColorPalette(dialogBinding.colorPaletteLayout, selectedColor) { selectedColor = it }
+        val isRoutineChecked = { dialogBinding.routineSwitch.isChecked }
         
         // Observe all tags and populate the chip group
         tagViewModel.allTags.observe(this) { allTags ->
@@ -474,7 +489,8 @@ class MainActivity : AppCompatActivity() {
                         val persona = com.samsara.polymath.data.Persona(
                             name = name,
                             backgroundColor = selectedColor,
-                            textColor = textColor
+                            textColor = textColor,
+                            isRoutine = isRoutineChecked()
                         )
                         val personaId = viewModel.insertPersonaSync(persona)
                         tagViewModel.setTagsForPersona(personaId, selectedTagIds.toList())
