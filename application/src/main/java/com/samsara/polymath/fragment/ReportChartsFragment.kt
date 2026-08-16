@@ -8,18 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.charts.HorizontalBarChart
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.formatter.PercentFormatter
-import com.samsara.polymath.data.DailyPersonaTimeSumWithDay
 import com.samsara.polymath.data.PersonaStatistics
-import com.samsara.polymath.data.PersonaReport
 import com.samsara.polymath.databinding.FragmentReportChartsBinding
 import com.samsara.polymath.viewmodel.PersonaReportViewModel
 import java.text.SimpleDateFormat
@@ -32,16 +25,13 @@ class ReportChartsFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: PersonaReportViewModel by activityViewModels()
 
-    /** Whether the device is currently in dark mode. */
     private val isDarkMode: Boolean
         get() = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
                 Configuration.UI_MODE_NIGHT_YES
 
-    /** Theme-aware text color for chart labels. */
     private val chartTextColor: Int
         get() = if (isDarkMode) Color.WHITE else Color.DKGRAY
 
-    /** Theme-aware grid line color. */
     private val chartGridColor: Int
         get() = if (isDarkMode) Color.parseColor("#555555") else Color.parseColor("#E0E0E0")
 
@@ -55,150 +45,18 @@ class ReportChartsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Observe stacked bar chart data
-        viewModel.dailyTimeByPersona.observe(viewLifecycleOwner) { dailyData ->
-            viewModel.personaInfo.value?.let { personaInfo ->
-                setupStackedBarChart(binding.stackedBarChart, dailyData, personaInfo)
-            }
-        }
-
-        // Observe line chart data
         viewModel.personaScoreHistory.observe(viewLifecycleOwner) { scoreHistory ->
             viewModel.personaInfo.value?.let { personaInfo ->
                 setupLineChart(binding.lineChart, scoreHistory, personaInfo)
             }
         }
 
-        // Observe bar + pie chart data from report summary
-        viewModel.reportSummary.observe(viewLifecycleOwner) { report ->
-            val personaReports = report.personaReports
-            setupHorizontalBarChart(binding.horizontalBarChart, personaReports)
-            setupPieChart(binding.pieChart, personaReports)
-        }
-
-        // Also re-render stacked bar and line chart when personaInfo arrives
         viewModel.personaInfo.observe(viewLifecycleOwner) { personaInfo ->
-            viewModel.dailyTimeByPersona.value?.let { dailyData ->
-                setupStackedBarChart(binding.stackedBarChart, dailyData, personaInfo)
-            }
             viewModel.personaScoreHistory.value?.let { scoreHistory ->
                 setupLineChart(binding.lineChart, scoreHistory, personaInfo)
             }
         }
     }
-
-    // ==================== STACKED BAR CHART ====================
-
-    private fun setupStackedBarChart(
-        chart: BarChart,
-        dailyData: List<DailyPersonaTimeSumWithDay>,
-        personaInfo: Map<Long, Pair<String, String>>
-    ) {
-        if (dailyData.isEmpty()) {
-            chart.setNoDataText(getString(com.samsara.polymath.R.string.chart_no_data))
-            chart.setNoDataTextColor(chartTextColor)
-            chart.invalidate()
-            return
-        }
-
-        // Group daily data into weekly buckets
-        val now = System.currentTimeMillis()
-        val weekMillis = TimeUnit.DAYS.toMillis(7)
-
-        // Collect all persona IDs in stable order
-        val personaIds = dailyData.map { it.personaId }.distinct()
-
-        // Group by week number (0 = oldest week, 12 = most recent)
-        val sinceMillis = now - TimeUnit.DAYS.toMillis(91)
-        val weeklyData = mutableMapOf<Int, MutableMap<Long, Float>>() // weekIndex -> (personaId -> hours)
-
-        for (entry in dailyData) {
-            val weekIndex = ((entry.dayMillis - sinceMillis) / weekMillis).toInt().coerceIn(0, 12)
-            val personaMap = weeklyData.getOrPut(weekIndex) { mutableMapOf() }
-            val currentHours = personaMap.getOrDefault(entry.personaId, 0f)
-            personaMap[entry.personaId] = currentHours + (entry.totalTime / 3600000f)
-        }
-
-        // Build stacked bar entries (reversed: index 0 = most recent week, 12 = oldest)
-        val barEntries = mutableListOf<BarEntry>()
-        val weekLabels = mutableListOf<String>()
-        val dateFormat = SimpleDateFormat("MMM d", Locale.getDefault())
-
-        for (barIdx in 0..12) {
-            val weekIdx = 12 - barIdx // reverse: bar position 0 = week 12 (most recent)
-            val weekStart = sinceMillis + weekIdx * weekMillis
-            weekLabels.add(dateFormat.format(Date(weekStart)))
-
-            val values = FloatArray(personaIds.size)
-            val personaMap = weeklyData[weekIdx] ?: emptyMap()
-            for ((i, pid) in personaIds.withIndex()) {
-                values[i] = personaMap[pid] ?: 0f
-            }
-            barEntries.add(BarEntry(barIdx.toFloat(), values))
-        }
-
-        val dataSet = BarDataSet(barEntries, "").apply {
-            // Set colors for each stack segment
-            colors = personaIds.map { pid ->
-                val colorStr = personaInfo[pid]?.second ?: "#007AFF"
-                try { Color.parseColor(colorStr) } catch (_: Exception) { Color.parseColor("#007AFF") }
-            }
-            // Set stack labels
-            stackLabels = personaIds.map { pid ->
-                personaInfo[pid]?.first ?: "Unknown"
-            }.toTypedArray()
-            setDrawValues(false)
-        }
-
-        val barData = BarData(dataSet).apply {
-            barWidth = 0.7f
-        }
-
-        chart.apply {
-            data = barData
-            description.isEnabled = false
-            setFitBars(true)
-
-            xAxis.apply {
-                position = XAxis.XAxisPosition.BOTTOM
-                valueFormatter = IndexAxisValueFormatter(weekLabels)
-                granularity = 1f
-                setDrawGridLines(false)
-                labelRotationAngle = -45f
-                textSize = 9f
-                textColor = chartTextColor
-            }
-
-            axisLeft.apply {
-                axisMinimum = 0f
-                setDrawGridLines(true)
-                gridColor = chartGridColor
-                textSize = 10f
-                textColor = chartTextColor
-            }
-
-            axisRight.isEnabled = false
-
-            legend.apply {
-                isEnabled = true
-                verticalAlignment = Legend.LegendVerticalAlignment.TOP
-                horizontalAlignment = Legend.LegendHorizontalAlignment.RIGHT
-                orientation = Legend.LegendOrientation.VERTICAL
-                setDrawInside(true)
-                xEntrySpace = 6f
-                yEntrySpace = 4f
-                textSize = 10f
-                textColor = chartTextColor
-            }
-
-            setExtraBottomOffset(4f)
-            setNoDataTextColor(chartTextColor)
-            animateY(600)
-            invalidate()
-        }
-    }
-
-    // ==================== LINE CHART ====================
 
     private fun setupLineChart(
         chart: LineChart,
@@ -212,7 +70,6 @@ class ReportChartsFragment : Fragment() {
             return
         }
 
-        // Use "days ago from now" as X-axis to avoid Float precision loss with timestamps
         val now = System.currentTimeMillis()
         val dayMillis = TimeUnit.DAYS.toMillis(1)
 
@@ -226,9 +83,6 @@ class ReportChartsFragment : Fragment() {
             val colorStr = info?.second ?: "#007AFF"
             val lineColor = try { Color.parseColor(colorStr) } catch (_: Exception) { Color.parseColor("#007AFF") }
 
-            // Convert timestamps to "days ago" (0 = today on left, 91 = oldest on right)
-            // Apply log1p to score so large and small values are both visible
-            // MPAndroidChart requires entries sorted by X ascending, so sort by daysAgo
             val entries = stats.map { stat ->
                 val daysAgo = ((now - stat.timestamp) / dayMillis).toFloat().coerceIn(0f, 91f)
                 val logScore = Math.log1p(stat.score).toFloat()
@@ -258,8 +112,6 @@ class ReportChartsFragment : Fragment() {
         }
 
         val lineData = LineData(dataSets.toList())
-
-        // Build date labels for x-axis: value = days ago (0 = today, 91 = oldest)
         val dateFormat = SimpleDateFormat("MMM d", Locale.getDefault())
 
         chart.apply {
@@ -269,7 +121,7 @@ class ReportChartsFragment : Fragment() {
             xAxis.apply {
                 position = XAxis.XAxisPosition.BOTTOM
                 setDrawGridLines(false)
-                granularity = 7f // one label per week
+                granularity = 7f
                 axisMinimum = 0f
                 axisMaximum = 91f
                 valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
@@ -289,7 +141,6 @@ class ReportChartsFragment : Fragment() {
                 gridColor = chartGridColor
                 textSize = 10f
                 textColor = chartTextColor
-                // Show actual score values on the Y-axis (reverse log1p)
                 valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
                     override fun getFormattedValue(value: Float): String {
                         val actual = Math.expm1(value.toDouble())
@@ -316,153 +167,6 @@ class ReportChartsFragment : Fragment() {
             setExtraBottomOffset(4f)
             setNoDataTextColor(chartTextColor)
             animateX(600)
-            invalidate()
-        }
-    }
-
-    // ==================== HORIZONTAL BAR CHART ====================
-
-    private fun setupHorizontalBarChart(
-        chart: HorizontalBarChart,
-        personaReports: List<PersonaReport>
-    ) {
-        val reportsWithTime = personaReports.filter { it.totalTimeSpent > 0 }
-            .sortedBy { it.totalTimeSpent }
-
-        if (reportsWithTime.isEmpty()) {
-            chart.setNoDataText(getString(com.samsara.polymath.R.string.chart_no_data))
-            chart.setNoDataTextColor(chartTextColor)
-            chart.invalidate()
-            return
-        }
-
-        val entries = reportsWithTime.mapIndexed { index, report ->
-            BarEntry(index.toFloat(), report.totalTimeSpent / 3600000f) // Convert to hours
-        }
-
-        val colors = reportsWithTime.map { report ->
-            try { Color.parseColor(report.persona.backgroundColor) } catch (_: Exception) { Color.parseColor("#007AFF") }
-        }
-
-        val labels = reportsWithTime.map { it.persona.name }
-
-        val dataSet = BarDataSet(entries, "").apply {
-            this.colors = colors
-            setDrawValues(true)
-            valueTextSize = 10f
-            valueTextColor = chartTextColor
-            valueFormatter = object : com.github.mikephil.charting.formatter.ValueFormatter() {
-                override fun getFormattedValue(value: Float): String {
-                    return if (value >= 1f) String.format("%.1fh", value)
-                    else String.format("%.0fm", value * 60)
-                }
-            }
-        }
-
-        val barData = BarData(dataSet).apply {
-            barWidth = 0.6f
-        }
-
-        // Adjust chart height based on number of personas
-        val minHeight = (reportsWithTime.size * 48).coerceAtLeast(150)
-        chart.layoutParams = chart.layoutParams.apply {
-            height = (minHeight * resources.displayMetrics.density).toInt()
-        }
-
-        chart.apply {
-            data = barData
-            description.isEnabled = false
-            setFitBars(true)
-
-            xAxis.apply {
-                position = XAxis.XAxisPosition.BOTTOM
-                valueFormatter = IndexAxisValueFormatter(labels)
-                granularity = 1f
-                setDrawGridLines(false)
-                textSize = 11f
-                textColor = chartTextColor
-            }
-
-            axisLeft.apply {
-                axisMinimum = 0f
-                setDrawGridLines(true)
-                gridColor = chartGridColor
-                textSize = 10f
-                textColor = chartTextColor
-            }
-
-            axisRight.isEnabled = false
-            legend.isEnabled = false
-
-            setExtraLeftOffset(8f)
-            setNoDataTextColor(chartTextColor)
-            animateX(600)
-            invalidate()
-        }
-    }
-
-    // ==================== PIE CHART ====================
-
-    private fun setupPieChart(
-        chart: PieChart,
-        personaReports: List<PersonaReport>
-    ) {
-        val reportsWithTime = personaReports.filter { it.totalTimeSpent > 0 }
-            .sortedByDescending { it.totalTimeSpent }
-
-        if (reportsWithTime.isEmpty()) {
-            chart.setNoDataText(getString(com.samsara.polymath.R.string.chart_no_data))
-            chart.setNoDataTextColor(chartTextColor)
-            chart.invalidate()
-            return
-        }
-
-        val entries = reportsWithTime.map { report ->
-            PieEntry(report.totalTimeSpent.toFloat(), report.persona.name)
-        }
-
-        val colors = reportsWithTime.map { report ->
-            try { Color.parseColor(report.persona.backgroundColor) } catch (_: Exception) { Color.parseColor("#007AFF") }
-        }
-
-        val dataSet = PieDataSet(entries, "").apply {
-            this.colors = colors
-            sliceSpace = 2f
-            selectionShift = 5f
-            valueTextSize = 11f
-            valueTextColor = Color.WHITE
-            valueFormatter = PercentFormatter(chart)
-        }
-
-        val pieData = PieData(dataSet)
-        val holeColor = if (isDarkMode) Color.parseColor("#303030") else Color.WHITE
-
-        chart.apply {
-            data = pieData
-            description.isEnabled = false
-            isDrawHoleEnabled = true
-            holeRadius = 45f
-            transparentCircleRadius = 50f
-            setHoleColor(holeColor)
-            setUsePercentValues(true)
-            setEntryLabelColor(chartTextColor)
-            setEntryLabelTextSize(10f)
-
-            legend.apply {
-                isEnabled = true
-                verticalAlignment = Legend.LegendVerticalAlignment.TOP
-                horizontalAlignment = Legend.LegendHorizontalAlignment.RIGHT
-                orientation = Legend.LegendOrientation.VERTICAL
-                setDrawInside(true)
-                xEntrySpace = 6f
-                yEntrySpace = 4f
-                textSize = 10f
-                textColor = chartTextColor
-            }
-
-            setExtraBottomOffset(4f)
-            setNoDataTextColor(chartTextColor)
-            animateY(600)
             invalidate()
         }
     }

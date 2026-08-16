@@ -7,7 +7,6 @@ data class ExportData(
     val statistics: List<PersonaStatistics> = emptyList(), // Added in version 3
     val tags: List<Tag> = emptyList(), // Added in version 4
     val personaTags: List<PersonaTagExport> = emptyList(), // Added in version 4
-    val timeEntries: List<TimeEntry> = emptyList(), // Added in version 7
     val personaOpenEvents: List<PersonaOpenEvent> = emptyList(), // Added in version 8
     val exportDate: Long = System.currentTimeMillis(),
     val version: Int = 9 // Bumped to version 9 for isFocused on personas

@@ -36,6 +36,9 @@ interface PersonaDao {
     @Query("UPDATE personas SET previousOpenCount = openCount")
     suspend fun saveAllPreviousOpenCounts()
 
+    @Query("UPDATE personas SET backgroundColor = :color, textColor = :textColor WHERE id = :id")
+    suspend fun updateBackgroundColor(id: Long, color: String, textColor: String)
+
     @Query("UPDATE personas SET isFocused = :isFocused WHERE id = :id")
     suspend fun updateFocusStatus(id: Long, isFocused: Boolean)
 

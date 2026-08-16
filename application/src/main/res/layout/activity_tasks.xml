@@ -37,82 +37,6 @@
 
     </LinearLayout>
 
-    <!-- Collapsible Heatmap — inset section card -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/heatmapCard"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="10dp"
-        android:visibility="gone"
-        app:cardCornerRadius="14dp"
-        app:cardElevation="0dp"
-        app:cardBackgroundColor="@color/surface_sunken"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appBarLayout">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Header row: section title + chevron -->
-            <LinearLayout
-                android:id="@+id/heatmapHeader"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="14dp"
-                android:paddingVertical="10dp">
-
-                <TextView
-                    android:id="@+id/heatmapTitle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/heatmap_activity"
-                    android:textColor="@color/ink"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="-0.01"
-                    android:textAllCaps="false" />
-
-                <ImageView
-                    android:id="@+id/heatmapArrow"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:rotation="0"
-                    android:src="@drawable/ic_expand_more"
-                    android:tint="@color/ink_muted"
-                    android:contentDescription="Toggle heatmap" />
-
-            </LinearLayout>
-
-            <!-- Heatmap content (collapsible, starts closed) -->
-            <LinearLayout
-                android:id="@+id/heatmapContent"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
-                android:paddingHorizontal="10dp"
-                android:paddingBottom="10dp">
-
-                <com.samsara.polymath.view.HeatmapView
-                    android:id="@+id/personaHeatmapView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingHorizontal="4dp" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tasksRecyclerView"
         android:layout_width="match_parent"
@@ -122,7 +46,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/heatmapCard" />
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addTaskFab"

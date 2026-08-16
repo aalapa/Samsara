@@ -21,8 +21,6 @@ import com.samsara.polymath.databinding.DialogAddTaskBinding
 import com.samsara.polymath.databinding.DialogTaskCommentsBinding
 import com.samsara.polymath.viewmodel.CommentViewModel
 import com.samsara.polymath.viewmodel.TaskViewModel
-import com.samsara.polymath.util.ReportUtils
-import com.samsara.polymath.viewmodel.TimeEntryViewModel
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
@@ -31,11 +29,11 @@ class TasksActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTasksBinding
     private lateinit var viewModel: TaskViewModel
     private lateinit var commentViewModel: CommentViewModel
-    private lateinit var timeEntryViewModel: TimeEntryViewModel
     private lateinit var adapter: TaskAdapter
     private var personaId: Long = -1
     private var personaName: String = ""
-    private var personaBackgroundColor: String = "#007AFF" // Default color
+    private var personaBackgroundColor: String = "#007AFF"
+    private var parentTaskId: Long? = null  // null = top-level; non-null = subtask mode
     private var showCompletedTasks: Boolean = false
     private var pendingSwipeTask: com.samsara.polymath.data.Task? = null
     private var pendingSwipePosition: Int = -1
@@ -48,6 +46,7 @@ class TasksActivity : AppCompatActivity() {
         personaId = intent.getLongExtra(EXTRA_PERSONA_ID, -1)
         personaName = intent.getStringExtra(EXTRA_PERSONA_NAME) ?: "Tasks"
         personaBackgroundColor = intent.getStringExtra(EXTRA_PERSONA_BACKGROUND_COLOR) ?: "#007AFF"
+        parentTaskId = intent.getLongExtra(EXTRA_PARENT_TASK_ID, -1L).takeIf { it != -1L }
 
         if (personaId == -1L) {
             finish()
@@ -56,14 +55,10 @@ class TasksActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[TaskViewModel::class.java]
         commentViewModel = ViewModelProvider(this)[CommentViewModel::class.java]
-        timeEntryViewModel = ViewModelProvider(this)[TimeEntryViewModel::class.java]
 
         setupToolbar()
         setupRecyclerView()
-        setupHeatmap()
         observeTasks()
-        observeTimer()
-        observeHeatmap()
         setupFab()
     }
 
@@ -97,7 +92,13 @@ class TasksActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         adapter = TaskAdapter(
             onTaskClick = { task ->
-                showTaskCommentsDialog(task)
+                if (parentTaskId == null) {
+                    // Top-level view: tap card body → open subtask screen
+                    startSubtaskActivity(task)
+                } else {
+                    // Subtask view: tap card body → show comments (same as circle)
+                    showTaskCommentsDialog(task)
+                }
             },
             onTaskDelete = { task ->
                 showDeleteConfirmation(task)
@@ -113,9 +114,6 @@ class TasksActivity : AppCompatActivity() {
             },
             onCircleClick = { task ->
                 showTaskCommentsDialog(task)
-            },
-            onTimerToggle = { task ->
-                timeEntryViewModel.toggleTimer(task.id)
             }
         )
 
@@ -220,8 +218,13 @@ class TasksActivity : AppCompatActivity() {
     }
 
     private fun observeTasks() {
-        viewModel.getTasksByPersona(personaId).observe(this) { tasks ->
-            // Update subtitle with task stats
+        val liveData = if (parentTaskId != null) {
+            viewModel.getSubtasksByParentTask(parentTaskId!!)
+        } else {
+            viewModel.getTopLevelTasksByPersona(personaId)
+        }
+
+        liveData.observe(this) { tasks ->
             val openCount = tasks.count { !it.isCompleted }
             val completedCount = tasks.count { it.isCompleted && !it.isAvoidTask }
             val avoidFailCount = tasks.count { it.isCompleted && it.isAvoidTask }
@@ -231,7 +234,6 @@ class TasksActivity : AppCompatActivity() {
                 "$openCount open · $completedCount done"
             }
 
-            // Filter tasks based on showCompletedTasks flag
             val now = System.currentTimeMillis()
             val filteredTasks = if (showCompletedTasks) {
                 tasks.filter { it.isCompleted }
@@ -242,35 +244,14 @@ class TasksActivity : AppCompatActivity() {
         }
     }
 
-    private fun observeTimer() {
-        timeEntryViewModel.runningTaskId.observe(this) { taskId ->
-            adapter.activeTimerTaskId = taskId
+    private fun startSubtaskActivity(task: com.samsara.polymath.data.Task) {
+        val intent = android.content.Intent(this, TasksActivity::class.java).apply {
+            putExtra(EXTRA_PERSONA_ID, personaId)
+            putExtra(EXTRA_PERSONA_NAME, task.title)
+            putExtra(EXTRA_PERSONA_BACKGROUND_COLOR, personaBackgroundColor)
+            putExtra(EXTRA_PARENT_TASK_ID, task.id)
         }
-        timeEntryViewModel.getTaskTimeMap(personaId).observe(this) { timeMap ->
-            adapter.taskTimeMap = timeMap
-        }
-    }
-
-    private fun setupHeatmap() {
-        // Wire the accordion collapse/expand
-        ReportUtils.setupAccordion(
-            binding.heatmapHeader,
-            binding.heatmapContent,
-            binding.heatmapArrow
-        )
-        // Load heatmap data for this persona
-        timeEntryViewModel.loadPersonaHeatmap(personaId)
-    }
-
-    private fun observeHeatmap() {
-        timeEntryViewModel.personaHeatmapData.observe(this) { data ->
-            if (data.isNotEmpty()) {
-                binding.heatmapCard.visibility = View.VISIBLE
-                binding.personaHeatmapView.setData(data)
-            } else {
-                binding.heatmapCard.visibility = View.GONE
-            }
-        }
+        startActivity(intent)
     }
 
     private fun setupFab() {
@@ -478,7 +459,7 @@ class TasksActivity : AppCompatActivity() {
                 val capitalizedTitle = title.replaceFirstChar {
                     if (it.isLowerCase()) it.uppercaseChar() else it
                 }
-                viewModel.insertTask(personaId, capitalizedTitle, description, personaBackgroundColor, isRecurring, frequency, days, selectedEndDate, isAvoidTask)
+                viewModel.insertTask(personaId, capitalizedTitle, description, personaBackgroundColor, isRecurring, frequency, days, selectedEndDate, isAvoidTask, parentTaskId)
             } else {
                 Toast.makeText(this, "Please enter a task title", Toast.LENGTH_SHORT).show()
             }
@@ -704,6 +685,7 @@ class TasksActivity : AppCompatActivity() {
         const val EXTRA_PERSONA_ID = "persona_id"
         const val EXTRA_PERSONA_NAME = "persona_name"
         const val EXTRA_PERSONA_BACKGROUND_COLOR = "persona_background_color"
+        const val EXTRA_PARENT_TASK_ID = "parent_task_id"
 
         fun start(activity: AppCompatActivity, personaId: Long, personaName: String, personaBackgroundColor: String) {
             val intent = android.content.Intent(activity, TasksActivity::class.java).apply {

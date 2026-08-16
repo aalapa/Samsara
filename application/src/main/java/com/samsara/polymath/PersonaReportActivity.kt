@@ -19,7 +19,6 @@ class PersonaReportActivity : AppCompatActivity() {
     private val tabTitles by lazy {
         arrayOf(
             getString(R.string.report_tab_overview),
-            getString(R.string.report_tab_time),
             getString(R.string.report_tab_trends),
             getString(R.string.report_tab_charts)
         )

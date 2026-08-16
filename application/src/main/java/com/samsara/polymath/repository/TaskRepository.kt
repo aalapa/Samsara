@@ -9,6 +9,17 @@ import kotlinx.coroutines.flow.first
 
 class TaskRepository(private val taskDao: TaskDao) {
     fun getTasksByPersona(personaId: Long): Flow<List<Task>> = taskDao.getTasksByPersona(personaId)
+
+    fun getTopLevelTasksByPersona(personaId: Long): Flow<List<Task>> = taskDao.getTopLevelTasksByPersona(personaId)
+
+    suspend fun getTopLevelTasksByPersonaList(personaId: Long): List<Task> = taskDao.getTopLevelTasksByPersonaList(personaId)
+
+    fun getSubtasksByParentTask(parentTaskId: Long): Flow<List<Task>> = taskDao.getSubtasksByParentTask(parentTaskId)
+
+    suspend fun getSubtasksByParentTaskList(parentTaskId: Long): List<Task> = taskDao.getSubtasksByParentTaskList(parentTaskId)
+
+    suspend fun updateBackgroundColorForPersona(personaId: Long, color: String) =
+        taskDao.updateBackgroundColorForPersona(personaId, color)
     
     fun getAllTasks(): Flow<List<Task>> = taskDao.getAllTasks()
     

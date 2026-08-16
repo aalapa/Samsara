@@ -421,6 +421,8 @@ class MainActivity : AppCompatActivity() {
     private fun showAddPersonaDialog() {
         val dialogBinding = DialogAddPersonaBinding.inflate(LayoutInflater.from(this))
         val selectedTagIds = mutableSetOf<Long>()
+        var selectedColor = personaColorPalette.first()
+        setupColorPalette(dialogBinding.colorPaletteLayout, selectedColor) { selectedColor = it }
         
         // Observe all tags and populate the chip group
         tagViewModel.allTags.observe(this) { allTags ->
@@ -467,7 +469,14 @@ class MainActivity : AppCompatActivity() {
                 val name = dialogBinding.personaNameEditText.text?.toString()?.trim()
                 if (!name.isNullOrEmpty()) {
                     lifecycleScope.launch {
-                        val personaId = viewModel.insertPersonaSync(name)
+                        val isDark = isColorDark(android.graphics.Color.parseColor(selectedColor))
+                        val textColor = if (isDark) "#FFFFFF" else "#000000"
+                        val persona = com.samsara.polymath.data.Persona(
+                            name = name,
+                            backgroundColor = selectedColor,
+                            textColor = textColor
+                        )
+                        val personaId = viewModel.insertPersonaSync(persona)
                         tagViewModel.setTagsForPersona(personaId, selectedTagIds.toList())
                     }
                 } else {
@@ -479,19 +488,83 @@ class MainActivity : AppCompatActivity() {
 
         dialog.show()
     }
-    
+
     private fun isColorDark(color: Int): Boolean {
-        val darkness = 1 - (0.299 * android.graphics.Color.red(color) + 
-                           0.587 * android.graphics.Color.green(color) + 
+        val darkness = 1 - (0.299 * android.graphics.Color.red(color) +
+                           0.587 * android.graphics.Color.green(color) +
                            0.114 * android.graphics.Color.blue(color)) / 255
         return darkness >= 0.5
+    }
+
+    private val personaColorPalette = listOf(
+        "#16171A", "#1B2B4B", "#1E3A5F", "#14372E", "#2D1B4E",
+        "#4A1942", "#5C1A1A", "#2563EB", "#7C3AED", "#DB2777",
+        "#059669", "#D97706"
+    )
+
+    private fun setupColorPalette(
+        layout: android.widget.LinearLayout,
+        initialColor: String,
+        onColorSelected: (String) -> Unit
+    ) {
+        layout.removeAllViews()
+        val density = resources.displayMetrics.density
+        val size = (40 * density).toInt()
+        val margin = (6 * density).toInt()
+        var selectedColor = initialColor
+
+        personaColorPalette.forEach { hex ->
+            val swatch = android.widget.ImageView(this).apply {
+                layoutParams = android.widget.LinearLayout.LayoutParams(size, size).also {
+                    it.marginEnd = margin
+                }
+                val drawable = android.graphics.drawable.GradientDrawable().apply {
+                    shape = android.graphics.drawable.GradientDrawable.OVAL
+                    setColor(android.graphics.Color.parseColor(hex))
+                }
+                background = drawable
+                scaleType = android.widget.ImageView.ScaleType.CENTER
+                contentDescription = hex
+            }
+
+            fun updateCheck() {
+                if (selectedColor.equals(hex, ignoreCase = true)) {
+                    swatch.setImageResource(android.R.drawable.ic_menu_myplaces)
+                    swatch.setColorFilter(android.graphics.Color.WHITE)
+                } else {
+                    swatch.setImageDrawable(null)
+                }
+            }
+
+            swatch.setOnClickListener {
+                selectedColor = hex
+                onColorSelected(hex)
+                // Refresh all swatches
+                for (i in 0 until layout.childCount) {
+                    val child = layout.getChildAt(i) as? android.widget.ImageView ?: continue
+                    val childHex = child.contentDescription?.toString() ?: continue
+                    if (childHex.equals(selectedColor, ignoreCase = true)) {
+                        child.setImageResource(android.R.drawable.ic_menu_myplaces)
+                        child.setColorFilter(android.graphics.Color.WHITE)
+                    } else {
+                        child.setImageDrawable(null)
+                    }
+                }
+            }
+
+            layout.addView(swatch)
+            updateCheck()
+        }
     }
 
     private fun showEditPersonaDialog(persona: com.samsara.polymath.data.Persona) {
         val dialogBinding = DialogAddPersonaBinding.inflate(LayoutInflater.from(this))
         dialogBinding.personaNameEditText.setText(persona.name)
         dialogBinding.personaNameEditText.selectAll()
-        
+
+        var selectedColor = persona.backgroundColor
+        setupColorPalette(dialogBinding.colorPaletteLayout, selectedColor) { selectedColor = it }
+
         val selectedTagIds = mutableSetOf<Long>()
         
         // Observe all tags and persona's current tags
@@ -545,6 +618,9 @@ class MainActivity : AppCompatActivity() {
                 if (!newName.isNullOrEmpty()) {
                     if (newName != persona.name) {
                         viewModel.updatePersonaName(persona.id, newName)
+                    }
+                    if (!selectedColor.equals(persona.backgroundColor, ignoreCase = true)) {
+                        viewModel.updatePersonaColor(persona.id, selectedColor)
                     }
                     tagViewModel.setTagsForPersona(persona.id, selectedTagIds.toList())
                 } else {
@@ -636,11 +712,6 @@ class MainActivity : AppCompatActivity() {
                         .getAllSync()
                         .map { com.samsara.polymath.data.PersonaTagExport(it.personaId, it.tagId, it.assignedAt) }
 
-                    // Get all completed time entries
-                    val allTimeEntries = AppDatabase.getDatabase(applicationContext)
-                        .timeEntryDao()
-                        .getAllCompletedEntries()
-
                     // Get all persona open events (last 91 days)
                     val sinceMillis = System.currentTimeMillis() - 91L * 86400000L
                     val allOpenEvents = AppDatabase.getDatabase(applicationContext)
@@ -654,7 +725,6 @@ class MainActivity : AppCompatActivity() {
                         statistics = allStatistics,
                         tags = allTags,
                         personaTags = allPersonaTags,
-                        timeEntries = allTimeEntries,
                         personaOpenEvents = allOpenEvents
                     )
 
@@ -797,21 +867,6 @@ class MainActivity : AppCompatActivity() {
                                     personaId = newPersonaId,
                                     tagId = newTagId,
                                     assignedAt = personaTag.assignedAt
-                                )
-                            )
-                        }
-                    }
-
-                    // Import time entries with new task IDs
-                    val timeEntryDao = AppDatabase.getDatabase(applicationContext).timeEntryDao()
-                    exportData.timeEntries.forEach { oldEntry ->
-                        val newTaskId = taskIdMap[oldEntry.taskId]
-                        if (newTaskId != null) {
-                            timeEntryDao.insert(
-                                com.samsara.polymath.data.TimeEntry(
-                                    taskId = newTaskId,
-                                    startTime = oldEntry.startTime,
-                                    endTime = oldEntry.endTime
                                 )
                             )
                         }

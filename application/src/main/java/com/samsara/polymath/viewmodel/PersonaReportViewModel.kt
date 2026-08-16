@@ -6,12 +6,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.samsara.polymath.data.*
-import com.samsara.polymath.data.DailyPersonaTimeSumWithDay
 import com.samsara.polymath.repository.PersonaOpenEventRepository
 import com.samsara.polymath.repository.PersonaRepository
 import com.samsara.polymath.repository.PersonaStatisticsRepository
 import com.samsara.polymath.repository.TaskRepository
-import com.samsara.polymath.repository.TimeEntryRepository
 import com.samsara.polymath.util.HeatmapUtils
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -23,7 +21,6 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
     private val taskRepository: TaskRepository
     private val statisticsRepository: PersonaStatisticsRepository
     private val tagDao: TagDao
-    private val timeEntryRepository: TimeEntryRepository
     private val personaOpenEventRepository: PersonaOpenEventRepository
 
     // --- LiveData for tabbed report ---
@@ -33,19 +30,8 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
     private val _heatmapData = MutableLiveData<Map<Long, Long>>()
     val heatmapData: LiveData<Map<Long, Long>> = _heatmapData
 
-    private val _selectedDayBreakdown = MutableLiveData<List<DailyPersonaTimeSum>>()
-    val selectedDayBreakdown: LiveData<List<DailyPersonaTimeSum>> = _selectedDayBreakdown
-
     private val _selectedDay = MutableLiveData<Long?>()
     val selectedDay: LiveData<Long?> = _selectedDay
-
-    // Per-persona heatmap data for the Report Time tab
-    private val _perPersonaHeatmaps = MutableLiveData<List<PersonaHeatmapEntry>>()
-    val perPersonaHeatmaps: LiveData<List<PersonaHeatmapEntry>> = _perPersonaHeatmaps
-
-    // Chart data for the Charts tab
-    private val _dailyTimeByPersona = MutableLiveData<List<DailyPersonaTimeSumWithDay>>()
-    val dailyTimeByPersona: LiveData<List<DailyPersonaTimeSumWithDay>> = _dailyTimeByPersona
 
     private val _personaScoreHistory = MutableLiveData<Map<Long, List<PersonaStatistics>>>()
     val personaScoreHistory: LiveData<Map<Long, List<PersonaStatistics>>> = _personaScoreHistory
@@ -62,7 +48,6 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
         taskRepository = TaskRepository(database.taskDao())
         statisticsRepository = PersonaStatisticsRepository(database.personaStatisticsDao())
         tagDao = database.tagDao()
-        timeEntryRepository = TimeEntryRepository(database.timeEntryDao())
         personaOpenEventRepository = PersonaOpenEventRepository(database.personaOpenEventDao())
     }
 
@@ -100,45 +85,9 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
     fun loadHeatmapData() {
         viewModelScope.launch {
             val sinceMillis = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(91)
-
-            // Global combined heatmap
-            val timeSums = timeEntryRepository.getDailyTimeSums(sinceMillis)
             val completions = taskRepository.getDailyCompletionsGlobal(sinceMillis)
             val opens = personaOpenEventRepository.getDailyOpenCountsGlobal(sinceMillis)
-            val combined = HeatmapUtils.combineHeatmapData(timeSums, completions, opens)
-
-            // Fallback: if no open/completion data yet, show raw timer data so heatmap isn't empty
-            if (combined.isEmpty()) {
-                val rawMap = timeSums.associate { it.dayMillis to it.totalTime }
-                _heatmapData.postValue(rawMap)
-            } else {
-                _heatmapData.postValue(combined)
-            }
-
-            // Per-persona heatmaps
-            val personas = personaRepository.getAllPersonasSync()
-            val entries = personas.mapNotNull { persona ->
-                val pTime = timeEntryRepository.getDailyTimeSumsByPersona(persona.id, sinceMillis)
-                val pComp = taskRepository.getDailyCompletionsByPersona(persona.id, sinceMillis)
-                val pOpen = personaOpenEventRepository.getDailyOpenCountsByPersona(persona.id, sinceMillis)
-                val pCombined = HeatmapUtils.combineHeatmapData(pTime, pComp, pOpen)
-
-                // Fallback to raw time if no combined data
-                val data = if (pCombined.isEmpty()) {
-                    pTime.associate { it.dayMillis to it.totalTime }
-                } else {
-                    pCombined
-                }
-
-                if (data.isEmpty()) null
-                else PersonaHeatmapEntry(
-                    personaId = persona.id,
-                    personaName = persona.name,
-                    backgroundColor = persona.backgroundColor,
-                    data = data
-                )
-            }
-            _perPersonaHeatmaps.postValue(entries)
+            _heatmapData.postValue(HeatmapUtils.combineHeatmapData(completions, opens))
         }
     }
 
@@ -149,20 +98,10 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
     fun loadChartData() {
         viewModelScope.launch {
             val sinceMillis = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(91)
-
-            // Stacked bar: daily time broken down by persona
-            val dailyData = timeEntryRepository.getDailyTimeSumsWithPersona(sinceMillis)
-            _dailyTimeByPersona.postValue(dailyData)
-
-            // Line chart: persona score progression from historical snapshots
             val allStats = statisticsRepository.getStatisticsSince(sinceMillis)
-            val grouped = allStats.groupBy { it.personaId }
-            _personaScoreHistory.postValue(grouped)
-
-            // Persona info (name + color) for chart legends
+            _personaScoreHistory.postValue(allStats.groupBy { it.personaId })
             val personas = personaRepository.getAllPersonasSync()
-            val infoMap = personas.associate { it.id to Pair(it.name, it.backgroundColor) }
-            _personaInfo.postValue(infoMap)
+            _personaInfo.postValue(personas.associate { it.id to Pair(it.name, it.backgroundColor) })
         }
     }
 
@@ -171,15 +110,10 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
      */
     fun selectDay(dayMillis: Long) {
         _selectedDay.postValue(dayMillis)
-        viewModelScope.launch {
-            val breakdown = timeEntryRepository.getTimeBreakdownForDay(dayMillis)
-            _selectedDayBreakdown.postValue(breakdown)
-        }
     }
 
     fun clearSelectedDay() {
         _selectedDay.postValue(null)
-        _selectedDayBreakdown.postValue(emptyList())
     }
 
     suspend fun generateReport(reportType: ReportType): ReportSummary {
@@ -191,17 +125,10 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
         val startTime = now - TimeUnit.DAYS.toMillis(daysToLookBack.toLong())
         val previousPeriodStart = startTime - TimeUnit.DAYS.toMillis(daysToLookBack.toLong())
 
-        // Get all personas
         val personas = personaRepository.getAllPersonasSync()
 
-        // Get time tracking data per persona
-        val timeByPersona = timeEntryRepository.getTotalTimeByAllPersonas()
-            .associate { it.personaId to it.totalTime }
-
-        // Get current and previous statistics for each persona
         val personaReports = personas.map { persona ->
-            generatePersonaReport(persona, startTime, previousPeriodStart, now)
-                .copy(totalTimeSpent = timeByPersona[persona.id] ?: 0)
+            generatePersonaReport(persona, startTime, previousPeriodStart)
         }.sortedByDescending { it.improvementScore }
 
         // Find highlights - top 2 each
@@ -236,10 +163,6 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
             .sortedBy { it.avgOpenCount }
             .take(2)
 
-        val mostTimeSpent = personaReports
-            .filter { it.totalTimeSpent > 0 }
-            .sortedByDescending { it.totalTimeSpent }
-
         return ReportSummary(
             reportType = reportType,
             startDate = startTime,
@@ -250,16 +173,14 @@ class PersonaReportViewModel(application: Application) : AndroidViewModel(applic
             mostActive = mostActive,
             tagsMostActive = tagsMostActive,
             tagsMostImproved = tagsMostImproved,
-            tagsNeedAttention = tagsNeedAttention,
-            mostTimeSpent = mostTimeSpent
+            tagsNeedAttention = tagsNeedAttention
         )
     }
 
     private suspend fun generatePersonaReport(
         persona: Persona,
         startTime: Long,
-        previousPeriodStart: Long,
-        now: Long
+        previousPeriodStart: Long
     ): PersonaReport {
         // Get current period stats
         val allTasks = taskRepository.getTasksByPersonaSync(persona.id)

@@ -10,9 +10,8 @@ data class PersonaReport(
     val previousCompletionRate: Double,
     val openCountTrend: TrendDirection,
     val completionRateTrend: TrendDirection,
-    val improvementScore: Double, // Combined score for ranking
-    val tags: List<Tag> = emptyList(),
-    val totalTimeSpent: Long = 0 // Total time in milliseconds
+    val improvementScore: Double,
+    val tags: List<Tag> = emptyList()
 )
 
 enum class TrendDirection {
@@ -29,8 +28,7 @@ data class ReportSummary(
     val mostActive: List<PersonaReport>,
     val tagsMostActive: List<TagReport> = emptyList(),
     val tagsMostImproved: List<TagReport> = emptyList(),
-    val tagsNeedAttention: List<TagReport> = emptyList(),
-    val mostTimeSpent: List<PersonaReport> = emptyList()
+    val tagsNeedAttention: List<TagReport> = emptyList()
 )
 
 data class TagReport(

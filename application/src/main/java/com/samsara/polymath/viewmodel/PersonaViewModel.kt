@@ -269,6 +269,21 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
             repository.updatePersonaName(personaId, newName)
         }
     }
+
+    fun updatePersonaColor(personaId: Long, color: String) {
+        val isDark = run {
+            val c = android.graphics.Color.parseColor(color)
+            val d = 1 - (0.299 * android.graphics.Color.red(c) +
+                    0.587 * android.graphics.Color.green(c) +
+                    0.114 * android.graphics.Color.blue(c)) / 255
+            d >= 0.5
+        }
+        val textColor = if (isDark) "#FFFFFF" else "#000000"
+        viewModelScope.launch {
+            repository.updatePersonaColor(personaId, color, textColor)
+            taskRepository.updateBackgroundColorForPersona(personaId, color)
+        }
+    }
     
     fun deletePersona(persona: Persona) {
         viewModelScope.launch {

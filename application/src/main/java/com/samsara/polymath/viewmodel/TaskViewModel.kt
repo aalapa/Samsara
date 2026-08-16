@@ -23,14 +23,30 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
     }
     
     fun getTasksByPersona(personaId: Long): LiveData<List<Task>> = repository.getTasksByPersona(personaId).asLiveData()
-    
-    fun insertTask(personaId: Long, title: String, description: String = "", personaBackgroundColor: String = "#007AFF", isRecurring: Boolean = false, recurringFrequency: String? = null, recurringDays: String? = null, endDate: Long? = null, isAvoidTask: Boolean = false) {
-        viewModelScope.launch {
-            val tasks = repository.getTasksByPersona(personaId)
-            val taskList = tasks.first()
-            val maxOrder = taskList.maxOfOrNull { it.order } ?: 0
 
-            // Calculate variant color based on task order (increment hex value slightly)
+    fun getTopLevelTasksByPersona(personaId: Long): LiveData<List<Task>> = repository.getTopLevelTasksByPersona(personaId).asLiveData()
+
+    fun getSubtasksByParentTask(parentTaskId: Long): LiveData<List<Task>> = repository.getSubtasksByParentTask(parentTaskId).asLiveData()
+
+    fun insertTask(
+        personaId: Long,
+        title: String,
+        description: String = "",
+        personaBackgroundColor: String = "#007AFF",
+        isRecurring: Boolean = false,
+        recurringFrequency: String? = null,
+        recurringDays: String? = null,
+        endDate: Long? = null,
+        isAvoidTask: Boolean = false,
+        parentTaskId: Long? = null
+    ) {
+        viewModelScope.launch {
+            val siblings = if (parentTaskId != null) {
+                repository.getSubtasksByParentTaskList(parentTaskId)
+            } else {
+                repository.getTopLevelTasksByPersonaList(personaId)
+            }
+            val maxOrder = siblings.maxOfOrNull { it.order } ?: 0
             val variantColor = calculateVariantColor(personaBackgroundColor, maxOrder + 1)
 
             repository.insertTask(
@@ -44,7 +60,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                     recurringFrequency = recurringFrequency,
                     recurringDays = recurringDays,
                     endDate = endDate,
-                    isAvoidTask = isAvoidTask
+                    isAvoidTask = isAvoidTask,
+                    parentTaskId = parentTaskId
                 )
             )
         }

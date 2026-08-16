@@ -12,6 +12,21 @@ data class DailyCompletionCount(
 interface TaskDao {
     @Query("SELECT * FROM tasks WHERE personaId = :personaId ORDER BY `order` ASC, createdAt ASC")
     fun getTasksByPersona(personaId: Long): Flow<List<Task>>
+
+    @Query("SELECT * FROM tasks WHERE personaId = :personaId AND parentTaskId IS NULL ORDER BY `order` ASC, createdAt ASC")
+    fun getTopLevelTasksByPersona(personaId: Long): Flow<List<Task>>
+
+    @Query("SELECT * FROM tasks WHERE personaId = :personaId AND parentTaskId IS NULL ORDER BY `order` ASC, createdAt ASC")
+    suspend fun getTopLevelTasksByPersonaList(personaId: Long): List<Task>
+
+    @Query("SELECT * FROM tasks WHERE parentTaskId = :parentTaskId ORDER BY `order` ASC, createdAt ASC")
+    fun getSubtasksByParentTask(parentTaskId: Long): Flow<List<Task>>
+
+    @Query("SELECT * FROM tasks WHERE parentTaskId = :parentTaskId ORDER BY `order` ASC, createdAt ASC")
+    suspend fun getSubtasksByParentTaskList(parentTaskId: Long): List<Task>
+
+    @Query("UPDATE tasks SET backgroundColor = :color WHERE personaId = :personaId")
+    suspend fun updateBackgroundColorForPersona(personaId: Long, color: String)
     
     @Query("SELECT * FROM tasks ORDER BY personaId ASC, `order` ASC")
     fun getAllTasks(): Flow<List<Task>>
