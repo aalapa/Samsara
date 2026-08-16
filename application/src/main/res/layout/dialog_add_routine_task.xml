@@ -38,13 +38,20 @@
             android:textStyle="bold"
             android:textColor="@color/ink" />
 
-        <!-- Time chunk buttons — populated programmatically -->
-        <LinearLayout
-            android:id="@+id/timeChunkGroup"
+        <!-- Time chunk buttons — populated programmatically; scroll if many sections -->
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:orientation="horizontal" />
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/timeChunkGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+
+        </HorizontalScrollView>
 
         <TextView
             android:layout_width="wrap_content"
