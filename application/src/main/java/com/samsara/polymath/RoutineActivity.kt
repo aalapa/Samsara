@@ -304,12 +304,30 @@ class RoutineActivity : AppCompatActivity() {
     // ── Swipe to delete ──────────────────────────────────────────────────────
 
     private fun createItemTouchHelper(): ItemTouchHelper {
-        return ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-            override fun onMove(rv: RecyclerView, vh: RecyclerView.ViewHolder, t: RecyclerView.ViewHolder) = false
-
+        return ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.LEFT
+        ) {
             override fun getMovementFlags(rv: RecyclerView, vh: RecyclerView.ViewHolder): Int {
                 if (vh is RoutineAdapter.HeaderVH) return makeMovementFlags(0, 0)
-                return super.getMovementFlags(rv, vh)
+                val drag = if (isManageMode) ItemTouchHelper.UP or ItemTouchHelper.DOWN else 0
+                return makeMovementFlags(drag, ItemTouchHelper.LEFT)
+            }
+
+            override fun onMove(rv: RecyclerView, vh: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                if (target is RoutineAdapter.HeaderVH) return false
+                val from = vh.bindingAdapterPosition
+                val to = target.bindingAdapterPosition
+                if (from == RecyclerView.NO_POSITION || to == RecyclerView.NO_POSITION) return false
+                val fromTask = adapter.getTaskAt(from) ?: return false
+                val toTask   = adapter.getTaskAt(to)   ?: return false
+                if (fromTask.timeChunk != toTask.timeChunk) return false  // block cross-section drags
+                adapter.moveItem(from, to)
+                return true
+            }
+
+            override fun clearView(rv: RecyclerView, vh: RecyclerView.ViewHolder) {
+                super.clearView(rv, vh)
+                if (isManageMode) viewModel.persistOrder(adapter.tasksInAdapterOrder())
             }
 
             override fun onSwiped(vh: RecyclerView.ViewHolder, direction: Int) {

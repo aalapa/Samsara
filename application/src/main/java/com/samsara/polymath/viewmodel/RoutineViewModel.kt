@@ -107,4 +107,12 @@ class RoutineViewModel(application: Application) : AndroidViewModel(application)
     fun deleteTask(task: Task) {
         viewModelScope.launch { taskRepository.deleteTask(task) }
     }
+
+    fun persistOrder(tasks: List<Task>) {
+        viewModelScope.launch {
+            tasks.forEachIndexed { index, task ->
+                taskRepository.updateTaskOrder(task.id, index)
+            }
+        }
+    }
 }

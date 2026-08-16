@@ -59,6 +59,16 @@ class RoutineAdapter(
     fun getTaskAt(position: Int): Task? =
         (items.getOrNull(position) as? RoutineListItem.TaskItem)?.task
 
+    fun moveItem(from: Int, to: Int) {
+        val mutable = items.toMutableList()
+        mutable.add(to, mutable.removeAt(from))
+        items = mutable
+        notifyItemMoved(from, to)
+    }
+
+    fun tasksInAdapterOrder(): List<Task> =
+        items.filterIsInstance<RoutineListItem.TaskItem>().map { it.task }
+
     override fun getItemViewType(position: Int) = when (items[position]) {
         is RoutineListItem.Header   -> TYPE_HEADER
         is RoutineListItem.TaskItem -> TYPE_TASK
