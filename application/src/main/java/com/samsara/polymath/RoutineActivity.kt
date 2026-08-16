@@ -5,13 +5,17 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import org.json.JSONArray
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -47,8 +51,32 @@ class RoutineActivity : AppCompatActivity() {
     private var manageMenuItem: MenuItem? = null
     private var viewToggleMenuItem: MenuItem? = null
 
-    // SharedPreferences key per chunk: "chunk_color_<personaId>_<chunk>"
+    // SharedPreferences
     private val prefs by lazy { getSharedPreferences("routine_prefs", Context.MODE_PRIVATE) }
+
+    // ── Sections ─────────────────────────────────────────────────────────────
+
+    private var sectionsList: MutableList<String> = mutableListOf()
+
+    private fun sectionsKey() = "sections_${personaId}"
+
+    private fun defaultSections() =
+        mutableListOf("MORNING", "AFTERNOON", "EVENING", "NIGHT")
+
+    private fun loadSections(): MutableList<String> {
+        val json = prefs.getString(sectionsKey(), null) ?: return defaultSections()
+        return try {
+            val arr = JSONArray(json)
+            MutableList(arr.length()) { arr.getString(it) }
+        } catch (_: Exception) { defaultSections() }
+    }
+
+    private fun saveSections(sections: List<String>) {
+        prefs.edit().putString(sectionsKey(), JSONArray(sections).toString()).apply()
+        sectionsList = sections.toMutableList()
+    }
+
+    // ── Chunk colors ──────────────────────────────────────────────────────────
 
     private fun chunkColorKey(chunk: String) = "chunk_color_${personaId}_$chunk"
 
@@ -62,7 +90,7 @@ class RoutineActivity : AppCompatActivity() {
     }
 
     private fun chunkColorsMap(): Map<String, Int> =
-        listOf("MORNING", "AFTERNOON", "EVENING", "NIGHT")
+        sectionsList
             .mapNotNull { chunk -> getChunkColor(chunk)?.let { chunk to it } }
             .toMap()
 
@@ -89,6 +117,7 @@ class RoutineActivity : AppCompatActivity() {
         personaId    = intent.getLongExtra(EXTRA_PERSONA_ID, 0L)
         personaName  = intent.getStringExtra(EXTRA_PERSONA_NAME) ?: ""
         personaColor = intent.getStringExtra(EXTRA_PERSONA_COLOR) ?: "#16171A"
+        sectionsList = loadSections()
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -136,6 +165,7 @@ class RoutineActivity : AppCompatActivity() {
             applyModeFilter()
             true
         }
+        R.id.action_sections -> { showManageSectionsDialog(); true }
         else -> super.onOptionsItemSelected(item)
     }
 
@@ -168,6 +198,7 @@ class RoutineActivity : AppCompatActivity() {
     }
 
     private fun refreshAdapter() {
+        adapter.sections = sectionsList
         adapter.chunkColors = chunkColorsMap()
         adapter.submit(currentTasks, currentCompletedIds, statCache.toMap())
         updateProgress()
@@ -302,21 +333,19 @@ class RoutineActivity : AppCompatActivity() {
         val db = DialogAddRoutineTaskBinding.inflate(LayoutInflater.from(this))
         db.taskNameEditText.setText(task.title)
 
-        var selectedChunk = task.timeChunk
+        var selectedChunk = task.timeChunk.let { if (it in sectionsList) it else sectionsList.firstOrNull() ?: it }
         var selectedDaysMask = ScheduledDays.displayMask(task.scheduledDays)
         val density = resources.displayMetrics.density
         val chunkViews = mutableListOf<TextView>()
 
-        listOf("MORNING","AFTERNOON","EVENING","NIGHT")
-            .zip(listOf("Morning","Afternoon","Evening","Night"))
-            .forEachIndexed { i, (chunk, label) ->
-                val tv = makeToggleButton(label, chunk == selectedChunk, density)
-                tv.setOnClickListener {
-                    selectedChunk = chunk
-                    chunkViews.forEachIndexed { j, v -> updateToggle(v, j == i, density) }
-                }
-                chunkViews.add(tv); db.timeChunkGroup.addView(tv)
+        sectionsList.forEachIndexed { i, section ->
+            val tv = makeToggleButton(section, section == selectedChunk, density)
+            tv.setOnClickListener {
+                selectedChunk = section
+                chunkViews.forEachIndexed { j, v -> updateToggle(v, j == i, density) }
             }
+            chunkViews.add(tv); db.timeChunkGroup.addView(tv)
+        }
 
         ScheduledDays.dayLabels.forEachIndexed { i, label ->
             val bit = ScheduledDays.dayBits[i]
@@ -352,21 +381,19 @@ class RoutineActivity : AppCompatActivity() {
 
     private fun showAddTaskDialog() {
         val db = DialogAddRoutineTaskBinding.inflate(LayoutInflater.from(this))
-        var selectedChunk = "MORNING"
+        var selectedChunk = sectionsList.firstOrNull() ?: "MORNING"
         var selectedDaysMask = ScheduledDays.ALL_MASK
         val density = resources.displayMetrics.density
         val chunkViews = mutableListOf<TextView>()
 
-        listOf("MORNING","AFTERNOON","EVENING","NIGHT")
-            .zip(listOf("Morning","Afternoon","Evening","Night"))
-            .forEachIndexed { i, (chunk, label) ->
-                val tv = makeToggleButton(label, chunk == selectedChunk, density)
-                tv.setOnClickListener {
-                    selectedChunk = chunk
-                    chunkViews.forEachIndexed { j, v -> updateToggle(v, j == i, density) }
-                }
-                chunkViews.add(tv); db.timeChunkGroup.addView(tv)
+        sectionsList.forEachIndexed { i, section ->
+            val tv = makeToggleButton(section, section == selectedChunk, density)
+            tv.setOnClickListener {
+                selectedChunk = section
+                chunkViews.forEachIndexed { j, v -> updateToggle(v, j == i, density) }
             }
+            chunkViews.add(tv); db.timeChunkGroup.addView(tv)
+        }
 
         ScheduledDays.dayLabels.forEachIndexed { i, label ->
             val bit = ScheduledDays.dayBits[i]
@@ -435,6 +462,146 @@ class RoutineActivity : AppCompatActivity() {
     private fun isColorDark(color: Int): Boolean {
         val d = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
         return d >= 0.5
+    }
+
+    // ── Section management ────────────────────────────────────────────────────
+
+    private fun showManageSectionsDialog() {
+        val editing = sectionsList.toMutableList()
+        val renames = mutableMapOf<String, String>()   // originalName → currentName
+        val deleted = mutableListOf<String>()
+        val density = resources.displayMetrics.density
+        val pad = (16 * density).toInt()
+        val gap = (8 * density).toInt()
+
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(pad, pad, pad, pad)
+        }
+        val scrollView = ScrollView(this).apply { addView(container) }
+
+        var rebuildRows: () -> Unit = {}
+        rebuildRows = {
+            container.removeAllViews()
+            editing.forEachIndexed { i, name ->
+                val row = LinearLayout(this).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER_VERTICAL
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).also { it.bottomMargin = gap }
+                }
+                val nameView = TextView(this).apply {
+                    text = name; textSize = 15f
+                    layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                    setPadding(0, gap, gap, gap)
+                    setOnClickListener {
+                        showRenameSectionDialog(name, editing, i, renames, rebuildRows)
+                    }
+                }
+                val upBtn   = makeSectionBtn("▲", density) { if (i > 0) { editing.add(i-1, editing.removeAt(i)); rebuildRows() } }
+                val downBtn = makeSectionBtn("▼", density) { if (i < editing.size-1) { editing.add(i+1, editing.removeAt(i)); rebuildRows() } }
+                val delBtn  = makeSectionBtn("✕", density) {
+                    if (editing.size > 1) { deleted.add(name); editing.removeAt(i); rebuildRows() }
+                    else Toast.makeText(this, "Need at least one section", Toast.LENGTH_SHORT).show()
+                }
+                row.addView(nameView); row.addView(upBtn); row.addView(downBtn); row.addView(delBtn)
+                container.addView(row)
+            }
+            val addBtn = TextView(this).apply {
+                text = "+ Add section"; textSize = 14f
+                setTextColor(try { Color.parseColor(personaColor) } catch (_: Exception) { Color.GRAY })
+                setPadding(0, (12 * density).toInt(), 0, gap)
+                setOnClickListener { showAddSectionNameDialog(editing, rebuildRows) }
+            }
+            container.addView(addBtn)
+        }
+        rebuildRows()
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Manage Sections")
+            .setView(scrollView)
+            .setPositiveButton("Done") { _, _ -> applyManageSectionsChanges(editing, renames, deleted) }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showRenameSectionDialog(
+        current: String,
+        editing: MutableList<String>,
+        index: Int,
+        renames: MutableMap<String, String>,
+        rebuild: () -> Unit
+    ) {
+        val density = resources.displayMetrics.density
+        val pad = (24 * density).toInt(); val vpad = (8 * density).toInt()
+        val input = android.widget.EditText(this).apply {
+            setText(current); selectAll()
+            setPadding(pad, vpad, pad, vpad)
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Rename section")
+            .setView(input)
+            .setPositiveButton("Rename") { _, _ ->
+                val newName = input.text?.toString()?.trim()
+                if (newName.isNullOrEmpty() || newName == current) return@setPositiveButton
+                // Track original name → new name (chain renames)
+                val originalName = renames.entries.firstOrNull { it.value == current }?.key ?: current
+                renames[originalName] = newName
+                editing[index] = newName
+                rebuild()
+            }
+            .setNegativeButton("Cancel", null).show()
+    }
+
+    private fun showAddSectionNameDialog(editing: MutableList<String>, rebuild: () -> Unit) {
+        val density = resources.displayMetrics.density
+        val pad = (24 * density).toInt(); val vpad = (8 * density).toInt()
+        val input = android.widget.EditText(this).apply {
+            hint = "Section name"; setPadding(pad, vpad, pad, vpad)
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Add section")
+            .setView(input)
+            .setPositiveButton("Add") { _, _ ->
+                val name = input.text?.toString()?.trim()
+                if (!name.isNullOrEmpty() && name !in editing) { editing.add(name); rebuild() }
+            }
+            .setNegativeButton("Cancel", null).show()
+    }
+
+    private fun applyManageSectionsChanges(
+        newSections: List<String>,
+        renames: Map<String, String>,
+        deleted: List<String>
+    ) {
+        val fallback = newSections.firstOrNull() ?: return
+        // Apply renames: update tasks + migrate color pref
+        renames.forEach { (oldName, newName) ->
+            if (oldName == newName) return@forEach
+            allTasks.filter { it.timeChunk == oldName }.forEach { viewModel.updateTask(it.copy(timeChunk = newName)) }
+            val oldColor = prefs.getInt(chunkColorKey(oldName), Int.MIN_VALUE)
+            if (oldColor != Int.MIN_VALUE) {
+                prefs.edit().remove(chunkColorKey(oldName)).putInt(chunkColorKey(newName), oldColor).apply()
+            }
+        }
+        // Handle deleted sections: move tasks to first remaining section
+        deleted.forEach { delName ->
+            allTasks.filter { it.timeChunk == delName }.forEach { viewModel.updateTask(it.copy(timeChunk = fallback)) }
+            prefs.edit().remove(chunkColorKey(delName)).apply()
+        }
+        saveSections(newSections)
+        statCache.clear()
+    }
+
+    private fun makeSectionBtn(label: String, density: Float, onClick: () -> Unit): TextView {
+        val size = (32 * density).toInt()
+        return TextView(this).apply {
+            text = label; textSize = 13f; gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(size, size)
+            setOnClickListener { onClick() }
+        }
     }
 
     companion object {

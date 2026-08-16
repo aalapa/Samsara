@@ -26,7 +26,7 @@ class RoutineAdapter(
     private val onChunkColorTap: (chunk: String, currentColor: Int) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val chunks = listOf("MORNING", "AFTERNOON", "EVENING", "NIGHT")
+    var sections: List<String> = listOf("MORNING", "AFTERNOON", "EVENING", "NIGHT")
     private var items: List<RoutineListItem> = emptyList()
     private var completedIds: Set<Long> = emptySet()
     private var statsMap: Map<Long, RoutineTaskStats> = emptyMap()
@@ -45,7 +45,7 @@ class RoutineAdapter(
         this.statsMap = statsMap
 
         val newItems = mutableListOf<RoutineListItem>()
-        for (chunk in chunks) {
+        for (chunk in sections) {
             val chunkTasks = tasks.filter { it.timeChunk == chunk }
             if (chunkTasks.isEmpty()) continue
             val done = chunkTasks.count { it.id in completedIds }
