@@ -51,12 +51,22 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    val keystorePropsFile = rootProject.file("keystore.properties")
+    val keystoreProps = Properties()
+    if (keystorePropsFile.exists()) keystoreProps.load(keystorePropsFile.inputStream())
+
     signingConfigs {
         getByName("debug") {
             storeFile = file(System.getProperty("user.home") + "/.android/debug.keystore")
             storePassword = "android"
             keyAlias = "androiddebugkey"
             keyPassword = "android"
+        }
+        create("release") {
+            storeFile = file(keystoreProps.getProperty("STORE_FILE", ""))
+            storePassword = keystoreProps.getProperty("STORE_PASSWORD", "")
+            keyAlias = keystoreProps.getProperty("KEY_ALIAS", "samsara")
+            keyPassword = keystoreProps.getProperty("KEY_PASSWORD", "")
         }
     }
 
@@ -65,6 +75,7 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
