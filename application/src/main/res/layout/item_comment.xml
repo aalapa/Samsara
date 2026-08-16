@@ -5,25 +5,24 @@
     android:orientation="vertical"
     android:padding="12dp"
     android:layout_marginBottom="8dp"
-    android:background="@drawable/comment_background">
+    android:background="@color/surface_sunken"
+    android:backgroundTintMode="src_atop">
 
+    <!-- surface_sunken fill, 14dp radius applied via card wrapper in the adapter -->
     <TextView
         android:id="@+id/commentTextTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="14sp"
-        android:textColor="@color/text_primary"
+        android:textColor="@color/ink"
         android:layout_marginBottom="4dp" />
 
     <TextView
         android:id="@+id/commentDateTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="12sp"
-        android:textColor="@color/text_secondary"
-        android:textStyle="italic" />
+        android:textSize="11.5sp"
+        android:textColor="@color/ink_muted"
+        android:fontFamily="monospace" />
 
 </LinearLayout>
-
-
-

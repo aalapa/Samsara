@@ -103,32 +103,21 @@ class PersonaAdapter(
         fun bind(personaWithCount: PersonaWithTaskCount) {
             val persona = personaWithCount.persona
             val completedCount = personaWithCount.completedTaskCount
+            val openCount = personaWithCount.openTaskCount
 
-            val displayText = "$completedCount ${persona.name}"
-            binding.personaNameTextView.text = displayText
+            binding.personaNameTextView.text = persona.name
 
-            fun isColorDark(color: Int): Boolean {
-                val darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
-                return darkness >= 0.5
+            val countsText = if (completedCount > 0) {
+                "$openCount open · $completedCount done"
+            } else {
+                "$openCount open"
             }
-
-            fun desaturateColor(color: Int, saturation: Float): Int {
-                val r = Color.red(color)
-                val g = Color.green(color)
-                val b = Color.blue(color)
-                val gray = (0.299 * r + 0.587 * g + 0.114 * b).toInt()
-                val newR = (gray + saturation * (r - gray)).toInt().coerceIn(0, 255)
-                val newG = (gray + saturation * (g - gray)).toInt().coerceIn(0, 255)
-                val newB = (gray + saturation * (b - gray)).toInt().coerceIn(0, 255)
-                return Color.rgb(newR, newG, newB)
-            }
+            binding.personaCountsTextView.text = countsText
 
             var bgColor = Color.parseColor("#FFFFFF")
             try {
                 bgColor = Color.parseColor(persona.backgroundColor)
-            } catch (e: Exception) {
-                bgColor = Color.parseColor("#FFFFFF")
-            }
+            } catch (_: Exception) { }
 
             val finalBgColor = when (personaWithCount.decayLevel) {
                 DecayLevel.SERIOUS -> desaturateColor(bgColor, 0.3f)
@@ -136,34 +125,25 @@ class PersonaAdapter(
             }
 
             val textColor = if (isColorDark(finalBgColor)) Color.WHITE else Color.BLACK
-            val menuIconColor = if (isColorDark(finalBgColor)) Color.WHITE else Color.BLACK
+            val menuIconAlpha = (0.30f * 255).toInt()
+            val menuIconColor = Color.argb(menuIconAlpha, Color.red(textColor), Color.green(textColor), Color.blue(textColor))
 
             binding.personaNameTextView.setTextColor(textColor)
+            binding.personaCountsTextView.setTextColor(Color.argb(180, Color.red(textColor), Color.green(textColor), Color.blue(textColor)))
             binding.openCountTextView.setTextColor(textColor)
             binding.menuButton.setColorFilter(menuIconColor)
 
             val score = personaWithCount.score
-            if (score > 0) {
-                binding.openCountTextView.text = score.toInt().toString()
-                binding.openCountTextView.visibility = View.VISIBLE
-            } else {
-                binding.openCountTextView.visibility = View.GONE
-            }
+            binding.openCountTextView.text = if (score > 0) score.toInt().toString() else "—"
+            binding.openCountTextView.visibility = View.VISIBLE
 
-            val rankStatus = personaWithCount.rankStatus
-            when (rankStatus) {
-                RankStatus.UP -> {
-                    binding.rankIndicatorImageView.setImageResource(R.drawable.ic_persona_rank_up)
-                    binding.rankIndicatorImageView.visibility = View.VISIBLE
-                }
-                RankStatus.DOWN -> {
-                    binding.rankIndicatorImageView.setImageResource(R.drawable.ic_persona_rank_down)
-                    binding.rankIndicatorImageView.visibility = View.VISIBLE
-                }
-                RankStatus.STABLE -> {
-                    binding.rankIndicatorImageView.visibility = View.GONE
-                }
+            // Rank rail colour
+            val rankColor = when (personaWithCount.rankStatus) {
+                RankStatus.UP -> binding.root.context.getColor(R.color.positive)
+                RankStatus.DOWN -> binding.root.context.getColor(R.color.negative)
+                RankStatus.STABLE -> Color.argb(77, Color.red(textColor), Color.green(textColor), Color.blue(textColor))
             }
+            binding.rankRailView.setBackgroundColor(rankColor)
 
             applyDecayVisuals(personaWithCount.decayLevel, finalBgColor)
 
@@ -191,54 +171,32 @@ class PersonaAdapter(
 
                 popup.setOnMenuItemClickListener { item ->
                     when (item.itemId) {
-                        R.id.action_toggle_focus -> {
-                            onPersonaToggleFocus(persona)
-                            true
-                        }
-                        R.id.action_toggle_chakra -> {
-                            onPersonaToggleChakra(persona)
-                            true
-                        }
-                        R.id.action_edit_persona -> {
-                            onPersonaEdit(persona)
-                            true
-                        }
-                        R.id.action_delete_persona -> {
-                            onPersonaDelete(persona)
-                            true
-                        }
+                        R.id.action_toggle_focus -> { onPersonaToggleFocus(persona); true }
+                        R.id.action_toggle_chakra -> { onPersonaToggleChakra(persona); true }
+                        R.id.action_edit_persona -> { onPersonaEdit(persona); true }
+                        R.id.action_delete_persona -> { onPersonaDelete(persona); true }
                         else -> false
                     }
                 }
                 popup.show()
             }
 
-            binding.root.setOnClickListener {
-                onPersonaClick(persona)
-            }
-
+            binding.root.setOnClickListener { onPersonaClick(persona) }
             binding.tagsChipGroup.visibility = View.GONE
         }
 
         private fun applyDecayVisuals(decayLevel: DecayLevel, bgColor: Int) {
             when (decayLevel) {
-                DecayLevel.NONE -> {
-                    binding.root.alpha = 1.0f
-                    binding.root.setCardBackgroundColor(bgColor)
-                }
-                DecayLevel.SLIGHT -> {
-                    binding.root.alpha = 0.90f
-                    binding.root.setCardBackgroundColor(bgColor)
-                }
-                DecayLevel.MEDIUM -> {
-                    binding.root.alpha = 0.75f
-                    binding.root.setCardBackgroundColor(bgColor)
-                }
-                DecayLevel.SERIOUS -> {
-                    binding.root.alpha = 0.60f
-                    binding.root.setCardBackgroundColor(desaturateColor(bgColor, 0.3f))
-                }
+                DecayLevel.NONE -> { binding.root.alpha = 1.0f; binding.root.setCardBackgroundColor(bgColor) }
+                DecayLevel.SLIGHT -> { binding.root.alpha = 0.90f; binding.root.setCardBackgroundColor(bgColor) }
+                DecayLevel.MEDIUM -> { binding.root.alpha = 0.75f; binding.root.setCardBackgroundColor(bgColor) }
+                DecayLevel.SERIOUS -> { binding.root.alpha = 0.60f; binding.root.setCardBackgroundColor(desaturateColor(bgColor, 0.3f)) }
             }
+        }
+
+        private fun isColorDark(color: Int): Boolean {
+            val darkness = 1 - (0.299 * Color.red(color) + 0.587 * Color.green(color) + 0.114 * Color.blue(color)) / 255
+            return darkness >= 0.5
         }
 
         private fun desaturateColor(color: Int, saturation: Float): Int {

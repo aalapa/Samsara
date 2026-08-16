@@ -4,32 +4,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/surface"
     tools:context=".PersonaReportActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/surface_raised"
+        app:elevation="0dp">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:titleTextColor="@android:color/white"
-            app:navigationIconTint="@android:color/white"
+            android:background="@color/surface_raised"
+            app:titleTextColor="@color/ink"
+            app:navigationIconTint="@color/ink"
             app:title="@string/report_title"
             app:navigationIcon="@drawable/ic_arrow_back" />
 
+        <!-- Text-only tabs: ink_muted unselected, ink selected, 2dp ink indicator -->
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:tabMode="scrollable"
             app:tabGravity="fill"
-            app:tabIndicatorColor="@android:color/white"
-            app:tabSelectedTextColor="@android:color/white"
-            app:tabTextColor="#B0BEC5"
-            android:background="?attr/colorPrimary" />
+            app:tabIndicatorColor="@color/ink"
+            app:tabSelectedTextColor="@color/ink"
+            app:tabTextColor="@color/ink_muted"
+            app:tabIndicatorHeight="2dp"
+            android:background="@color/surface_raised" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/hairline" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -39,59 +49,53 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Period Selector + Date Range (shared across all tabs) -->
-        <com.google.android.material.card.MaterialCardView
+        <!-- Period selector: restyled segmented control -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_margin="16dp"
+            android:orientation="horizontal"
+            android:padding="3dp"
+            android:background="@drawable/segmented_track_bg">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/weeklyButton"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/weekly"
+                android:textColor="@color/ink_muted"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                app:rippleColor="@android:color/transparent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/monthlyButton"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="@string/monthly"
+                android:textColor="@color/ink_muted"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                app:rippleColor="@android:color/transparent" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/dateRangeTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:cardElevation="2dp">
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="8dp"
+            android:textAlignment="center"
+            android:textSize="11.5sp"
+            android:fontFamily="monospace"
+            android:textColor="@color/ink_muted"
+            tools:text="Jan 17 – Jan 24, 2026" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="12dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/weeklyButton"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
-                        android:text="@string/weekly" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/monthlyButton"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="8dp"
-                        android:text="@string/monthly" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/dateRangeTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textAlignment="center"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/darker_gray"
-                    tools:text="Jan 17 - Jan 24, 2026" />
-
-            </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- ViewPager2 for tab content -->
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager"
             android:layout_width="match_parent"

@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
-    app:cardBackgroundColor="@color/card_background"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/surface_raised"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="0dp"
     app:strokeWidth="0dp">
 
     <LinearLayout
@@ -17,13 +17,13 @@
         android:padding="16dp"
         android:gravity="center_vertical">
 
-        <!-- Color accent bar from persona -->
+        <!-- 3dp persona colour rail, full row height -->
         <View
             android:id="@+id/personaColorBar"
-            android:layout_width="4dp"
-            android:layout_height="40dp"
+            android:layout_width="3dp"
+            android:layout_height="match_parent"
             android:layout_marginEnd="12dp"
-            android:background="#007AFF" />
+            android:background="@color/ink" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -35,9 +35,10 @@
                 android:id="@+id/taskTitleTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/ink"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
                 tools:text="Morning exercise" />
 
             <TextView
@@ -45,18 +46,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
+                android:textColor="@color/ink_muted"
+                android:textSize="11.5sp"
+                android:fontFamily="monospace"
                 tools:text="Physical" />
 
         </LinearLayout>
 
+        <!-- 24dp circle complete button -->
         <ImageView
             android:id="@+id/completeButton"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_marginStart="8dp"
-            android:src="@android:drawable/checkbox_off_background"
+            android:src="@drawable/ic_complete_circle"
             android:contentDescription="Complete task" />
 
     </LinearLayout>

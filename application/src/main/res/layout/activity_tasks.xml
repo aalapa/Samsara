@@ -4,52 +4,61 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light"
+    android:background="@color/surface"
     tools:context=".TasksActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <!-- Header -->
+    <LinearLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_secondary"
-        app:elevation="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="vertical"
+        android:background="@color/surface_raised"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- Keep toolbar for back nav + menu support -->
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/background_secondary"
-            app:navigationIcon="@android:drawable/ic_menu_revert"
-            app:navigationIconTint="@color/text_primary"
-            app:titleTextColor="@color/text_primary"
-            app:subtitleTextColor="@color/text_tertiary" />
+            android:background="@color/surface_raised"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@color/ink"
+            app:titleTextColor="@color/ink"
+            app:subtitleTextColor="@color/ink_muted" />
 
-    </com.google.android.material.appbar.AppBarLayout>
+        <!-- 1dp hairline rule -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/hairline" />
 
-    <!-- Collapsible Heatmap Section -->
+    </LinearLayout>
+
+    <!-- Collapsible Heatmap — inset section card -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/heatmapCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="10dp"
         android:visibility="gone"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="1dp"
-        app:cardBackgroundColor="@color/background_secondary"
+        app:cardCornerRadius="14dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/surface_sunken"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Header row: title + collapse arrow -->
+            <!-- Header row: section title + chevron -->
             <LinearLayout
                 android:id="@+id/heatmapHeader"
                 android:layout_width="match_parent"
@@ -65,17 +74,20 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/heatmap_activity"
-                    android:textColor="@color/text_primary"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textColor="@color/ink"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="-0.01"
+                    android:textAllCaps="false" />
 
                 <ImageView
                     android:id="@+id/heatmapArrow"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:rotation="0"
-                    android:src="@android:drawable/arrow_down_float"
-                    app:tint="@color/text_secondary" />
+                    android:src="@drawable/ic_expand_more"
+                    android:tint="@color/ink_muted"
+                    android:contentDescription="Toggle heatmap" />
 
             </LinearLayout>
 
@@ -110,18 +122,19 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/heatmapCard" />
+        app:layout_constraintTop_toBottomOf="@id/heatmapCard" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addTaskFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="24dp"
-        android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@color/apple_blue"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="44dp"
+        android:src="@drawable/ic_fab_add"
+        app:backgroundTint="@color/ink"
+        app:tint="@color/surface"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.FAB"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@color/background_secondary" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-

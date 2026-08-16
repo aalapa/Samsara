@@ -1,6 +1,10 @@
 package com.samsara.polymath.adapter
 
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.RelativeSizeSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,10 +12,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.samsara.polymath.R
-import com.samsara.polymath.data.RankStatus
 import com.samsara.polymath.data.Task
 import com.samsara.polymath.databinding.ItemTaskBinding
-import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 class TaskAdapter(
@@ -47,17 +49,12 @@ class TaskAdapter(
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
-        val binding = ItemTaskBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
+        val binding = ItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return TaskViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        val totalTaskCount = currentList.size
-        holder.bind(getItem(position), totalTaskCount)
+        holder.bind(getItem(position), currentList.size)
     }
 
     inner class TaskViewHolder(
@@ -66,9 +63,10 @@ class TaskAdapter(
 
         fun bind(task: Task, totalTaskCount: Int) {
             val isCompact = totalTaskCount > 7
+            val density = binding.root.context.resources.displayMetrics.density
 
-            // For avoid tasks, prefix with shield indicator
-            binding.taskTitleTextView.text = if (task.isAvoidTask) "\uD83D\uDEE1\uFE0F ${task.title}" else task.title
+            binding.taskTitleTextView.text =
+                if (task.isAvoidTask) "🛡️ ${task.title}" else task.title
 
             if (task.description.isNotEmpty()) {
                 binding.taskDescriptionTextView.text = task.description
@@ -77,127 +75,63 @@ class TaskAdapter(
                 binding.taskDescriptionTextView.visibility = View.GONE
             }
 
-            val density = binding.root.context.resources.displayMetrics.density
-
-            val layoutParams = binding.root.layoutParams as? ViewGroup.MarginLayoutParams
-            if (layoutParams != null) {
-                val marginDp = if (isCompact) 6 else 9
-                layoutParams.bottomMargin = (marginDp * density).toInt()
-                binding.root.layoutParams = layoutParams
+            // Row gap
+            val marginDp = if (isCompact) 6 else 6
+            (binding.root.layoutParams as? ViewGroup.MarginLayoutParams)?.let {
+                it.bottomMargin = (marginDp * density).toInt()
+                binding.root.layoutParams = it
             }
 
-            val paddingDp = if (isCompact) 11 else 15
-            val paddingPx = (paddingDp * density).toInt()
-            if (binding.root.childCount > 0) {
-                val innerLayout = binding.root.getChildAt(0)
-                if (innerLayout is ViewGroup) {
-                    innerLayout.setPadding(paddingPx, paddingPx, paddingPx, paddingPx)
-                }
+            // Text sizes
+            binding.taskTitleTextView.textSize = if (isCompact) 13.5f else 14.5f
+            binding.taskDescriptionTextView.textSize = if (isCompact) 11f else 11.5f
+            binding.completionInfoTextView.textSize = if (isCompact) 10f else 11f
+
+            // Day column width stays 44dp; only font size changes in compact
+            val dayTextSize = if (isCompact) 16f else 20f
+            binding.daysTextView.textSize = dayTextSize
+
+            // Timer pill height
+            val timerHeightDp = if (isCompact) 26 else 32
+            binding.timerLayout.layoutParams?.let {
+                it.height = (timerHeightDp * density).toInt()
+                binding.timerLayout.layoutParams = it
             }
 
-            val circleSizeDp = if (isCompact) 34 else 45
-            val circleSizePx = (circleSizeDp * density).toInt()
-            val circleLayoutParams = binding.daysTextView.layoutParams as? ViewGroup.MarginLayoutParams
-            if (circleLayoutParams != null) {
-                circleLayoutParams.width = circleSizePx
-                circleLayoutParams.height = circleSizePx
-                val circleMarginDp = if (isCompact) 9 else 12
-                circleLayoutParams.marginEnd = (circleMarginDp * density).toInt()
-                binding.daysTextView.layoutParams = circleLayoutParams
-            }
+            // Card colours from task background
+            var bgColor = Color.WHITE
+            try { bgColor = Color.parseColor(task.backgroundColor) } catch (_: Exception) { }
+            binding.root.setCardBackgroundColor(bgColor)
 
-            val rankSizeDp = if (isCompact) 16 else 20
-            val rankSizePx = (rankSizeDp * density).toInt()
-            val rankLayoutParams = binding.rankIndicatorImageView.layoutParams as? ViewGroup.MarginLayoutParams
-            if (rankLayoutParams != null) {
-                rankLayoutParams.width = rankSizePx
-                rankLayoutParams.height = rankSizePx
-                val rankMarginDp = if (isCompact) 6 else 8
-                rankLayoutParams.marginStart = (rankMarginDp * density).toInt()
-                binding.rankIndicatorImageView.layoutParams = rankLayoutParams
-            }
+            val isDark = isColorDark(bgColor)
+            val contrastColor = if (isDark) Color.WHITE else Color.BLACK
 
-            // Adjust timer layout size
-            val timerMarginDp = if (isCompact) 6 else 8
-            val timerWrapperParams = binding.timerLayout.layoutParams as? ViewGroup.MarginLayoutParams
-            if (timerWrapperParams != null) {
-                timerWrapperParams.marginStart = (timerMarginDp * density).toInt()
-                binding.timerLayout.layoutParams = timerWrapperParams
-            }
-            val timerSizeDp = if (isCompact) 28 else 36
-            val timerSizePx = (timerSizeDp * density).toInt()
-            val timerIconParams = binding.timerToggleImageView.layoutParams
-            if (timerIconParams != null) {
-                timerIconParams.width = timerSizePx
-                timerIconParams.height = timerSizePx
-                binding.timerToggleImageView.layoutParams = timerIconParams
-            }
-            binding.timeSpentTextView.textSize = if (isCompact) 8f else 9f
+            binding.taskTitleTextView.setTextColor(contrastColor)
+            binding.taskDescriptionTextView.setTextColor(
+                Color.argb(133, Color.red(contrastColor), Color.green(contrastColor), Color.blue(contrastColor))
+            )
+            binding.dragHandleImageView.setColorFilter(
+                Color.argb(66, Color.red(contrastColor), Color.green(contrastColor), Color.blue(contrastColor))
+            )
 
-            val dragHandleSizeDp = if (isCompact) 18 else 24
-            val dragHandleSizePx = (dragHandleSizeDp * density).toInt()
-            val dragHandleLayoutParams = binding.dragHandleImageView.layoutParams as? ViewGroup.MarginLayoutParams
-            if (dragHandleLayoutParams != null) {
-                dragHandleLayoutParams.width = dragHandleSizePx
-                dragHandleLayoutParams.height = dragHandleSizePx
-                val dragMarginDp = if (isCompact) 6 else 8
-                dragHandleLayoutParams.marginStart = (dragMarginDp * density).toInt()
-                binding.dragHandleImageView.layoutParams = dragHandleLayoutParams
-            }
-
-            binding.taskTitleTextView.textSize = if (isCompact) 13f else 15f
-            binding.taskDescriptionTextView.textSize = if (isCompact) 11f else 13f
-            binding.daysTextView.textSize = if (isCompact) 12f else 14f
-            binding.completionInfoTextView.textSize = if (isCompact) 9f else 11f
-
-            val descLayoutParams = binding.taskDescriptionTextView.layoutParams as? ViewGroup.MarginLayoutParams
-            if (descLayoutParams != null) {
-                val descMarginDp = if (isCompact) 3 else 4
-                descLayoutParams.topMargin = (descMarginDp * density).toInt()
-                binding.taskDescriptionTextView.layoutParams = descLayoutParams
-            }
-
-            val completionLayoutParams = binding.completionInfoTextView.layoutParams as? ViewGroup.MarginLayoutParams
-            if (completionLayoutParams != null) {
-                val completionMarginDp = if (isCompact) 6 else 8
-                completionLayoutParams.topMargin = (completionMarginDp * density).toInt()
-                binding.completionInfoTextView.layoutParams = completionLayoutParams
-            }
-
-            try {
-                val bgColor = Color.parseColor(task.backgroundColor)
-                binding.root.setCardBackgroundColor(bgColor)
-
-                val isDark = isColorDark(bgColor)
-                val textColor = if (isDark) Color.WHITE else Color.BLACK
-                binding.taskTitleTextView.setTextColor(textColor)
-                binding.taskDescriptionTextView.setTextColor(textColor)
-
-                binding.dragHandleImageView.setColorFilter(textColor)
-            } catch (e: Exception) {
-                binding.root.setCardBackgroundColor(Color.parseColor("#FFFFFF"))
-                binding.taskTitleTextView.setTextColor(Color.parseColor("#000000"))
-                binding.dragHandleImageView.setColorFilter(Color.parseColor("#000000"))
-            }
-
+            // Day column: number + "d" suffix (smaller span)
             val currentTime = System.currentTimeMillis()
-            val daysTextView = binding.daysTextView
-
             if (task.isCompleted && task.completedAt != null) {
                 val daysToComplete = calculateDaysDifference(task.createdAt, task.completedAt)
                 val daysSinceCompletion = calculateDaysDifference(task.completedAt, currentTime)
 
-                daysTextView.text = daysToComplete.toString()
+                binding.daysTextView.text = buildDaySpan(daysToComplete.toString())
+                // Completed day number in positive colour
+                binding.daysTextView.setTextColor(binding.root.context.getColor(R.color.positive))
 
                 if (task.isAvoidTask) {
-                    // Avoid task completed = streak broken
                     val brokeText = when {
                         daysSinceCompletion == 0L -> "Broke today"
                         daysSinceCompletion == 1L -> "Broke 1 day ago"
                         else -> "Broke $daysSinceCompletion days ago"
                     }
                     binding.completionInfoTextView.text = "$daysToComplete day streak • $brokeText"
-                    binding.completionInfoTextView.setTextColor(Color.parseColor("#FF6B6B"))
+                    binding.completionInfoTextView.setTextColor(binding.root.context.getColor(R.color.negative))
                 } else {
                     val completionText = when {
                         daysSinceCompletion == 0L -> binding.root.context.getString(R.string.done_today)
@@ -205,87 +139,70 @@ class TaskAdapter(
                         else -> binding.root.context.getString(R.string.done_days_ago, daysSinceCompletion)
                     }
                     binding.completionInfoTextView.text = "$daysToComplete days • $completionText"
-                    binding.completionInfoTextView.setTextColor(binding.root.context.getColor(R.color.completed_green))
+                    binding.completionInfoTextView.setTextColor(binding.root.context.getColor(R.color.positive))
                 }
                 binding.completionInfoTextView.visibility = View.VISIBLE
-
-                daysTextView.setBackgroundResource(R.drawable.circle_background_completed)
-
-                // Hide timer for completed tasks
                 binding.timerLayout.visibility = View.GONE
             } else {
                 val daysSinceCreation = calculateDaysDifference(task.createdAt, currentTime)
-                daysTextView.text = daysSinceCreation.toString()
+                binding.daysTextView.text = buildDaySpan(daysSinceCreation.toString())
+                binding.daysTextView.setTextColor(contrastColor)
                 binding.completionInfoTextView.visibility = View.GONE
-
-                daysTextView.setBackgroundResource(R.drawable.circle_background)
-
-                // Show timer toggle for open tasks
                 binding.timerLayout.visibility = View.VISIBLE
             }
 
-            val rankIcon = when (task.rankStatus) {
-                RankStatus.STABLE -> R.drawable.ic_rank_stable
-                RankStatus.UP -> R.drawable.ic_rank_up
-                RankStatus.DOWN -> R.drawable.ic_rank_down
-            }
-            binding.rankIndicatorImageView.setImageResource(rankIcon)
-
-            // Timer toggle icon based on active state
+            // Timer pill visual
             val isTimerActive = activeTimerTaskId == task.id
+            val pillDrawable = GradientDrawable().apply {
+                cornerRadius = 999f * density
+                if (isTimerActive) {
+                    // Running: solid inverse fill
+                    setColor(Color.argb(220, Color.red(contrastColor), Color.green(contrastColor), Color.blue(contrastColor)))
+                } else {
+                    // Idle: contrast at ~10% opacity
+                    setColor(Color.argb(26, Color.red(contrastColor), Color.green(contrastColor), Color.blue(contrastColor)))
+                }
+            }
+            binding.timerLayout.background = pillDrawable
+
             binding.timerToggleImageView.setImageResource(
                 if (isTimerActive) R.drawable.ic_stop else R.drawable.ic_play
             )
 
-            // Show cumulative time spent on this task
+            val timerTextColor = if (isTimerActive) {
+                if (isDark) Color.BLACK else Color.WHITE
+            } else {
+                Color.argb(180, Color.red(contrastColor), Color.green(contrastColor), Color.blue(contrastColor))
+            }
+            binding.timerToggleImageView.setColorFilter(timerTextColor)
+            binding.timeSpentTextView.setTextColor(timerTextColor)
+
             val totalMs = taskTimeMap[task.id] ?: 0L
             binding.timeSpentTextView.text = formatDuration(totalMs)
-            // Tint timer icon and text to match card text color
-            try {
-                val bgColor = Color.parseColor(task.backgroundColor)
-                val isDark = isColorDark(bgColor)
-                val tintColor = if (isDark) Color.WHITE else Color.BLACK
-                binding.timerToggleImageView.setColorFilter(tintColor)
-                binding.timeSpentTextView.setTextColor(tintColor)
-            } catch (_: Exception) { }
 
-            // Circle click - show comments
-            binding.daysTextView.setOnClickListener {
-                onCircleClick(task)
-            }
-
-            // Card click does nothing - comments open via circle click only
-
-            // Long press - edit task
-            binding.root.setOnLongClickListener {
-                onTaskLongClick(task)
-                true
-            }
-
-            // Timer toggle
-            binding.timerToggleImageView.setOnClickListener {
-                onTimerToggle(task)
-            }
-
-            // Drag handle
-            binding.dragHandleImageView.setOnTouchListener { view, event ->
-                if (event.action == android.view.MotionEvent.ACTION_DOWN) {
-                    onStartDrag(this)
-                }
+            // Click listeners (all unchanged functionally)
+            binding.daysTextView.setOnClickListener { onCircleClick(task) }
+            binding.root.setOnLongClickListener { onTaskLongClick(task); true }
+            binding.timerToggleImageView.setOnClickListener { onTimerToggle(task) }
+            binding.dragHandleImageView.setOnTouchListener { _, event ->
+                if (event.action == android.view.MotionEvent.ACTION_DOWN) onStartDrag(this)
                 false
             }
         }
 
-        private fun calculateDaysDifference(startTime: Long, endTime: Long): Long {
-            val diff = endTime - startTime
-            return TimeUnit.MILLISECONDS.toDays(diff)
+        private fun buildDaySpan(number: String): SpannableString {
+            val full = "${number}d"
+            val span = SpannableString(full)
+            span.setSpan(RelativeSizeSpan(0.55f), number.length, full.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            return span
         }
+
+        private fun calculateDaysDifference(startTime: Long, endTime: Long): Long =
+            TimeUnit.MILLISECONDS.toDays(endTime - startTime)
 
         private fun formatDuration(millis: Long): String {
             val totalMinutes = TimeUnit.MILLISECONDS.toMinutes(millis)
-            val hours = totalMinutes / 60
-            val minutes = totalMinutes % 60
-            return String.format("%02d:%02d", hours, minutes)
+            return String.format("%02d:%02d", totalMinutes / 60, totalMinutes % 60)
         }
 
         private fun isColorDark(color: Int): Boolean {
@@ -295,12 +212,7 @@ class TaskAdapter(
     }
 
     class TaskDiffCallback : DiffUtil.ItemCallback<Task>() {
-        override fun areItemsTheSame(oldItem: Task, newItem: Task): Boolean {
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean {
-            return oldItem == newItem
-        }
+        override fun areItemsTheSame(oldItem: Task, newItem: Task) = oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: Task, newItem: Task) = oldItem == newItem
     }
 }

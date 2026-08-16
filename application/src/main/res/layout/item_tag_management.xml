@@ -3,34 +3,36 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
-    app:cardBackgroundColor="@color/card_background"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="2dp"
+    android:layout_marginBottom="6dp"
+    app:cardBackgroundColor="@color/surface_raised"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="0dp"
     app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="17dp"
+        android:padding="16dp"
         android:gravity="center_vertical">
 
+        <!-- Three-bar drag handle -->
         <ImageView
             android:id="@+id/dragHandle"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="10dp"
             android:src="@drawable/ic_drag_handle"
-            android:tint="@color/text_tertiary"
+            android:tint="@color/ink_muted"
             android:contentDescription="Drag to reorder" />
 
+        <!-- 10dp colour dot -->
         <View
             android:id="@+id/tagColorIndicator"
-            android:layout_width="12dp"
-            android:layout_height="40dp"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
             android:layout_marginEnd="12dp"
-            android:background="#666666" />
+            android:background="@drawable/tag_circle" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -42,7 +44,7 @@
                 android:id="@+id/tagNameTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/text_primary"
+                android:textColor="@color/ink"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:fontFamily="sans-serif-medium" />
@@ -51,22 +53,22 @@
                 android:id="@+id/tagUsageTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
+                android:layout_marginTop="2dp"
+                android:textColor="@color/ink_muted"
+                android:textSize="11.5sp"
+                android:fontFamily="monospace" />
 
         </LinearLayout>
 
         <ImageView
             android:id="@+id/menuButton"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:padding="4dp"
             android:src="@drawable/ic_more_vert"
-            android:tint="@color/text_tertiary"
+            android:tint="@color/ink_muted"
             android:contentDescription="Menu" />
 
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>
-
-

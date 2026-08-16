@@ -121,7 +121,6 @@ class MainActivity : AppCompatActivity() {
 
     /** Refresh all tag chip labels based on current expanded/checked state */
     private fun collapseOtherTagChips(allTags: List<com.samsara.polymath.data.Tag>) {
-        // Tag chips start at index 0 in filterChipGroup (system chips are in systemChipGroup)
         val tagChipStartIndex = 0
         for (i in 0 until allTags.size) {
             val chipIndex = tagChipStartIndex + i
@@ -139,240 +138,156 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupFilterChips() {
+        // Wire segmented control buttons
+        updateSegmentVisuals()
+        binding.segAll.setOnClickListener {
+            isTodayMode = false; isFocusMode = false; isChakraMode = false
+            selectedFilterTagIds.clear(); expandedTagId = null
+            clearTagChipSelections(); updateSegmentVisuals()
+            switchToPersonasMode(); observePersonas()
+        }
+        binding.segGtd.setOnClickListener {
+            isTodayMode = true; isFocusMode = false; isChakraMode = false
+            selectedFilterTagIds.clear(); expandedTagId = null
+            clearTagChipSelections(); updateSegmentVisuals()
+            switchToTodayMode()
+        }
+        binding.segFocus.setOnClickListener {
+            isFocusMode = true; isTodayMode = false; isChakraMode = false
+            selectedFilterTagIds.clear(); expandedTagId = null
+            clearTagChipSelections(); updateSegmentVisuals()
+            switchToPersonasMode(); observePersonas()
+        }
+        binding.segChakra.setOnClickListener {
+            isChakraMode = true; isTodayMode = false; isFocusMode = false
+            selectedFilterTagIds.clear(); expandedTagId = null
+            clearTagChipSelections(); updateSegmentVisuals()
+            switchToPersonasMode(); observePersonas()
+        }
+
+        // Tag chips
         tagViewModel.allTags.observe(this) { allTags ->
-            binding.systemChipGroup.removeAllViews()
             binding.filterChipGroup.removeAllViews()
-
-            // Always show the chip row (system chips are always present)
             binding.filterChipsScrollView.visibility = View.VISIBLE
-
-            // --- System chips ---
-
-            // Add "GTD" chip
-            val todayChip = com.google.android.material.chip.Chip(this).apply {
-                text = getString(R.string.gtd)
-                isCheckable = true
-                isChecked = isTodayMode
-                chipBackgroundColor = android.content.res.ColorStateList(
-                    arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
-                    intArrayOf(android.graphics.Color.parseColor("#FF9500"), android.graphics.Color.parseColor("#E0E0E0"))
-                )
-            }
-            binding.systemChipGroup.addView(todayChip)
-
-            // Add "Focus" chip
-            val focusChip = com.google.android.material.chip.Chip(this).apply {
-                text = getString(R.string.focus)
-                isCheckable = true
-                isChecked = isFocusMode
-                chipBackgroundColor = android.content.res.ColorStateList(
-                    arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
-                    intArrayOf(android.graphics.Color.parseColor("#AF52DE"), android.graphics.Color.parseColor("#E0E0E0"))
-                )
-            }
-            binding.systemChipGroup.addView(focusChip)
-
-            // Add "Chakra" chip
-            val chakraChip = com.google.android.material.chip.Chip(this).apply {
-                text = getString(R.string.chakra)
-                isCheckable = true
-                isChecked = isChakraMode
-                chipBackgroundColor = android.content.res.ColorStateList(
-                    arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
-                    intArrayOf(android.graphics.Color.parseColor("#5856D6"), android.graphics.Color.parseColor("#E0E0E0"))
-                )
-            }
-            binding.systemChipGroup.addView(chakraChip)
-
-            // Add "All" chip
-            val showAllChip = com.google.android.material.chip.Chip(this).apply {
-                text = getString(R.string.show_all)
-                isCheckable = true
-                isChecked = !isTodayMode && !isFocusMode && !isChakraMode && selectedFilterTagIds.isEmpty()
-            }
-            binding.systemChipGroup.addView(showAllChip)
-
-            // --- Tag chips ---
 
             allTags.forEach { tag ->
                 val isSelected = !isTodayMode && !isFocusMode && !isChakraMode && tag.id in selectedFilterTagIds
+                val tagColor = try {
+                    if (tag.color != null) android.graphics.Color.parseColor(tag.color)
+                    else android.graphics.Color.parseColor("#666666")
+                } catch (_: Exception) { android.graphics.Color.parseColor("#666666") }
+
                 val chip = com.google.android.material.chip.Chip(this).apply {
                     text = if (isSelected || expandedTagId == tag.id) tag.name else abbreviateTag(tag.name)
                     isCheckable = true
                     isChecked = isSelected
-
-                    val chipBgColor = try {
-                        if (tag.color != null) android.graphics.Color.parseColor(tag.color)
-                        else android.graphics.Color.parseColor("#666666")
-                    } catch (e: Exception) {
-                        android.graphics.Color.parseColor("#666666")
-                    }
-
-                    chipBackgroundColor = android.content.res.ColorStateList.valueOf(chipBgColor)
-                    val textColor = if (isColorDark(chipBgColor)) android.graphics.Color.WHITE else android.graphics.Color.BLACK
-                    setTextColor(textColor)
+                    chipMinHeight = 28f * resources.displayMetrics.density
+                    chipBackgroundColor = android.content.res.ColorStateList.valueOf(android.graphics.Color.TRANSPARENT)
+                    chipStrokeWidth = resources.displayMetrics.density
+                    chipStrokeColor = android.content.res.ColorStateList.valueOf(getColor(R.color.hairline))
+                    setTextColor(getColor(R.color.ink))
+                    chipIconSize = 6f * resources.displayMetrics.density
+                    chipIconTint = android.content.res.ColorStateList.valueOf(tagColor)
+                    chipIcon = getDrawable(R.drawable.tag_circle)
                 }
                 binding.filterChipGroup.addView(chip)
             }
 
-            // Add "Untagged" chip
             val isUntaggedSelected = !isTodayMode && !isFocusMode && !isChakraMode && -1L in selectedFilterTagIds
             val untaggedChip = com.google.android.material.chip.Chip(this).apply {
                 text = if (isUntaggedSelected || expandedTagId == -1L) getString(R.string.untagged) else abbreviateTag(getString(R.string.untagged))
                 isCheckable = true
                 isChecked = isUntaggedSelected
+                chipMinHeight = 28f * resources.displayMetrics.density
+                chipBackgroundColor = android.content.res.ColorStateList.valueOf(android.graphics.Color.TRANSPARENT)
+                chipStrokeWidth = resources.displayMetrics.density
+                chipStrokeColor = android.content.res.ColorStateList.valueOf(getColor(R.color.hairline))
+                setTextColor(getColor(R.color.ink))
             }
             binding.filterChipGroup.addView(untaggedChip)
 
-            // Helper to uncheck all chips across both chip groups
-            fun uncheckAllExcept(except: com.google.android.material.chip.Chip) {
-                for (i in 0 until binding.systemChipGroup.childCount) {
-                    val c = binding.systemChipGroup.getChildAt(i) as? com.google.android.material.chip.Chip
-                    if (c != except) c?.isChecked = false
-                }
-                for (i in 0 until binding.filterChipGroup.childCount) {
-                    val c = binding.filterChipGroup.getChildAt(i) as? com.google.android.material.chip.Chip
-                    if (c != except) c?.isChecked = false
-                }
-            }
-
-            // Wire Today chip
-            todayChip.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    isTodayMode = true
-                    isFocusMode = false
-                    isChakraMode = false
-                    selectedFilterTagIds.clear()
-                    expandedTagId = null
-                    uncheckAllExcept(todayChip)
-                    collapseOtherTagChips(allTags)
-                    switchToTodayMode()
-                }
-            }
-
-            // Wire Focus chip
-            focusChip.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    isFocusMode = true
-                    isTodayMode = false
-                    isChakraMode = false
-                    selectedFilterTagIds.clear()
-                    expandedTagId = null
-                    uncheckAllExcept(focusChip)
-                    collapseOtherTagChips(allTags)
-                    switchToPersonasMode()
-                    observePersonas()
-                }
-            }
-
-            // Wire Chakra chip
-            chakraChip.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    isChakraMode = true
-                    isTodayMode = false
-                    isFocusMode = false
-                    selectedFilterTagIds.clear()
-                    expandedTagId = null
-                    uncheckAllExcept(chakraChip)
-                    collapseOtherTagChips(allTags)
-                    switchToPersonasMode()
-                    observePersonas()
-                }
-            }
-
-            // Wire Show All chip
-            showAllChip.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    isTodayMode = false
-                    isFocusMode = false
-                    isChakraMode = false
-                    selectedFilterTagIds.clear()
-                    expandedTagId = null
-                    uncheckAllExcept(showAllChip)
-                    collapseOtherTagChips(allTags)
-                    switchToPersonasMode()
-                    observePersonas()
-                }
-            }
-
-            // Wire tag chips — tags start at index 0 in filterChipGroup
+            // Wire listeners
             for (i in 0 until binding.filterChipGroup.childCount) {
                 val chip = binding.filterChipGroup.getChildAt(i) as? com.google.android.material.chip.Chip ?: continue
-                val tagIndex = i
-                if (tagIndex < allTags.size) {
-                    val tag = allTags[tagIndex]
-
+                if (i < allTags.size) {
+                    val tag = allTags[i]
                     chip.setOnCheckedChangeListener { _, isChecked ->
                         if (isChecked) {
-                            isTodayMode = false
-                            isFocusMode = false
-                            isChakraMode = false
-                            todayChip.isChecked = false
-                            focusChip.isChecked = false
-                            chakraChip.isChecked = false
-                            showAllChip.isChecked = false
+                            isTodayMode = false; isFocusMode = false; isChakraMode = false
                             selectedFilterTagIds.add(tag.id)
                             expandedTagId = tag.id
-                            chip.text = tag.name // Expand on select
+                            chip.text = tag.name
+                            updateSegmentVisuals()
                             switchToPersonasMode()
                         } else {
                             selectedFilterTagIds.remove(tag.id)
                             if (expandedTagId == tag.id) expandedTagId = null
                             chip.text = abbreviateTag(tag.name)
-                            if (selectedFilterTagIds.isEmpty()) showAllChip.isChecked = true
+                            if (selectedFilterTagIds.isEmpty()) updateSegmentVisuals()
                         }
                         observePersonas()
                     }
-
-                    // Long-press to peek at full name without toggling filter
                     chip.setOnLongClickListener {
                         if (!chip.isChecked) {
-                            if (expandedTagId == tag.id) {
-                                expandedTagId = null
-                            } else {
-                                expandedTagId = tag.id
-                            }
+                            expandedTagId = if (expandedTagId == tag.id) null else tag.id
                             collapseOtherTagChips(allTags)
                         }
                         true
                     }
                 } else {
-                    // Untagged chip
                     chip.setOnCheckedChangeListener { _, isChecked ->
                         if (isChecked) {
-                            isTodayMode = false
-                            isFocusMode = false
-                            isChakraMode = false
-                            todayChip.isChecked = false
-                            focusChip.isChecked = false
-                            chakraChip.isChecked = false
-                            showAllChip.isChecked = false
+                            isTodayMode = false; isFocusMode = false; isChakraMode = false
                             selectedFilterTagIds.add(-1L)
                             expandedTagId = -1L
                             chip.text = getString(R.string.untagged)
+                            updateSegmentVisuals()
                             switchToPersonasMode()
                         } else {
                             selectedFilterTagIds.remove(-1L)
                             if (expandedTagId == -1L) expandedTagId = null
                             chip.text = abbreviateTag(getString(R.string.untagged))
-                            if (selectedFilterTagIds.isEmpty()) showAllChip.isChecked = true
+                            if (selectedFilterTagIds.isEmpty()) updateSegmentVisuals()
                         }
                         observePersonas()
                     }
-
                     chip.setOnLongClickListener {
                         if (!chip.isChecked) {
-                            if (expandedTagId == -1L) {
-                                expandedTagId = null
-                            } else {
-                                expandedTagId = -1L
-                            }
+                            expandedTagId = if (expandedTagId == -1L) null else -1L
                             collapseOtherTagChips(allTags)
                         }
                         true
                     }
                 }
             }
+        }
+    }
+
+    private fun updateSegmentVisuals() {
+        val segCorner = 9f * resources.displayMetrics.density
+        val isAllActive = !isTodayMode && !isFocusMode && !isChakraMode && selectedFilterTagIds.isEmpty()
+        listOf(
+            Triple(binding.segAll, isAllActive, null as Int?),
+            Triple(binding.segGtd, isTodayMode, R.color.mode_gtd),
+            Triple(binding.segFocus, isFocusMode, R.color.mode_focus),
+            Triple(binding.segChakra, isChakraMode, R.color.mode_chakra)
+        ).forEach { (tv, active, colorRes) ->
+            if (active) {
+                tv.background = android.graphics.drawable.GradientDrawable().apply {
+                    setColor(if (colorRes != null) getColor(colorRes) else getColor(R.color.ink))
+                    cornerRadius = segCorner
+                }
+                tv.setTextColor(getColor(R.color.surface))
+            } else {
+                tv.background = null
+                tv.setTextColor(getColor(R.color.ink_muted))
+            }
+        }
+    }
+
+    private fun clearTagChipSelections() {
+        for (i in 0 until binding.filterChipGroup.childCount) {
+            (binding.filterChipGroup.getChildAt(i) as? com.google.android.material.chip.Chip)?.isChecked = false
         }
     }
 

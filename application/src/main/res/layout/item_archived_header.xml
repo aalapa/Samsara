@@ -17,7 +17,7 @@
         android:layout_height="1dp"
         android:layout_weight="1"
         android:layout_marginEnd="12dp"
-        android:background="#CCCCCC" />
+        android:background="@color/hairline" />
 
     <TextView
         android:id="@+id/archivedLabelTextView"
@@ -27,22 +27,21 @@
         android:textSize="12sp"
         android:textAllCaps="true"
         android:letterSpacing="0.08"
-        android:textColor="#999999" />
+        android:textColor="@color/ink_muted" />
 
     <TextView
         android:id="@+id/archivedChevronTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="6dp"
-        android:text="&#9654;"
         android:textSize="10sp"
-        android:textColor="#999999" />
+        android:textColor="@color/ink_muted" />
 
     <View
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_weight="1"
         android:layout_marginStart="12dp"
-        android:background="#CCCCCC" />
+        android:background="@color/hairline" />
 
 </LinearLayout>

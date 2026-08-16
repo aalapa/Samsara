@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Samsara" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/ink</item>
+        <item name="colorPrimaryVariant">@color/ink</item>
+        <item name="colorOnPrimary">@color/surface</item>
+        <item name="android:statusBarColor">@color/surface</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="actionMenuTextColor">@color/ink</item>
+        <item name="android:textColorPrimary">@color/ink</item>
+        <item name="popupMenuStyle">@style/PopupMenuStyle</item>
+        <item name="popupTheme">@style/PopupMenuTheme</item>
+    </style>
+</resources>

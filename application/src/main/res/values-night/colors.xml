@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Chrome / surfaces (dark) -->
+    <color name="surface">#0F1013</color>
+    <color name="surface_raised">#17181B</color>
+    <color name="surface_sunken">#1A1B1F</color>
+    <color name="ink">#F3F2EE</color>
+    <color name="ink_muted">#8B8D93</color>
+    <color name="hairline">#26282C</color>
+
+    <!-- Legacy aliases for dark mode -->
+    <color name="text_primary">@color/ink</color>
+    <color name="text_secondary">@color/ink_muted</color>
+    <color name="text_tertiary">@color/ink_muted</color>
+    <color name="card_background">@color/surface_raised</color>
+    <color name="background_light">@color/surface</color>
+    <color name="background_secondary">@color/surface_raised</color>
+    <color name="background_tertiary">@color/surface_sunken</color>
+    <color name="divider">@color/hairline</color>
+</resources>

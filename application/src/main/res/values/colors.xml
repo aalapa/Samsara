@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Apple-inspired color palette -->
+    <!-- Chrome / surfaces (light) -->
+    <color name="surface">#FAFAF7</color>
+    <color name="surface_raised">#FFFFFF</color>
+    <color name="surface_sunken">#F0EFEA</color>
+    <color name="ink">#16171A</color>
+    <color name="ink_muted">#85878C</color>
+    <color name="hairline">#E7E6E1</color>
+
+    <!-- Mode accents — ONLY on the selected filter segment -->
+    <color name="mode_gtd">#FF9500</color>
+    <color name="mode_focus">#AF52DE</color>
+    <color name="mode_chakra">#5856D6</color>
+
+    <!-- Semantic -->
+    <color name="positive">#34C759</color>
+    <color name="negative">#FF3B30</color>
+
+    <!-- User-assignable persona/task fill colours (kept for user colour picks) -->
     <color name="apple_blue">#007AFF</color>
     <color name="apple_green">#34C759</color>
     <color name="apple_red">#FF3B30</color>
@@ -9,29 +26,16 @@
     <color name="apple_pink">#FF2D55</color>
     <color name="apple_teal">#5AC8FA</color>
     <color name="apple_indigo">#5856D6</color>
-    
-    <!-- Background colors -->
-    <color name="background_light">#F2F2F7</color>
-    <color name="background_secondary">#FFFFFF</color>
-    <color name="background_tertiary">#E5E5EA</color>
-    
-    <!-- Text colors -->
-    <color name="text_primary">#000000</color>
-    <color name="text_secondary">#3C3C43</color>
-    <color name="text_tertiary">#8E8E93</color>
-    
-    <!-- Card colors -->
-    <color name="card_background">#FFFFFF</color>
-    <color name="card_shadow">#000000</color>
-    
-    <!-- Status colors -->
-    <color name="completed_green">#34C759</color>
-    <color name="delete_red">#FF3B30</color>
-    
-    <!-- Divider color -->
-    <color name="divider">#E5E5EA</color>
-    
-    <!-- Icon background (dark blue/black) -->
-    <color name="icon_background">#0A0E27</color>
-</resources>
 
+    <!-- Legacy aliases (keeps existing code compiling) -->
+    <color name="text_primary">@color/ink</color>
+    <color name="text_secondary">@color/ink_muted</color>
+    <color name="text_tertiary">@color/ink_muted</color>
+    <color name="card_background">@color/surface_raised</color>
+    <color name="background_light">@color/surface</color>
+    <color name="background_secondary">@color/surface_raised</color>
+    <color name="background_tertiary">@color/surface_sunken</color>
+    <color name="divider">@color/hairline</color>
+    <color name="completed_green">@color/positive</color>
+    <color name="delete_red">@color/negative</color>
+</resources>
