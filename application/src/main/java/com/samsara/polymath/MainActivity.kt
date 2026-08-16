@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -69,7 +70,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+
+        // Apply persisted theme before any view inflation
+        val appPrefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        AppCompatDelegate.setDefaultNightMode(
+            if (appPrefs.getBoolean("dark_mode", false)) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
+
         // Check authentication
         val authManager = com.samsara.polymath.util.AuthManager(this)
         if (authManager.isAuthEnabled() && !authManager.isAuthenticated()) {

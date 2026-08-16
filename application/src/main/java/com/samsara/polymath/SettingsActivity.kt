@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.biometric.BiometricManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.samsara.polymath.databinding.ActivitySettingsBinding
@@ -22,6 +23,13 @@ class SettingsActivity : AppCompatActivity() {
 
         authManager = AuthManager(this)
 
+        // Apply saved theme before views render
+        val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        val isDark = prefs.getBoolean("dark_mode", false)
+        AppCompatDelegate.setDefaultNightMode(
+            if (isDark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+        )
+
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
@@ -31,6 +39,9 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
+        val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        binding.darkModeSwitch.isChecked = prefs.getBoolean("dark_mode", false)
+
         val isAuthEnabled = authManager.isAuthEnabled()
         
         // PIN Lock Switch
@@ -60,6 +71,15 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
+        // Dark mode toggle
+        binding.darkModeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            getSharedPreferences("app_prefs", MODE_PRIVATE).edit()
+                .putBoolean("dark_mode", isChecked).apply()
+            AppCompatDelegate.setDefaultNightMode(
+                if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+            )
+        }
+
         // PIN Lock Switch
         binding.pinLockSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
