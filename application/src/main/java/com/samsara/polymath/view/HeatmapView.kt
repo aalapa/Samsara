@@ -34,13 +34,13 @@ class HeatmapView @JvmOverloads constructor(
     private val numRows = 7   // Mon..Sun
     private val numCols = 13  // 13 weeks
 
-    // Colors: 5 intensity levels (empty, light to dark green)
-    private val emptyColor = Color.parseColor("#EBEDF0")
-    private val level1Color = Color.parseColor("#9BE9A8")
-    private val level2Color = Color.parseColor("#40C463")
-    private val level3Color = Color.parseColor("#30A14E")
-    private val level4Color = Color.parseColor("#216E39")
-    private val selectedStrokeColor = Color.parseColor("#1565C0")
+    // Colors: 5 intensity levels (empty → ink at increasing opacity)
+    private val emptyColor = Color.parseColor("#F0EFEA")
+    private val level1Color = Color.argb(51, 22, 23, 26)
+    private val level2Color = Color.argb(102, 22, 23, 26)
+    private val level3Color = Color.argb(163, 22, 23, 26)
+    private val level4Color = Color.argb(217, 22, 23, 26)
+    private val selectedStrokeColor = Color.parseColor("#16171A")
 
     private val cellPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
@@ -53,13 +53,13 @@ class HeatmapView @JvmOverloads constructor(
     }
 
     private val labelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#888888")
+        color = Color.parseColor("#85878C")
         textSize = 24f
         textAlign = Paint.Align.RIGHT
     }
 
     private val monthLabelPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#888888")
+        color = Color.parseColor("#85878C")
         textSize = 22f
         textAlign = Paint.Align.LEFT
     }
@@ -136,7 +136,7 @@ class HeatmapView @JvmOverloads constructor(
         cellGap = 3f * density
 
         val availableWidth = w - paddingLeft - paddingRight - labelWidth
-        cellSize = ((availableWidth - cellGap * (numCols - 1)) / numCols).coerceAtMost(20f * density)
+        cellSize = ((availableWidth - cellGap * (numCols - 1)) / numCols).coerceAtMost(9f * density)
 
         val totalHeight = monthLabelHeight + numRows * cellSize + (numRows - 1) * cellGap + paddingTop + paddingBottom
         setMeasuredDimension(w, totalHeight.toInt())
@@ -151,7 +151,7 @@ class HeatmapView @JvmOverloads constructor(
             computeCellDays()
         }
 
-        val cornerRadius = 3f * resources.displayMetrics.density
+        val cornerRadius = 2.5f * resources.displayMetrics.density
         val rect = RectF()
         val cal = Calendar.getInstance()
 

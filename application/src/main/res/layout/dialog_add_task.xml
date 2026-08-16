@@ -10,8 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/task_title_hint"
-        app:hintTextColor="#FFFFFF"
-        app:boxStrokeColor="#FFFFFF"
+        app:hintTextColor="@color/ink_muted"
+        app:boxStrokeColor="@color/ink"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -20,8 +20,8 @@
             android:layout_height="wrap_content"
             android:inputType="text"
             android:maxLines="1"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#AAAAAA" />
+            android:textColor="@color/ink"
+            android:textColorHint="@color/ink_muted" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -30,8 +30,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:hint="@string/task_description_hint"
-        app:hintTextColor="#FFFFFF"
-        app:boxStrokeColor="#FFFFFF"
+        app:hintTextColor="@color/ink_muted"
+        app:boxStrokeColor="@color/ink"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -40,8 +40,8 @@
             android:layout_height="wrap_content"
             android:inputType="textMultiLine"
             android:maxLines="3"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#AAAAAA" />
+            android:textColor="@color/ink"
+            android:textColorHint="@color/ink_muted" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -51,8 +51,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/recurring_task"
-        android:textColor="#FFFFFF"
-        app:buttonTint="#FFFFFF" />
+        android:textColor="@color/ink"
+        app:buttonTint="@color/ink" />
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/avoidCheckBox"
@@ -60,8 +60,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/avoid_task"
-        android:textColor="#FFFFFF"
-        app:buttonTint="#FF6B6B" />
+        android:textColor="@color/ink"
+        app:buttonTint="@color/negative" />
 
     <TextView
         android:id="@+id/avoidHintTextView"
@@ -69,7 +69,7 @@
         android:layout_height="wrap_content"
         android:paddingStart="32dp"
         android:text="@string/avoid_task_hint"
-        android:textColor="#AAAAAA"
+        android:textColor="@color/ink_muted"
         android:textSize="11sp"
         android:visibility="gone" />
 
@@ -87,7 +87,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/frequency"
-            android:textColor="#AAAAAA"
+            android:textColor="@color/ink_muted"
             android:textSize="12sp"
             android:layout_marginBottom="4dp" />
 
@@ -102,32 +102,32 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/daily"
-                android:textColor="#FFFFFF"
-                android:buttonTint="#FFFFFF" />
+                android:textColor="@color/ink"
+                android:buttonTint="@color/ink" />
 
             <RadioButton
                 android:id="@+id/radioWeekly"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/weekly"
-                android:textColor="#FFFFFF"
-                android:buttonTint="#FFFFFF" />
+                android:textColor="@color/ink"
+                android:buttonTint="@color/ink" />
 
             <RadioButton
                 android:id="@+id/radioMonthly"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/monthly"
-                android:textColor="#FFFFFF"
-                android:buttonTint="#FFFFFF" />
+                android:textColor="@color/ink"
+                android:buttonTint="@color/ink" />
 
             <RadioButton
                 android:id="@+id/radioCustom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/custom_days"
-                android:textColor="#FFFFFF"
-                android:buttonTint="#FFFFFF" />
+                android:textColor="@color/ink"
+                android:buttonTint="@color/ink" />
 
         </RadioGroup>
 
@@ -145,7 +145,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Every"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/ink"
                 android:textSize="14sp" />
 
             <NumberPicker
@@ -160,7 +160,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="month(s)"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/ink"
                 android:textSize="14sp" />
 
         </LinearLayout>
@@ -170,7 +170,7 @@
             android:id="@+id/frequencyInfoLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#AAAAAA"
+            android:textColor="@color/ink_muted"
             android:textSize="12sp"
             android:layout_marginTop="4dp"
             android:visibility="gone" />
@@ -200,7 +200,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/end_date"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/ink"
             android:textSize="14sp" />
 
         <TextView
@@ -208,7 +208,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/no_end_date"
-            android:textColor="#AAAAAA"
+            android:textColor="@color/ink_muted"
             android:textSize="14sp"
             android:paddingHorizontal="12dp"
             android:paddingVertical="8dp"
@@ -220,11 +220,10 @@
             android:layout_height="32dp"
             android:padding="6dp"
             android:src="@android:drawable/ic_menu_close_clear_cancel"
-            android:tint="#AAAAAA"
+            android:tint="@color/ink_muted"
             android:visibility="gone"
             android:contentDescription="@string/clear_end_date" />
 
     </LinearLayout>
 
 </LinearLayout>
-

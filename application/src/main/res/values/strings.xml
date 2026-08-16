@@ -107,7 +107,7 @@
     <string name="enable_fingerprint">Enable Fingerprint?</string>
     <string name="enable_fingerprint_message">Would you like to use your fingerprint to unlock the app instead of entering your PIN each time?</string>
     <string name="skip_for_now">Skip for now</string>
-    <string name="security_settings">Security Settings</string>
+    <string name="security_settings">Settings</string>
     <string name="authentication">Authentication</string>
     <string name="enable_pin">Enable PIN Lock</string>
     <string name="disable_pin">Disable PIN Lock</string>

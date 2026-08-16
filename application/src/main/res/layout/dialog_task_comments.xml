@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="@color/text_primary"
+            android:textColor="@color/ink"
             android:layout_marginBottom="8dp" />
 
         <com.samsara.polymath.view.CompletionBarChartView
@@ -40,7 +40,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/divider"
+            android:background="@color/hairline"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp" />
 
@@ -49,8 +49,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/comment_hint"
-            app:hintTextColor="#FFFFFF"
-            app:boxStrokeColor="#FFFFFF"
+            app:hintTextColor="@color/ink_muted"
+            app:boxStrokeColor="@color/ink"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -59,8 +59,8 @@
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
                 android:maxLines="3"
-                android:textColor="#FFFFFF"
-                android:textColorHint="#AAAAAA" />
+                android:textColor="@color/ink"
+                android:textColorHint="@color/ink_muted" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

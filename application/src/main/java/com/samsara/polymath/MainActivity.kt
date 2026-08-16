@@ -19,9 +19,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
-import com.samsara.polymath.adapter.DailyTaskAdapter
-import com.samsara.polymath.adapter.DailyTaskItem
-import com.samsara.polymath.adapter.GtdListItem
 import com.samsara.polymath.adapter.PersonaAdapter
 import com.samsara.polymath.data.DecayLevel
 import com.samsara.polymath.data.AppDatabase
@@ -46,8 +43,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var taskViewModel: TaskViewModel
     private lateinit var tagViewModel: com.samsara.polymath.viewmodel.TagViewModel
     private lateinit var adapter: PersonaAdapter
-    private lateinit var dailyTaskAdapter: DailyTaskAdapter
-    private var isTodayMode = false
     private var isFocusMode = true // Default to Focus view on launch
     private var isChakraMode = false
     private val gson = Gson()
@@ -149,27 +144,24 @@ class MainActivity : AppCompatActivity() {
         // Wire segmented control buttons
         updateSegmentVisuals()
         binding.segAll.setOnClickListener {
-            isTodayMode = false; isFocusMode = false; isChakraMode = false
+            isFocusMode = false; isChakraMode = false
             selectedFilterTagIds.clear(); expandedTagId = null
             clearTagChipSelections(); updateSegmentVisuals()
+            binding.filterChipsScrollView.visibility = View.VISIBLE
             switchToPersonasMode(); observePersonas()
         }
-        binding.segGtd.setOnClickListener {
-            isTodayMode = true; isFocusMode = false; isChakraMode = false
-            selectedFilterTagIds.clear(); expandedTagId = null
-            clearTagChipSelections(); updateSegmentVisuals()
-            switchToTodayMode()
-        }
         binding.segFocus.setOnClickListener {
-            isFocusMode = true; isTodayMode = false; isChakraMode = false
+            isFocusMode = true; isChakraMode = false
             selectedFilterTagIds.clear(); expandedTagId = null
             clearTagChipSelections(); updateSegmentVisuals()
+            binding.filterChipsScrollView.visibility = View.GONE
             switchToPersonasMode(); observePersonas()
         }
         binding.segChakra.setOnClickListener {
-            isChakraMode = true; isTodayMode = false; isFocusMode = false
+            isChakraMode = true; isFocusMode = false
             selectedFilterTagIds.clear(); expandedTagId = null
             clearTagChipSelections(); updateSegmentVisuals()
+            binding.filterChipsScrollView.visibility = View.GONE
             switchToPersonasMode(); observePersonas()
         }
 
@@ -179,7 +171,7 @@ class MainActivity : AppCompatActivity() {
             binding.filterChipsScrollView.visibility = View.VISIBLE
 
             allTags.forEach { tag ->
-                val isSelected = !isTodayMode && !isFocusMode && !isChakraMode && tag.id in selectedFilterTagIds
+                val isSelected = !isFocusMode && !isChakraMode && tag.id in selectedFilterTagIds
                 val tagColor = try {
                     if (tag.color != null) android.graphics.Color.parseColor(tag.color)
                     else android.graphics.Color.parseColor("#666666")
@@ -201,7 +193,7 @@ class MainActivity : AppCompatActivity() {
                 binding.filterChipGroup.addView(chip)
             }
 
-            val isUntaggedSelected = !isTodayMode && !isFocusMode && !isChakraMode && -1L in selectedFilterTagIds
+            val isUntaggedSelected = !isFocusMode && !isChakraMode && -1L in selectedFilterTagIds
             val untaggedChip = com.google.android.material.chip.Chip(this).apply {
                 text = if (isUntaggedSelected || expandedTagId == -1L) getString(R.string.untagged) else abbreviateTag(getString(R.string.untagged))
                 isCheckable = true
@@ -221,7 +213,7 @@ class MainActivity : AppCompatActivity() {
                     val tag = allTags[i]
                     chip.setOnCheckedChangeListener { _, isChecked ->
                         if (isChecked) {
-                            isTodayMode = false; isFocusMode = false; isChakraMode = false
+                            isFocusMode = false; isChakraMode = false
                             selectedFilterTagIds.add(tag.id)
                             expandedTagId = tag.id
                             chip.text = tag.name
@@ -245,7 +237,7 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     chip.setOnCheckedChangeListener { _, isChecked ->
                         if (isChecked) {
-                            isTodayMode = false; isFocusMode = false; isChakraMode = false
+                            isFocusMode = false; isChakraMode = false
                             selectedFilterTagIds.add(-1L)
                             expandedTagId = -1L
                             chip.text = getString(R.string.untagged)
@@ -273,10 +265,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateSegmentVisuals() {
         val segCorner = 9f * resources.displayMetrics.density
-        val isAllActive = !isTodayMode && !isFocusMode && !isChakraMode && selectedFilterTagIds.isEmpty()
+        val isAllActive = !isFocusMode && !isChakraMode && selectedFilterTagIds.isEmpty()
         listOf(
             Triple(binding.segAll, isAllActive, null as Int?),
-            Triple(binding.segGtd, isTodayMode, R.color.mode_gtd),
             Triple(binding.segFocus, isFocusMode, R.color.mode_focus),
             Triple(binding.segChakra, isChakraMode, R.color.mode_chakra)
         ).forEach { (tv, active, colorRes) ->
@@ -299,74 +290,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun switchToTodayMode() {
-        binding.personasRecyclerView.visibility = View.GONE
-        binding.dailyTasksRecyclerView.visibility = View.VISIBLE
-        binding.addPersonaFab.visibility = View.GONE
-        observeDueTodayTasks()
-    }
-
     private fun switchToPersonasMode() {
         binding.personasRecyclerView.visibility = View.VISIBLE
-        binding.dailyTasksRecyclerView.visibility = View.GONE
         binding.emptyDailyTextView.visibility = View.GONE
         binding.addPersonaFab.visibility = View.VISIBLE
-    }
-
-    private fun observeDueTodayTasks() {
-        viewModel.getAllPersonasWithTaskCount().observe(this) { personasWithCount ->
-            val personaMap = personasWithCount.associate {
-                it.persona.id to Pair(it.persona.name, it.persona.backgroundColor)
-            }
-
-            taskViewModel.getOverdueTasks().observe(this) { overdueTasks ->
-                if (!isTodayMode) return@observe
-                taskViewModel.getDueTodayTasks().observe(this) { dueTasks ->
-                    if (!isTodayMode) return@observe
-                    taskViewModel.getUpcomingTasks().observe(this) innerObserve@{ upcomingTasks ->
-                        if (!isTodayMode) return@innerObserve
-                        val gtdItems = mutableListOf<GtdListItem>()
-                        val usedIds = mutableSetOf<Long>()
-
-                        // Overdue first
-                        if (overdueTasks.isNotEmpty()) {
-                            gtdItems.add(GtdListItem.Header(getString(R.string.overdue)))
-                            overdueTasks.forEach { task ->
-                                usedIds.add(task.id)
-                                val (name, color) = personaMap[task.personaId] ?: ("Unknown" to "#007AFF")
-                                gtdItems.add(GtdListItem.TaskItem(DailyTaskItem(task, name, color)))
-                            }
-                        }
-
-                        // Due Today
-                        val filteredToday = dueTasks.filter { it.id !in usedIds }
-                        if (filteredToday.isNotEmpty()) {
-                            gtdItems.add(GtdListItem.Header(getString(R.string.due_today)))
-                            filteredToday.forEach { task ->
-                                usedIds.add(task.id)
-                                val (name, color) = personaMap[task.personaId] ?: ("Unknown" to "#007AFF")
-                                gtdItems.add(GtdListItem.TaskItem(DailyTaskItem(task, name, color)))
-                            }
-                        }
-
-                        // Upcoming
-                        val filteredUpcoming = upcomingTasks.filter { it.id !in usedIds }
-                        if (filteredUpcoming.isNotEmpty()) {
-                            gtdItems.add(GtdListItem.Header(getString(R.string.upcoming)))
-                            filteredUpcoming.forEach { task ->
-                                val (name, color) = personaMap[task.personaId] ?: ("Unknown" to "#007AFF")
-                                gtdItems.add(GtdListItem.TaskItem(DailyTaskItem(task, name, color)))
-                            }
-                        }
-
-                        dailyTaskAdapter.submitList(gtdItems)
-                        binding.emptyDailyTextView.text = getString(R.string.no_gtd_tasks)
-                        binding.emptyDailyTextView.visibility = if (gtdItems.isEmpty()) View.VISIBLE else View.GONE
-                        binding.dailyTasksRecyclerView.visibility = if (gtdItems.isEmpty()) View.GONE else View.VISIBLE
-                    }
-                }
-            }
-        }
     }
     
     private fun setupMenuButton() { 
@@ -452,20 +379,6 @@ class MainActivity : AppCompatActivity() {
         binding.personasRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.personasRecyclerView.adapter = adapter
 
-        dailyTaskAdapter = DailyTaskAdapter(
-            onTaskComplete = { task ->
-                com.google.android.material.dialog.MaterialAlertDialogBuilder(this)
-                    .setTitle("Complete Task")
-                    .setMessage(getString(R.string.mark_complete_confirmation))
-                    .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                        taskViewModel.markTaskAsComplete(task)
-                    }
-                    .setNegativeButton(getString(R.string.no), null)
-                    .show()
-            }
-        )
-        binding.dailyTasksRecyclerView.layoutManager = LinearLayoutManager(this)
-        binding.dailyTasksRecyclerView.adapter = dailyTaskAdapter
     }
 
     private fun observePersonas() {
@@ -492,7 +405,7 @@ class MainActivity : AppCompatActivity() {
                 binding.emptyDailyTextView.text = getString(R.string.no_chakra_personas)
                 binding.emptyDailyTextView.visibility = View.VISIBLE
                 binding.personasRecyclerView.visibility = View.GONE
-            } else if (!isTodayMode) {
+            } else {
                 binding.emptyDailyTextView.visibility = View.GONE
                 binding.personasRecyclerView.visibility = View.VISIBLE
             }

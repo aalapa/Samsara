@@ -14,6 +14,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/persona_name_hint"
+            app:hintTextColor="@color/ink_muted"
+            app:boxStrokeColor="@color/ink"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -21,11 +23,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:textColor="@color/ink"
+                android:textColorHint="@color/ink_muted" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Tags Section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,7 +36,7 @@
             android:text="@string/tags"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface" />
+            android:textColor="@color/ink" />
 
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/tagsChipGroup"
@@ -50,10 +53,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/add_new_tag"
+            android:textColor="@color/ink_muted"
             android:textSize="12sp"
             style="@style/Widget.MaterialComponents.Button.TextButton" />
 
     </LinearLayout>
 
 </ScrollView>
-
