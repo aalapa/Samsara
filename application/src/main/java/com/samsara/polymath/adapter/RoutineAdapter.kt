@@ -60,11 +60,16 @@ class RoutineAdapter(
             val endTime = sectionEndTimes[chunk]
             val isOverdue = !isManageMode && endTime != null && currentMinutes >= endTime
 
-            // Hide section entirely when its deadline passed and every task is done
-            if (isOverdue && done == chunkTasks.size) continue
-
-            newItems += RoutineListItem.Header(chunk, done, chunkTasks.size, isOverdue && done < chunkTasks.size)
-            chunkTasks.forEach { newItems += RoutineListItem.TaskItem(it) }
+            if (isOverdue) {
+                // Past deadline: only show incomplete tasks; hide section if all done
+                val remaining = chunkTasks.filter { it.id !in completedIds }
+                if (remaining.isEmpty()) continue
+                newItems += RoutineListItem.Header(chunk, done, chunkTasks.size, true)
+                remaining.forEach { newItems += RoutineListItem.TaskItem(it) }
+            } else {
+                newItems += RoutineListItem.Header(chunk, done, chunkTasks.size, false)
+                chunkTasks.forEach { newItems += RoutineListItem.TaskItem(it) }
+            }
         }
         items = newItems
         notifyDataSetChanged()
