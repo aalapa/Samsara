@@ -52,8 +52,10 @@ class RoutineActivity : AppCompatActivity() {
 
     private var isManageMode = false
     private var isBarMode = true
+    private var isReviewMode = false
     private var manageMenuItem: MenuItem? = null
     private var viewToggleMenuItem: MenuItem? = null
+    private var reviewMenuItem: MenuItem? = null
 
     private val prefs by lazy { getSharedPreferences("routine_prefs", Context.MODE_PRIVATE) }
 
@@ -176,6 +178,7 @@ class RoutineActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_routine, menu)
         viewToggleMenuItem = menu.findItem(R.id.action_view_toggle)
         manageMenuItem     = menu.findItem(R.id.action_manage)
+        reviewMenuItem     = menu.findItem(R.id.action_review)
         return true
     }
 
@@ -196,6 +199,12 @@ class RoutineActivity : AppCompatActivity() {
             true
         }
         R.id.action_sections -> { showManageSectionsDialog(); true }
+        R.id.action_review -> {
+            isReviewMode = !isReviewMode
+            reviewMenuItem?.title = if (isReviewMode) "Hide completed" else "Review day"
+            refreshAdapter()
+            true
+        }
         else -> super.onOptionsItemSelected(item)
     }
 
@@ -230,7 +239,8 @@ class RoutineActivity : AppCompatActivity() {
     private fun refreshAdapter() {
         val names = sectionsList.map { it.name }
         adapter.sections        = names
-        adapter.sectionEndTimes = sectionsList.mapNotNull { s -> s.endMinutes?.let { s.name to it } }.toMap()
+        adapter.sectionEndTimes = if (isReviewMode) emptyMap()
+                                  else sectionsList.mapNotNull { s -> s.endMinutes?.let { s.name to it } }.toMap()
         adapter.currentMinutes  = currentMinutesOfDay()
         adapter.chunkColors     = chunkColorsMap()
         adapter.submit(currentTasks, currentCompletedIds, statCache.toMap())
