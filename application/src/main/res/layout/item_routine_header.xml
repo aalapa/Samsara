@@ -19,6 +19,18 @@
         android:textColor="@color/ink_muted"
         android:text="MORNING" />
 
+    <!-- Red dot shown when section deadline has passed and tasks remain -->
+    <TextView
+        android:id="@+id/overdueTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="●"
+        android:textSize="8sp"
+        android:textColor="#FF3B30"
+        android:paddingStart="4dp"
+        android:paddingEnd="6dp"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/chunkProgressTextView"
         android:layout_width="wrap_content"

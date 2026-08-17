@@ -16,7 +16,12 @@ private const val TYPE_HEADER = 0
 private const val TYPE_TASK = 1
 
 sealed class RoutineListItem {
-    data class Header(val chunk: String, val completed: Int, val total: Int) : RoutineListItem()
+    data class Header(
+        val chunk: String,
+        val completed: Int,
+        val total: Int,
+        val isOverdue: Boolean = false
+    ) : RoutineListItem()
     data class TaskItem(val task: Task) : RoutineListItem()
 }
 
@@ -35,6 +40,8 @@ class RoutineAdapter(
     /** When true (default) completed tasks render as the slim bar. */
     var isBarMode: Boolean = true
     var isManageMode: Boolean = false
+    var sectionEndTimes: Map<String, Int> = emptyMap()  // section name → end time (minutes from midnight)
+    var currentMinutes: Int = 0
 
     fun submit(
         tasks: List<Task>,
@@ -49,7 +56,14 @@ class RoutineAdapter(
             val chunkTasks = tasks.filter { it.timeChunk == chunk }
             if (chunkTasks.isEmpty()) continue
             val done = chunkTasks.count { it.id in completedIds }
-            newItems += RoutineListItem.Header(chunk, done, chunkTasks.size)
+
+            val endTime = sectionEndTimes[chunk]
+            val isOverdue = !isManageMode && endTime != null && currentMinutes >= endTime
+
+            // Hide section entirely when its deadline passed and every task is done
+            if (isOverdue && done == chunkTasks.size) continue
+
+            newItems += RoutineListItem.Header(chunk, done, chunkTasks.size, isOverdue && done < chunkTasks.size)
             chunkTasks.forEach { newItems += RoutineListItem.TaskItem(it) }
         }
         items = newItems
@@ -109,6 +123,8 @@ class RoutineAdapter(
                     b.root.context.getColor(com.samsara.polymath.R.color.ink_muted)
                 )
             }
+
+            b.overdueTextView.visibility = if (header.isOverdue) View.VISIBLE else View.GONE
 
             // Color dot: filled circle showing current chunk color, tap to pick
             val dotColor = chunkColor ?: Color.LTGRAY
