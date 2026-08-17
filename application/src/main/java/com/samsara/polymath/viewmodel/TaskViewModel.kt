@@ -163,7 +163,8 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
                         createdAt = System.currentTimeMillis(),
                         nextDueDate = nextDue,
                         recurringGroupId = groupId,
-                        isAvoidTask = task.isAvoidTask
+                        isAvoidTask = task.isAvoidTask,
+                        parentTaskId = task.parentTaskId
                     )
                 )
             }
