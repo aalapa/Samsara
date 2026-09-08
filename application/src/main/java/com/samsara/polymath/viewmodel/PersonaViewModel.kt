@@ -303,6 +303,12 @@ class PersonaViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun toggleSuspend(personaId: Long, isSuspended: Boolean) {
+        viewModelScope.launch {
+            repository.updateSuspendedStatus(personaId, isSuspended)
+        }
+    }
+
     suspend fun getAllPersonasSync(): List<Persona> {
         return repository.getAllPersonas().first()
     }

@@ -18,7 +18,8 @@ data class Persona(
     val lastOpenedAt: Long = System.currentTimeMillis(), // Track when persona was last opened for decay
     val isFocused: Boolean = false,
     val isChakra: Boolean = false,
-    val isRoutine: Boolean = false
+    val isRoutine: Boolean = false,
+    val isSuspended: Boolean = false
 )
 
 /**

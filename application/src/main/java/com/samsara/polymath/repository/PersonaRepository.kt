@@ -33,6 +33,8 @@ class PersonaRepository(private val personaDao: PersonaDao) {
         personaDao.updateBackgroundColor(id, color, textColor)
 
     suspend fun updateChakraStatus(id: Long, isChakra: Boolean) = personaDao.updateChakraStatus(id, isChakra)
+
+    suspend fun updateSuspendedStatus(id: Long, isSuspended: Boolean) = personaDao.updateSuspendedStatus(id, isSuspended)
     
     suspend fun getAllPersonasSync(): List<Persona> {
         return personaDao.getAllPersonasList()

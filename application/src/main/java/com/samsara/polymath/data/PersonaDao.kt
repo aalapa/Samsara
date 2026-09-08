@@ -45,6 +45,9 @@ interface PersonaDao {
     @Query("UPDATE personas SET isChakra = :isChakra WHERE id = :id")
     suspend fun updateChakraStatus(id: Long, isChakra: Boolean)
 
+    @Query("UPDATE personas SET isSuspended = :isSuspended WHERE id = :id")
+    suspend fun updateSuspendedStatus(id: Long, isSuspended: Boolean)
+
     @Query("SELECT * FROM personas ORDER BY createdAt ASC")
     suspend fun getAllPersonasList(): List<Persona>
     

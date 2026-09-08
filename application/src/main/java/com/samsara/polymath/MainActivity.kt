@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     private var isFocusMode = true // Default to Focus view on launch
     private var isChakraMode = false
     private var isRoutineMode = false
+    private var isPausedMode = false
     private val gson = Gson()
     
     private val prefs by lazy { 
@@ -145,28 +146,35 @@ class MainActivity : AppCompatActivity() {
         // Wire segmented control buttons
         updateSegmentVisuals()
         binding.segAll.setOnClickListener {
-            isFocusMode = false; isChakraMode = false; isRoutineMode = false
+            isFocusMode = false; isChakraMode = false; isRoutineMode = false; isPausedMode = false
             selectedFilterTagIds.clear(); expandedTagId = null
             clearTagChipSelections(); updateSegmentVisuals()
             binding.filterChipsScrollView.visibility = View.VISIBLE
             switchToPersonasMode(); observePersonas()
         }
         binding.segFocus.setOnClickListener {
-            isFocusMode = true; isChakraMode = false; isRoutineMode = false
+            isFocusMode = true; isChakraMode = false; isRoutineMode = false; isPausedMode = false
             selectedFilterTagIds.clear(); expandedTagId = null
             clearTagChipSelections(); updateSegmentVisuals()
             binding.filterChipsScrollView.visibility = View.GONE
             switchToPersonasMode(); observePersonas()
         }
         binding.segChakra.setOnClickListener {
-            isChakraMode = true; isFocusMode = false; isRoutineMode = false
+            isChakraMode = true; isFocusMode = false; isRoutineMode = false; isPausedMode = false
             selectedFilterTagIds.clear(); expandedTagId = null
             clearTagChipSelections(); updateSegmentVisuals()
             binding.filterChipsScrollView.visibility = View.GONE
             switchToPersonasMode(); observePersonas()
         }
         binding.segRoutine.setOnClickListener {
-            isRoutineMode = true; isChakraMode = false; isFocusMode = false
+            isRoutineMode = true; isChakraMode = false; isFocusMode = false; isPausedMode = false
+            selectedFilterTagIds.clear(); expandedTagId = null
+            clearTagChipSelections(); updateSegmentVisuals()
+            binding.filterChipsScrollView.visibility = View.GONE
+            switchToPersonasMode(); observePersonas()
+        }
+        binding.segPaused.setOnClickListener {
+            isPausedMode = true; isRoutineMode = false; isChakraMode = false; isFocusMode = false
             selectedFilterTagIds.clear(); expandedTagId = null
             clearTagChipSelections(); updateSegmentVisuals()
             binding.filterChipsScrollView.visibility = View.GONE
@@ -273,12 +281,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateSegmentVisuals() {
         val segCorner = 9f * resources.displayMetrics.density
-        val isAllActive = !isFocusMode && !isChakraMode && !isRoutineMode && selectedFilterTagIds.isEmpty()
+        val isAllActive = !isFocusMode && !isChakraMode && !isRoutineMode && !isPausedMode && selectedFilterTagIds.isEmpty()
         listOf(
             Triple(binding.segAll, isAllActive, null as Int?),
             Triple(binding.segFocus, isFocusMode, R.color.mode_focus),
             Triple(binding.segChakra, isChakraMode, R.color.mode_chakra),
-            Triple(binding.segRoutine, isRoutineMode, null as Int?)
+            Triple(binding.segRoutine, isRoutineMode, null as Int?),
+            Triple(binding.segPaused, isPausedMode, null as Int?)
         ).forEach { (tv, active, colorRes) ->
             if (active) {
                 tv.background = android.graphics.drawable.GradientDrawable().apply {
@@ -397,12 +406,14 @@ class MainActivity : AppCompatActivity() {
     private fun observePersonas() {
         viewModel.getAllPersonasWithTaskCount().observe(this) { personasWithCount ->
             val filteredList = when {
-                isFocusMode    -> personasWithCount.filter { it.persona.isFocused }
-                isChakraMode   -> personasWithCount.filter { it.persona.isChakra }
-                isRoutineMode  -> personasWithCount.filter { it.persona.isRoutine }
-                selectedFilterTagIds.isEmpty() -> personasWithCount
-                -1L in selectedFilterTagIds -> personasWithCount.filter { it.tags.isEmpty() }
+                isPausedMode   -> personasWithCount.filter { it.persona.isSuspended }
+                isFocusMode    -> personasWithCount.filter { it.persona.isFocused && !it.persona.isSuspended }
+                isChakraMode   -> personasWithCount.filter { it.persona.isChakra && !it.persona.isSuspended }
+                isRoutineMode  -> personasWithCount.filter { it.persona.isRoutine && !it.persona.isSuspended }
+                selectedFilterTagIds.isEmpty() -> personasWithCount.filter { !it.persona.isSuspended }
+                -1L in selectedFilterTagIds -> personasWithCount.filter { it.tags.isEmpty() && !it.persona.isSuspended }
                 else -> personasWithCount.filter { personaWithCount ->
+                    !personaWithCount.persona.isSuspended &&
                     personaWithCount.tags.any { tag -> tag.id in selectedFilterTagIds }
                 }
             }
@@ -411,7 +422,11 @@ class MainActivity : AppCompatActivity() {
             val archived = filteredList.filter { it.decayLevel == DecayLevel.SERIOUS }
             adapter.setPersonas(active, archived)
 
-            if (isFocusMode && filteredList.isEmpty()) {
+            if (isPausedMode && filteredList.isEmpty()) {
+                binding.emptyDailyTextView.text = "No suspended avatars"
+                binding.emptyDailyTextView.visibility = View.VISIBLE
+                binding.personasRecyclerView.visibility = View.GONE
+            } else if (isFocusMode && filteredList.isEmpty()) {
                 binding.emptyDailyTextView.text = getString(R.string.no_focused_personas)
                 binding.emptyDailyTextView.visibility = View.VISIBLE
                 binding.personasRecyclerView.visibility = View.GONE
@@ -581,6 +596,9 @@ class MainActivity : AppCompatActivity() {
         var selectedColor = persona.backgroundColor
         setupColorPalette(dialogBinding.colorPaletteLayout, selectedColor) { selectedColor = it }
 
+        dialogBinding.suspendSwitchRow.visibility = View.VISIBLE
+        dialogBinding.suspendSwitch.isChecked = persona.isSuspended
+
         val selectedTagIds = mutableSetOf<Long>()
         
         // Observe all tags and persona's current tags
@@ -639,6 +657,10 @@ class MainActivity : AppCompatActivity() {
                         viewModel.updatePersonaColor(persona.id, selectedColor)
                     }
                     tagViewModel.setTagsForPersona(persona.id, selectedTagIds.toList())
+                    val nowSuspended = dialogBinding.suspendSwitch.isChecked
+                    if (nowSuspended != persona.isSuspended) {
+                        viewModel.toggleSuspend(persona.id, nowSuspended)
+                    }
                 } else {
                     Toast.makeText(this, "Persona name cannot be empty", Toast.LENGTH_SHORT).show()
                 }
