@@ -248,6 +248,22 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
             .asLiveData()
     }
 
+    suspend fun getRecurringStatsForTasks(tasks: List<Task>): Map<Long, com.samsara.polymath.adapter.RecurringStats> {
+        val result = mutableMapOf<Long, com.samsara.polymath.adapter.RecurringStats>()
+        for (task in tasks) {
+            if (!task.isRecurring || task.isCompleted) continue
+            val groupId = task.recurringGroupId
+            if (groupId == null) {
+                result[task.id] = com.samsara.polymath.adapter.RecurringStats(task.createdAt, 0)
+            } else {
+                val originCreatedAt = repository.getTaskCreatedAt(groupId) ?: task.createdAt
+                val count = repository.getCompletedCountByGroupId(groupId)
+                result[task.id] = com.samsara.polymath.adapter.RecurringStats(originCreatedAt, count)
+            }
+        }
+        return result
+    }
+
     suspend fun getCompletionIntervals(personaId: Long, title: String): List<Int> {
         val instances = repository.getCompletedRecurringInstances(personaId, title)
         if (instances.size < 2) return emptyList()

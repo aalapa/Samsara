@@ -55,6 +55,12 @@ class TaskRepository(private val taskDao: TaskDao) {
     suspend fun getCompletedRecurringInstances(personaId: Long, title: String): List<Task> =
         taskDao.getCompletedRecurringInstances(personaId, title)
 
+    suspend fun getCompletedCountByGroupId(groupId: Long): Int =
+        taskDao.getCompletedCountByGroupId(groupId)
+
+    suspend fun getTaskCreatedAt(id: Long): Long? =
+        taskDao.getTaskCreatedAt(id)
+
     suspend fun getDailyCompletionsByPersona(personaId: Long, sinceMillis: Long): List<DailyCompletionCount> =
         taskDao.getDailyCompletionsByPersona(personaId, sinceMillis)
 

@@ -15,6 +15,8 @@ import com.samsara.polymath.data.Task
 import com.samsara.polymath.databinding.ItemTaskBinding
 import java.util.concurrent.TimeUnit
 
+data class RecurringStats(val originCreatedAt: Long, val completionCount: Int)
+
 class TaskAdapter(
     private val onTaskClick: (Task) -> Unit,
     private val onTaskDelete: (Task) -> Unit,
@@ -23,6 +25,9 @@ class TaskAdapter(
     private val onStartDrag: (RecyclerView.ViewHolder) -> Unit,
     private val onCircleClick: (Task) -> Unit = {}
 ) : ListAdapter<Task, TaskAdapter.TaskViewHolder>(TaskDiffCallback()) {
+
+    var recurringStats: Map<Long, RecurringStats> = emptyMap()
+        set(value) { field = value; notifyDataSetChanged() }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val binding = ItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -109,7 +114,17 @@ class TaskAdapter(
                 val daysSinceCreation = calculateDaysDifference(task.createdAt, currentTime)
                 binding.daysTextView.text = buildDaySpan(daysSinceCreation.toString())
                 binding.daysTextView.setTextColor(contrastColor)
-                binding.completionInfoTextView.visibility = View.GONE
+
+                val rstats = if (task.isRecurring) recurringStats[task.id] else null
+                if (rstats != null) {
+                    val originDays = calculateDaysDifference(rstats.originCreatedAt, currentTime)
+                    val muted = Color.argb(153, Color.red(contrastColor), Color.green(contrastColor), Color.blue(contrastColor))
+                    binding.completionInfoTextView.text = "${originDays}d · ${daysSinceCreation}d · ×${rstats.completionCount}"
+                    binding.completionInfoTextView.setTextColor(muted)
+                    binding.completionInfoTextView.visibility = View.VISIBLE
+                } else {
+                    binding.completionInfoTextView.visibility = View.GONE
+                }
             }
 
             binding.daysTextView.setOnClickListener { onCircleClick(task) }

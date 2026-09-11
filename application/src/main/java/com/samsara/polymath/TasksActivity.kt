@@ -241,6 +241,9 @@ class TasksActivity : AppCompatActivity() {
                 tasks.filter { !it.isCompleted && (it.nextDueDate == null || it.nextDueDate <= now) }
             }
             adapter.submitList(filteredTasks)
+            lifecycleScope.launch {
+                adapter.recurringStats = viewModel.getRecurringStatsForTasks(filteredTasks)
+            }
         }
     }
 
